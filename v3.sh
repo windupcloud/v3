@@ -626,9 +626,9 @@ install_socks5(){
 	fi
 }
 
-uninstall_socks5(){
-	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
-	    chmod 777 install.sh;bash install.sh --uninstall
+ddns(){
+	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/ddns.sh
+	    chmod 777 install.sh;bash ddns.sh
 }
 
 
@@ -978,7 +978,7 @@ case "$num" in
 	f)
 	detect_backhaul_routing;;
 	g)
-	uninstall_socks5;;
+	ddns;;
 	h)
 	speedtest;;
 	i)
