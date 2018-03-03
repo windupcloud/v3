@@ -626,6 +626,11 @@ install_socks5(){
 	fi
 }
 
+network(){
+	    service network restart
+}
+
+
 ddns(){
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/ddns.sh
 	    chmod 777 install.sh;bash ddns.sh
@@ -915,10 +920,6 @@ get_server_ip_info
 
 #输出安装选项
 echo "####################################################################
-# GitHub原版：https://github.com/mmmwhy/ss-panel-and-ss-py-mu      #
-# GitHub修改版：https://github.com/qinghuas/ss-panel-and-ss-py-mu  #
-# 原作者博客：http://91vps.win/2017/08/24/ss-panel-v3-mod          #
-# GitHub版权：@mmmwhy @qinghuas                                    #
 # 版本：V.2.3.3 2017-10-15                                         #
 ####################################################################
 # [1] Screen守护后端SSR                                            #
@@ -933,7 +934,7 @@ echo "####################################################################
 ####################################################################
 # [a]修复服务端故障 [b]检测BBR安装状态 [c]卸载各类云盾 [d]安装加速 #
 # [e]执行测速脚本 [f]查看回程路由 [g]动态IP解析 [h]SpeedTest       #
-# [i]配置防火墙 [j]列出开放端口 [k]更换默认源 [l]fail2ban          #
+# [i]配置防火墙 [j]列出开放端口 [k]更换默认源 [l]重启网卡          #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
 # 此服务器IP信息：${server_ip_info}
@@ -988,7 +989,7 @@ case "$num" in
 	k)
 	replacement_of_installation_source;;
 	l)
-	install_fail2ban;;
+	network;;
 	x)
 	bash v3.sh;;
 	y)
