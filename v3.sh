@@ -609,19 +609,17 @@ install_socks5(){
 	read install_socks5
 	
 	if [ ${install_socks5} = '1' ];then
-		echo "本机IP地址为：${server_ip}"
-	    read -p "本机IP地址是:" Userip
+	echo "本机IP地址为：${server_ip}"
+	read -p "本机IP地址是:" Userip
         read -p "设置端口是:" Userid
         read -p "用户是:" User
         read -p "密码是:" Userpasswd
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
 	    chmod 777 install.sh;bash install.sh --ip="${Userip}" --port="${Userid}" --user="${User}" --passwd="${Userpasswd}"
-	fi
 	    
 	elif [ ${install_socks5} = '2' ];then
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
 	    chmod 777 install.sh;bash install.sh --uninstall
-	fi
 	
 	    else
 		echo "选项不在范围内,更新中止.";exit 0
