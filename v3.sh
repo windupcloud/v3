@@ -468,9 +468,14 @@ repair_ssr_operation(){
 }
 
 update_the_shell(){
+	echo "请选择更新源：[1]修改版 ";read Update_source
+	#删除旧文件并从更新源获取新文件
+	if [ ${Update_source} = '1' ];then
 		rm -rf /root/v3.sh v3.sh.*
-		wget "https://github.com/Super-box/v3/raw/master/v3.sh"
-		
+		wget "http://yahaha.win/ssr-download/v3.sh"
+	else
+		echo "选项不在范围内,更新中止.";exit 0
+	fi
 	#将脚本作为命令放置在/usr/bin目录内,最后执行
 	rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
 	v3
