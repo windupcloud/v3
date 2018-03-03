@@ -605,6 +605,9 @@ swap(){
 }
 
 install_socks5(){
+	echo "请选择更新源：[1]安装 [2]卸载";read a_socks
+	#删除旧文件并从更新源获取新文件
+	if [ ${a_socks} = '1' ];then
 		echo "本机IP地址为：${server_ip}"
 	    read -p "本机IP地址是:" Userip
         read -p "设置端口是:" Userid
@@ -612,6 +615,12 @@ install_socks5(){
         read -p "密码是:" Userpasswd
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
 	    chmod 777 install.sh;bash install.sh --ip="${Userip}" --port="${Userid}" --user="${User}" --passwd="${Userpasswd}"
+	if [ ${a_socks} = '2' ];then
+	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
+	    chmod 777 install.sh;bash install.sh --uninstall
+	else
+		echo "选项不在范围内,更新中止.";exit 0
+	fi
 }
 uninstall_socks5(){
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
