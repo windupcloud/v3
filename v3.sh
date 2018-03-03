@@ -582,7 +582,7 @@ swap(){
 	elif [ ${swap} = '2' ];then
 		#判断/var/swapfile2文件是否存在
 		if [ ! -f /var/swapfile1 ];then
-			dd if=/dev/zero of=/var/swapfile1 bs=1024 count=1048576
+		dd if=/dev/zero of=/var/swapfile1 bs=1024 count=1048576
 	        mkswap /var/swapfile1;chmod 0644 /var/swapfile1;swapon /var/swapfile1
 	        echo '/var/swapfile1 swap swap default 0 0' >> /etc/fstab
 	        echo "已经成功添加SWAP"
@@ -595,9 +595,9 @@ swap(){
 		if [ ! -f /var/swapfile1 ];then
  		    echo "检查到您未添加SWAP"
 		else
-			swapoff /var/swapfile1
-            sed -i "/swapfile1/d" /etc/fstab
-            rm -rf /var/swapfile1
+	        swapoff /var/swapfile1
+                sed -i "/swapfile1/d" /etc/fstab
+                rm -rf /var/swapfile1
 		fi
 	else
 		echo "选项不在范围.";exit 0
@@ -616,12 +616,14 @@ install_socks5(){
         read -p "密码是:" Userpasswd
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
 	    chmod 777 install.sh;bash install.sh --ip="${Userip}" --port="${Userid}" --user="${User}" --passwd="${Userpasswd}"
+	fi
 	    
 	elif [ ${socks} = '2' ];then
 	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
 	    chmod 777 install.sh;bash install.sh --uninstall
-	    
-	else
+	fi
+	
+	    else
 		echo "选项不在范围内,更新中止.";exit 0
 	fi
 }
