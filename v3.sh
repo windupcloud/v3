@@ -322,7 +322,7 @@ install_screen(){
 }
 
 use_keep(){
-	wget -N —no-check-certificate http://yahaha.win/ssr-download/keep.sh
+	wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/keep.sh
 	screen -S ss
 	bash keep.sh
 }
@@ -439,7 +439,7 @@ modify_node_info(){
 	
 			#检查
 			if [ ! -f /root/shadowsocks/userapiconfig.py.bak ];then
-				wget http://yahaha.win/ssr-download/userapiconfig.py
+				wget https://github.com/Super-box/v3/raw/master/userapiconfig.py
 			else
 			#还原
 				rm -rf /root/shadowsocks/userapiconfig.py
@@ -468,9 +468,10 @@ repair_ssr_operation(){
 }
 
 update_the_shell(){
+
 		rm -rf /root/v3.sh v3.sh.*
-		wget "http://yahaha.win/ssr-download/v3.sh"
-		
+		wget "https://github.com/Super-box/v3/raw/master/v3.sh"
+
 	#将脚本作为命令放置在/usr/bin目录内,最后执行
 	rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
 	v3
