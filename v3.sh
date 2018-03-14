@@ -289,7 +289,7 @@ restart_supervisor(){
 		if [ ! -f /usr/bin/killall ];then
 			echo "检查到您未安装,脚本将先进行安装..."
 			yum -y update;yum -y install psmisc
-            killall supervisord
+                killall supervisord
 	        killall supervisord
 	        killall supervisord
 	        killall supervisord
@@ -605,25 +605,8 @@ swap(){
 }
 
 install_socks5(){
-	echo "请选择更新源：[1]安装 [2]卸载"
-	read install_socks5
-	
-	if [ ${install_socks5} = '1' ];then
-	echo "本机IP地址为：${server_ip}"
-	read -p "本机IP地址是:" Userip
-        read -p "设置端口是:" Userid
-        read -p "用户是:" User
-        read -p "密码是:" Userpasswd
-	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
-	    chmod 777 install.sh;bash install.sh --ip="${Userip}" --port="${Userid}" --user="${User}" --passwd="${Userpasswd}"
-	    
-	elif [ ${install_socks5} = '2' ];then
-	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/install.sh
-	    chmod 777 install.sh;bash install.sh --uninstall
-	
-	    else
-		echo "选项不在范围内,更新中止.";exit 0
-	fi
+           wget -N —no-check-certificate https://raw.githubusercontent.com/qinghuas/socks5-install/master/ss5.sh
+	   chmod 777 ss5.sh;bash ss5.sh
 }
 
 network(){
@@ -632,8 +615,8 @@ network(){
 
 
 ddns(){
-	    wget -N —no-check-certificate https://raw.github.com/Sooele/danted/master/ddns.sh
-	    chmod 777 install.sh;bash ddns.sh
+	    wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
+	    chmod 777 ddns.sh;bash ddns.sh
 }
 
 
