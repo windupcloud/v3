@@ -329,9 +329,9 @@ use_keep(){
 
 install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
-		if [ ! -f /usr/bin/pm2 ];then
-			echo "检查到您未安装pm2,脚本将先进行安装..."
-		    #安装Node.js环境
+	    if [ ! -f /usr/bin/pm2 ];then
+            echo "检查到您未安装pm2,脚本将先进行安装..."
+	    #安装Node.js环境
     	    yum -y install xz
     	    yum -y install wget
     	    wget -N https://nodejs.org/dist/v9.4.0/node-v9.4.0-linux-x64.tar.xz
@@ -348,11 +348,11 @@ install_pm2(){
     	    ln -s /root/node-v9.4.0-linux-x64/bin/pm2 /usr/bin/pm2
 		else
 			echo "已经安装pm2，开始配置pm2"
-	fi
+	    fi
 }
 
 use_pm2(){
-	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --watch
+	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
