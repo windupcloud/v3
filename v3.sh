@@ -349,6 +349,7 @@ install_pm2(){
 		else
 			echo "已经安装pm2，开始配置pm2"
 	    fi
+	    pm2 update
 }
 
 use_pm2(){
