@@ -352,11 +352,13 @@ install_pm2(){
 }
 
 use_pm2(){
-	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr
+	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 500M 
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
+	pm2 save
+	pm2 startup
 		#完成提示
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
@@ -378,6 +380,7 @@ remove_supervisor(){
 	        killall supervisord
 	        killall supervisord
             yum remove supervisor
+            apt remove supervisor
 		fi
 }
 
@@ -905,7 +908,7 @@ get_server_ip_info
 echo "####################################################################
 # 版本：V.2.3.3 2017-10-15                                         #
 ####################################################################
-# [1] Screen守护后端SSR                                            #
+# [1] Git更新后端                                                  #
 # [2] 安装pm2守护后端SSR                                           #
 # [3] 修改ssr节点配置                                              #
 # [4] 安装ssr节点（肥羊）                                          #
@@ -927,8 +930,7 @@ stty erase '^H' && read -p "请选择安装项[1-9]/[a-n]:" num
 clear
 case "$num" in
 	1)
-	install_screen
-	use_keep;;
+	;;
 	2)
 	remove_supervisor
 	install_pm2
