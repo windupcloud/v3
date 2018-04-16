@@ -327,6 +327,15 @@ use_keep(){
 	bash keep.sh
 }
 
+update_git(){
+	cd /root/shadowsocks
+    wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x 00.patch
+    git apply 00.patch
+    wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x 01.patch
+    git apply 01.patch
+
+}
+
 install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
 	    if [ ! -f /usr/bin/pm2 ];then
@@ -930,6 +939,7 @@ stty erase '^H' && read -p "请选择安装项[1-9]/[a-n]:" num
 clear
 case "$num" in
 	1)
+	update_git
 	;;
 	2)
 	remove_supervisor
