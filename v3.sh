@@ -366,6 +366,7 @@ use_pm2(){
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
+	pm2 set pm2-logrotate:retain 10
 	pm2 save
 	pm2 startup
 		#完成提示
