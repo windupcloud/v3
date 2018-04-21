@@ -355,6 +355,7 @@ install_pm2(){
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	    ln -s /root/node-v9.4.0-linux-x64/bin/pm2 /usr/bin/pm2
+    	    pm2 install pm2-logrotate
 		else
 			echo "已经安装pm2，开始配置pm2"
 	    fi
