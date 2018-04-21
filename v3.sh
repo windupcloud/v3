@@ -327,11 +327,11 @@ use_keep(){
 	bash keep.sh
 }
 
-update_git(){
-	cd /root/shadowsocks
-    wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x 00.patch
+update_git(){   
+    wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x /root/shadowsocks/00.patch
+    wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x /root/shadowsocks/01.patch
+    cd /root/shadowsocks
     git apply 00.patch
-    wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x 01.patch
     git apply 01.patch
 
 }
@@ -361,7 +361,7 @@ install_pm2(){
 }
 
 use_pm2(){
-	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 500M 
+	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 400M
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
