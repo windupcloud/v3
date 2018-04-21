@@ -355,7 +355,6 @@ install_pm2(){
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	    ln -s /root/node-v9.4.0-linux-x64/bin/pm2 /usr/bin/pm2
-    	    pm2 install pm2-logrotate
 		else
 			echo "已经安装pm2，开始配置pm2"
 	    fi
@@ -367,7 +366,11 @@ use_pm2(){
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
-	pm2 set pm2-logrotate:retain 10
+	rm -rf /var/spool/cron/root
+    echo 'SHELL=/bin/bash' >> /var/spool/cron/root
+    echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
+    echo '10 21 * * * pm2 flush' >> /var/spool/cron/root
+    /sbin/service crond restart
 	pm2 save
 	pm2 startup
 		#完成提示
