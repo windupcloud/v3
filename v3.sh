@@ -343,6 +343,7 @@ install_pm2(){
 	    #安装Node.js环境
     	    yum -y install xz
     	    yum -y install wget
+    	    yum -y install git
     	    wget -N https://nodejs.org/dist/v9.4.0/node-v9.4.0-linux-x64.tar.xz
     	    tar -xvf node-v9.4.0-linux-x64.tar.xz
     	    #设置权限
@@ -361,16 +362,21 @@ install_pm2(){
 }
 
 use_pm2(){
+    pm2 delete ssr
+
 	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 400M
+
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
+    #创建pm2日志清理
 	rm -rf /var/spool/cron/root
     echo 'SHELL=/bin/bash' >> /var/spool/cron/root
     echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
     echo '10 21 * * * pm2 flush' >> /var/spool/cron/root
     /sbin/service crond restart
+    #创建开机自启动
 	pm2 save
 	pm2 startup
 		#完成提示
