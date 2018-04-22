@@ -361,16 +361,15 @@ install_pm2(){
 }
 
 use_pm2(){
-    pm2 flush
     pm2 delete all
-	pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 400M
+    pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 400M
 
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart ssr" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
     #创建pm2日志清理
-	rm -rf /var/spool/cron/root
+    rm -rf /var/spool/cron/root
     echo 'SHELL=/bin/bash' >> /var/spool/cron/root
     echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
     echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
