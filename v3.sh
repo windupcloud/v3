@@ -362,7 +362,7 @@ install_pm2(){
 
 use_pm2(){
     pm2 delete all
-    pm2 start /root/shadowsocks/server.py -x --interpreter python --name ssr --max-memory-restart 400M
+    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
 
 	rm -rf /usr/bin/srs
 		echo "#!/bin/bash" >> /usr/bin/srs
