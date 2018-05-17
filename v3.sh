@@ -362,18 +362,47 @@ install_pm2(){
 
 use_pm2(){
     pm2 delete all
-    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    #判断内存
+    all=`free -m | awk 'NR==2' | awk '{print $2}'`
+    used=`free -m | awk 'NR==2' | awk '{print $3}'`
+    free=`free -m | awk 'NR==2' | awk '{print $4}'`
 
-	rm -rf /usr/bin/srs
-		echo "#!/bin/bash" >> /usr/bin/srs
-	echo "pm2 restart ssr" >> /usr/bin/srs
-	chmod 777 /usr/bin/srs
+    echo "===========================" >> /var/log/mem.log
+    date >> /var/log/mem.log
+    echo "Memory usage | [Use：${used}MB][Free：${free}MB]" >> /var/log/mem.log
+    echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
+
+    if [ $all -le 512 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
+    else if [ $all -le 1024 ] ; then
+	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+    else 
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    fi
+    
+    #创建快捷方式
+    rm -rf /usr/bin/srs
+    echo "#!/bin/bash" >> /usr/bin/srs
+    echo "pm2 restart ssr" >> /usr/bin/srs
+    chmod 777 /usr/bin/srs
     #创建pm2日志清理
     rm -rf /var/spool/cron/root
+    if [ ! -f /root/ddns.sh ] ; then
+        echo "未检测到ddns.sh"
+    else
+	echo "添加ddns.sh定时启动"
+    echo '#DDNS' >> /var/spool/cron/root
+    echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
+    fi
     echo 'SHELL=/bin/bash' >> /var/spool/cron/root
     echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
     echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
     echo '0 3 * * * pm2 restart all' >> /var/spool/cron/root
+    #清理缓存
+    echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+    echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+    echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+    
     /sbin/service crond restart
     #创建开机自启动
 	pm2 save
