@@ -374,7 +374,7 @@ use_pm2(){
 
     if [ $all -le 512 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
-    else if [ $all -le 1024 ] ; then
+    elif [ $all -le 1024 ] ; then
 	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
     else 
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
