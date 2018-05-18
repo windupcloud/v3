@@ -366,8 +366,8 @@ use_pm2(){
     all=`free -m | awk 'NR==2' | awk '{print $2}'`
     used=`free -m | awk 'NR==2' | awk '{print $3}'`
     free=`free -m | awk 'NR==2' | awk '{print $4}'`
-
     echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
+    sleep 2s
     if [ $all -le 256 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
     elif [ $all -le 448 ] ; then
@@ -377,7 +377,7 @@ use_pm2(){
     else 
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
     fi
-    
+    sleep 2s
     #创建快捷方式
     rm -rf /usr/bin/srs
     echo "#!/bin/bash" >> /usr/bin/srs
@@ -389,6 +389,7 @@ use_pm2(){
         echo "未检测到ddns.sh"
     else
 	echo "添加ddns.sh定时启动"
+    sleep 1s
     echo '#DDNS' >> /var/spool/cron/root
     echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
     fi
@@ -402,6 +403,9 @@ use_pm2(){
     echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
     
     /sbin/service crond restart
+    #查看cron进程
+    crontab -l
+    sleep 1s
     #创建开机自启动
 	pm2 save
 	pm2 startup
