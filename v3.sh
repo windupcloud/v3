@@ -280,15 +280,18 @@ reboot_system(){
 }
 
 install_bbr(){
-	wget --no-check-certificate https://raw.githubusercontent.com/teddysun/across/master/bbr.sh
+	wget -N --no-check-certificate https://raw.githubusercontent.com/teddysun/across/master/bbr.sh
 	chmod 777 bbr.sh;bash bbr.sh
 }
 
-restart_supervisor(){
+more(){
+echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器"
+	read serverspeeder_option
+	if [ ${serverspeeder_option} = '1' ];then
 		#判断/usr/bin/killall文件是否存在
 		if [ ! -f /usr/bin/killall ];then
-			echo "检查到您未安装,脚本将先进行安装..."
-			yum -y update;yum -y install psmisc
+	        echo "检查到您未安装,脚本将先进行安装..."
+	        yum -y update;yum -y install psmisc
                 killall supervisord
 	        killall supervisord
 	        killall supervisord
@@ -301,7 +304,13 @@ restart_supervisor(){
 	        killall supervisord
 	        supervisord
 		fi
+	elif [ ${serverspeeder_option} = '2' ];then
+	        wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
+                chmod +x bash gost.sh
+                bash bash gost.sh
+	fi
 }
+
 
 install_ssh_port(){
 	wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
@@ -343,20 +352,24 @@ install_pm2(){
 	    #安装Node.js环境
     	    yum -y install xz
     	    yum -y install wget
-    	    wget -N https://nodejs.org/dist/v9.4.0/node-v9.4.0-linux-x64.tar.xz
-    	    tar -xvf node-v9.4.0-linux-x64.tar.xz
+    	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
+	    
+    	    tar -xvf node-v9.9.0-linux-x64.tar.xz
     	    #设置权限
-    	    chmod 777 /root/node-v9.4.0-linux-x64/bin/node
-    	    chmod 777 /root/node-v9.4.0-linux-x64/bin/npm
+    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
+    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
     	    #创建软连接
-    	    ln -s /root/node-v9.4.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.4.0-linux-x64/bin/npm /usr/bin/npm
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
     	    #安装PM2
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
-    	    ln -s /root/node-v9.4.0-linux-x64/bin/pm2 /usr/bin/pm2
-		else
-			echo "已经安装pm2，开始配置pm2"
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+	    else
+	        #Update Pm2&node
+	        npm i -g npm
+		pm2 updatePM2
+		echo "已经安装pm2，开始配置pm2"
 	    fi
 }
 
@@ -370,9 +383,9 @@ use_pm2(){
     sleep 2s
     if [ $all -le 256 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
-    elif [ $all -le 448 ] ; then
+    elif [ $all -le 512 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
-    elif [ $all -le 960 ] ; then
+    elif [ $all -le 1024 ] ; then
 	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
     else 
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
@@ -389,10 +402,20 @@ use_pm2(){
         echo "未检测到ddns.sh"
     else
 	echo "添加ddns.sh定时启动"
-    sleep 1s
-    echo '#DDNS' >> /var/spool/cron/root
+    sleep 2s
+    echo '###DDNS' >> /var/spool/cron/root
     echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
     fi
+    
+    if [ ! -f /usr/local/gost/gostproxy ] ; then
+        echo "未检测到gost"
+    else
+	echo "添加gost定时启动"
+    sleep 2s
+    echo '###Gost' >> /var/spool/cron/root
+    echo '0 3 * * * gost start' >> /var/spool/cron/root
+    fi
+    
     echo 'SHELL=/bin/bash' >> /var/spool/cron/root
     echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
     echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
@@ -405,7 +428,7 @@ use_pm2(){
     /sbin/service crond restart
     #查看cron进程
     crontab -l
-    sleep 1s
+    sleep 2s
     #创建开机自启动
 	pm2 save
 	pm2 startup
@@ -966,7 +989,7 @@ echo "####################################################################
 # [6] 一键安装socks5                                               #
 # [7] 一键添加SWAP                                                 #
 # [8] 一键更换SSH端口                                              #
-# [9] 强制修复后端SSR                                              #
+# [9] 更多                                                      #
 ####################################################################
 # [a]修复服务端故障 [b]检测BBR安装状态 [c]卸载各类云盾 [d]安装加速 #
 # [e]执行测速脚本 [f]查看回程路由 [g]动态IP解析 [h]SpeedTest       #
@@ -1001,7 +1024,7 @@ case "$num" in
 	install_ssh_port
 	restart_ssh_port;;
 	9)
-	restart_supervisor;;
+	more;;
 	a)
 	repair_ssr_operation;;
 	b)
