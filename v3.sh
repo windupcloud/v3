@@ -285,7 +285,7 @@ install_bbr(){
 }
 
 more(){
-echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器"
+echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载PM2"
 	read serverspeeder_option
 	if [ ${serverspeeder_option} = '1' ];then
 		#判断/usr/bin/killall文件是否存在
@@ -298,7 +298,7 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器"
 	        killall supervisord
 	        supervisord
 		else
-			killall supervisord
+		killall supervisord
 	        killall supervisord
 	        killall supervisord
 	        killall supervisord
@@ -308,6 +308,17 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器"
 	        wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
                 chmod +x bash gost.sh
                 bash bash gost.sh
+	elif [ ${serverspeeder_option} = '3' ];then
+	        if [ ! -f /usr/bin/pm2 ];then
+		echo "PM2已卸载"
+		else
+		rm -rf /usr/bin/node
+	        rm -rf /usr/bin/npm
+		rm -rf /usr/bin/pm2
+		rm -rf /root/node*
+		sleep 1s
+            echo "PM2卸载完成"
+	fi
 	fi
 }
 
