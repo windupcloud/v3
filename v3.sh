@@ -367,15 +367,13 @@ use_pm2(){
     used=`free -m | awk 'NR==2' | awk '{print $3}'`
     free=`free -m | awk 'NR==2' | awk '{print $4}'`
 
-    echo "===========================" >> /var/log/mem.log
-    date >> /var/log/mem.log
-    echo "Memory usage | [Use：${used}MB][Free：${free}MB]" >> /var/log/mem.log
     echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
-
-    if [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
-    elif [ $all -le 1024 ] ; then
-	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+    if [ $all -le 256 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
+    elif [ $all -le 448 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+    elif [ $all -le 960 ] ; then
+	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
     else 
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
     fi
