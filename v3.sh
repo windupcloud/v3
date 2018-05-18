@@ -367,14 +367,14 @@ install_pm2(){
     	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
 	    else
 	        #Update Pm2&node
-	        npm i -g npm
-		pm2 updatePM2
 		echo "已经安装pm2，开始配置pm2"
 	    fi
 }
 
 use_pm2(){
     pm2 delete all
+    npm i -g npm
+    pm2 updatePM2
     #判断内存
     all=`free -m | awk 'NR==2' | awk '{print $2}'`
     used=`free -m | awk 'NR==2' | awk '{print $3}'`
