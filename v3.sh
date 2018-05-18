@@ -349,7 +349,9 @@ install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
 	    if [ ! -f /usr/bin/pm2 ];then
             echo "检查到您未安装pm2,脚本将先进行安装..."
-	    #安装Node.js环境
+	    #安装Node.js
+	    apt install xz
+    	    apt install wget
     	    yum -y install xz
     	    yum -y install wget
     	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
@@ -358,11 +360,23 @@ install_pm2(){
     	    #设置权限
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
+	    if [ ! -f /usr/bin/node ];then
     	    #创建软连接
     	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
     	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	    #安装PM2
+    	    else
+	    rm -rf /usr/bin/node
+	    rm -rf /usr/bin/npm
+	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+	    fi
+	    #升级Node
+	    npm i -g npm
+	    
+	    #安装PM2
     	    npm install -g pm2 --unsafe-perm
+	    
+	  
     	    #创建软连接x2
     	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
 	    else
@@ -373,9 +387,7 @@ install_pm2(){
 
 use_pm2(){
     pm2 delete all
-    #升级 Pm2&node
-    npm i -g npm
-    pm2 updatePM2
+    
     #判断内存
     all=`free -m | awk 'NR==2' | awk '{print $2}'`
     used=`free -m | awk 'NR==2' | awk '{print $3}'`
