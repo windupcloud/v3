@@ -324,7 +324,7 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载
 	elif [ ${serverspeeder_option} = '4' ];then
 	npm i -g npm
         npm install -g pm2 --unsafe-perm
-	rm -rf /root/.pm2
+	
         pm2 save
         pm2 update
 	pm2 startup
