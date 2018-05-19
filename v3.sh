@@ -285,7 +285,7 @@ install_bbr(){
 }
 
 more(){
-echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载PM2"
+echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载PM2 [4]更新PM2"
 	read serverspeeder_option
 	if [ ${serverspeeder_option} = '1' ];then
 		#判断/usr/bin/killall文件是否存在
@@ -312,6 +312,7 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载
 	        if [ ! -f /usr/bin/pm2 ];then
 		echo "PM2已卸载"
 		else
+		sudo npm uninstall -g pm2
 		rm -rf /usr/bin/node
 	        rm -rf /usr/bin/npm
 		rm -rf /usr/bin/pm2
@@ -319,6 +320,10 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载
 		sleep 1s
             echo "PM2卸载完成"
 	fi
+	elif [ ${serverspeeder_option} = '4' ];then
+	npm i -g npm
+npm install -g pm2 --unsafe-perm
+pm2 update
 	fi
 }
 
