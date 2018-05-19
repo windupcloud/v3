@@ -452,7 +452,7 @@ use_pm2(){
     echo 'SHELL=/bin/bash' >> /var/spool/cron/root
     echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
     echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
-    echo '0 3 * * * pm2 restart all' >> /var/spool/cron/root
+    echo '0 3 * * * pm2 update' >> /var/spool/cron/root
     #清理缓存
     echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
     echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
