@@ -316,14 +316,16 @@ echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载
 		rm -rf /usr/bin/node
 	        rm -rf /usr/bin/npm
 		rm -rf /usr/bin/pm2
+		rm -rf /root/.pm2
 		rm -rf /root/node*
 		sleep 1s
             echo "PM2卸载完成"
 	fi
 	elif [ ${serverspeeder_option} = '4' ];then
 	npm i -g npm
-npm install -g pm2 --unsafe-perm
-pm2 update
+        npm install -g pm2 --unsafe-perm
+	rm -rf /root/.pm2
+        pm2 update
 	fi
 }
 
