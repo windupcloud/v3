@@ -7,129 +7,446 @@
 server_ip=`curl -s https://app.52ll.win/ip/api.php`
 separate_lines="####################################################################"
 
-install_lnmp_and_ss_panel(){
-	yum -y remove httpd
-	yum install -y unzip zip git
-	#安装lnmp
-	clear;echo "选择lnmp版本: [1]lnmp1.3 [2]lnmp1.4 [3]跳过"
-	echo -n "请输入序号:"
-	read lnmp_version
-	
-	#lnmp安装选项
-	if [ ${lnmp_version} = '1' ];then
-		wget -c https://raw.githubusercontent.com/qinghuas/ss-panel-and-ss-py-mu/master/lnmp1.3.zip && unzip lnmp1.3.zip && cd lnmp1.3 && chmod +x install.sh && ./install.sh lnmp
-	elif [ ${lnmp_version} = '2' ];then
-		echo "lnmp1.4安装选项:2,自定义数据库密码,Y,5,1"
-		echo "安装完成后,会提示[Install lnmp V1.4 completed! enjoy it],这时按一下Ctrl+C即可.回车继续.";read
-		wget -c http://soft.vpser.net/lnmp/lnmp1.4.tar.gz && tar zxf lnmp1.4.tar.gz && cd lnmp1.4 && ./install.sh lnmp
-	elif [ ${lnmp_version} = '3' ];then
-		clear;echo "已跳过安装lnmp."
+reboot_system(){
+	read -p "需重启服务器使配置生效,现在重启? [y/n]" is_reboot
+	if [ ${is_reboot} = 'y' ];then
+		reboot
 	else
-		echo "选项不在范围内,安装终止.";exit
+		echo "需重启服务器使配置生效,稍后请务必手动重启服务器.";exit
 	fi
-	
-	#获取数据库密码
-	if [ ${lnmp_version} = '1' ];then
-		mysql_passwd=root
-	else
-		echo "数据库密码是:"
-		read mysql_passwd
-		if [ ${mysql_passwd} = '' ];then
-			mysql_passwd=root
-			echo "已默认数据库密码是:root"
-		fi
-		echo "---------------------------"
-	fi
-	
-	#检查数据库密码
-	echo "数据库密码错误时,会提示:";echo "ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)";echo "---------------------------"
-	echo "数据库密码正确时,会提示:";echo "Welcome to the MySQL monitor...(以下省略...)";echo "此时,请输入 exit 退出mysql";echo "---------------------------"
-	echo "脚本即将验证数据库密码的正误,请回车继续...";read
-	mysql -uroot -p${mysql_passwd}
-	#确认数据库密码
-	echo "根据上述提示,您判断数据库密码是正确的么？[y/n]"
-	read database_password_is_incorrect
-	if [ ${database_password_is_incorrect} = 'y' ];then
-		echo "数据库密码正确,请回车继续安装...";read
-	else
-		echo "数据库密码错误,请您确认正确的数据库密码后重试.";exit 0
-	fi
-	
-	#设定站点名称
-	clear;echo "请设置站点名称:"
-	read ss_panel_name
-	if [ ${ss_panel_name} = '' ];then
-		ss_panel_name="SS Panel"
-		echo "已默认站点名称是:SS Panel"
-	fi
-	
-	#确认安装
-	clear;echo "已完成所需设定,确认安装？[y/n]"
-	read confirm_the_installation
-	if [ ${confirm_the_installation} = 'n' ];then
-		echo "取消安装,脚本中止.";exit 0
-	fi
-	
-	#安装前端
-	cd /home/wwwroot/default/
-	rm -rf index.html
-	git clone https://github.com/mmmwhy/mod.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
-	#修改参数
-	wget -P /home/wwwroot/default/config http://sspanel-1252089354.coshk.myqcloud.com/.config.php
-	#站点地址,站点名称,数据库密码
-	sed -i "s/this_is_sspanel_name/${ss_panel_name}/g" /home/wwwroot/default/config/.config.php
-	sed -i "s/this_is_sspanel_address/${server_ip}/g" /home/wwwroot/default/config/.config.php
-	sed -i "s/this_is_the_sspanel_database_password/${mysql_passwd}/g" /home/wwwroot/default/config/.config.php
-	#继续
-	chattr -i .user.ini
-	mv .user.ini public
-	chown -R root:root *
-	chmod -R 777 *
-	chown -R www:www storage
-	chattr +i public/.user.ini
-	wget -N -P  /usr/local/nginx/conf/ http://sspanel-1252089354.coshk.myqcloud.com/nginx.conf
-	service nginx restart
-	#更换sspanel.sql文件
-	rm -rf /home/wwwroot/default/sql/sspanel.sql
-	#wget -P /home/wwwroot/default/sql http://sspanel-1252089354.coshk.myqcloud.com/sspanel.sql
-	#wget -P /home/wwwroot/default/sql http://sspanel-1252089354.coshk.myqcloud.com/glzjin_all.sql
-	#创建数据库
-	mysql -uroot -p${mysql_passwd} -e"create database sspanel;" 
-	mysql -uroot -p${mysql_passwd} -e"use sspanel;" 
-	mysql -uroot -p${mysql_passwd} sspanel < /home/wwwroot/default/sql/glzjin_all.sql
-	#其他设置
-	cd /home/wwwroot/default
-	php composer.phar install
-	php -n xcat initdownload
-	#定时任务
-	yum -y install vixie-cron crontabs
-	rm -rf /var/spool/cron/root
-	echo 'SHELL=/bin/bash' >> /var/spool/cron/root
-	echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
-	echo '*/20 * * * * /usr/sbin/ntpdate pool.ntp.org > /dev/null 2>&1' >> /var/spool/cron/root
-	echo '30 22 * * * php /home/wwwroot/default/xcat sendDiaryMail' >> /var/spool/cron/root
-	echo '0 0 * * * php /home/wwwroot/default/xcat dailyjob' >> /var/spool/cron/root
-	echo '*/1 * * * * php /home/wwwroot/default/xcat checkjob' >> /var/spool/cron/root
-	/sbin/service crond restart
-	#创建管理员账户
-	clear;echo "创建管理员账户,稍后按提示设定管理员邮箱和登录密码即可,回车继续...";read
-	cd /home/wwwroot/default;php xcat createAdmin;cd /root
-	#完成提示
-	clear;echo "####################################
-# LNMP 与 SS PANEL V3 已安装完成   # 
-# 登录地址：http://${server_ip}    # 
-####################################"
 }
 
+#PM2-[1]
+pm2(){
+	#检查 Root账户
+	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
+	#检查系统版本
+	check_sys(){
+		if [[ -f /etc/redhat-release ]]; then
+			release="centos"
+		elif cat /etc/issue | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+		elif cat /proc/version | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /proc/version | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+	  fi
+	}
+	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
+	read pm2_option
+	if [ ${pm2_option} = '1' ];then
+            install_pm2
+    elif [ ${pm2_option} = '2' ];then
+        use_pm2_for_each(){
+		    check_sys
+		if [[ ${release} = "centos" ]]; then
+			use_centos_pm2
+		else
+			use_ubuntu_pm2
+		fi
+	    }
+    elif [ ${pm2_option} = '3' ];then
+            update_pm2
+    elif [ ${pm2_option} = '4' ];then
+            remove_pm2
+	else
+		    echo "选项不在范围,操作中止.";exit 0
+	fi
+}
+
+install_pm2(){
+	#判断/usr/bin/pm2文件是否存在
+	    if [ ! -f /usr/bin/pm2 ];then
+            echo "检查到您未安装pm2,脚本将先进行安装..."
+	        #安装Node.js
+    	    yum -y install xz
+    	    yum -y install wget
+    	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
+    	    tar -xvf node-v9.9.0-linux-x64.tar.xz
+    	    #设置权限
+    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
+    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
+	    if [ ! -f /usr/bin/node ];then
+    	    #创建软连接
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+    	    else
+	        rm -rf "/usr/bin/node"
+	        rm -rf "/usr/bin/npm"
+	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+	    fi
+	        #升级Node
+	        npm i -g npm
+	        #安装PM2
+    	    npm install -g pm2 --unsafe-perm
+    	    #创建软连接x2
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+	    else	        
+		    echo "已经安装pm2，开始配置pm2"
+	    fi
+}
+
+use_centos_pm2(){
+	#清空
+        pm2 delete all
+    #判断内存
+    all=`free -m | awk 'NR==2' | awk '{print $2}'`
+    used=`free -m | awk 'NR==2' | awk '{print $3}'`
+    free=`free -m | awk 'NR==2' | awk '{print $4}'`
+        echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
+        sleep 2s
+    if [ $all -le 256 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
+    elif [ $all -le 512 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+    elif [ $all -le 1024 ] ; then
+	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    else 
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    fi
+    sleep 2s
+        #创建快捷方式
+            rm -rf "/usr/bin/srs"
+            echo "#!/bin/bash" >> /usr/bin/srs
+            echo "pm2 restart ssr" >> /usr/bin/srs
+            chmod 777 /usr/bin/srs
+        #创建pm2日志清理
+            rm -rf "/var/spool/cron/root"
+    if [ ! -f /root/ddns.sh ] ; then
+            echo "未检测到ddns.sh"
+    else
+	        echo "添加ddns.sh定时启动"
+            sleep 2s
+            echo '###DDNS' >> /var/spool/cron/root
+            echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
+    fi
+    
+    if [ ! -f /usr/local/gost/gostproxy ] ; then
+            echo "未检测到gost"
+    else
+	        echo "添加gost定时启动"
+            sleep 2s
+            echo '###Gost' >> /var/spool/cron/root
+            echo '0 3 * * * gost start' >> /var/spool/cron/root
+    fi
+        #PM2定时重启
+            echo 'SHELL=/bin/bash' >> /var/spool/cron/root
+            echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
+            echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
+            echo '0 3 * * * pm2 update' >> /var/spool/cron/root
+        #清理缓存
+            echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+            echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+            echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+       
+            /sbin/service crond restart
+        #查看cron进程
+            crontab -l
+            sleep 2s
+        #创建开机自启动
+	        pm2 save
+	        pm2 startup
+	    #完成提示
+	clear;echo "########################################
+# SS NODE 已安装完成                   #
+########################################
+# 启动SSR：pm2 start ssr               #
+# 停止SSR：pm2 stop ssr                #
+# 重启SSR：pm2 restart ssr             #
+# 或：srs                              #
+########################################"
+}
+
+use_ubuntu_pm2(){
+	#清空
+        pm2 delete all
+    #判断内存
+    all=`free -m | awk 'NR==2' | awk '{print $2}'`
+    used=`free -m | awk 'NR==2' | awk '{print $3}'`
+    free=`free -m | awk 'NR==2' | awk '{print $4}'`
+        echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
+        sleep 2s
+    if [ $all -le 256 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
+    elif [ $all -le 512 ] ; then
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+    elif [ $all -le 1024 ] ; then
+	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    else 
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+    fi
+        sleep 2s
+        #创建快捷方式
+            rm -rf "/usr/bin/srs"
+            echo "#!/bin/bash" >> /usr/bin/srs
+            echo "pm2 restart ssr" >> /usr/bin/srs
+            chmod 777 /usr/bin/srs
+        #创建pm2日志清理
+            rm -rf "/var/spool/cron/crontabs/root"
+    if [ ! -f /root/ddns.sh ] ; then
+            echo "未检测到ddns.sh"
+    else
+	        echo "添加ddns.sh定时启动"
+            sleep 2s
+            echo '###DDNS' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/crontabs/root
+    fi
+    
+    if [ ! -f /usr/local/gost/gostproxy ] ; then
+            echo "未检测到gost"
+    else
+    	#Gost定时重启
+	        echo "添加gost定时启动"
+            sleep 2s
+            echo '###Gost' >> /var/spool/cron/crontabs/root
+            echo '0 3 * * * gost start' >> /var/spool/cron/crontabs/root
+    fi
+        #PM2定时重启
+            echo 'SHELL=/bin/bash' >> /var/spool/cron/crontabs/root
+            echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
+            echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
+        #清理缓存
+            echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+            echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+            echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+        #cron重启
+            service cron restart
+            service cron reload
+        #查看cron进程
+            crontab -l
+            sleep 2s
+        #创建开机自启动
+	        pm2 save
+	        pm2 startup
+	    #完成提示
+	clear;echo "########################################
+# SS NODE 已安装完成                   #
+########################################
+# 启动SSR：pm2 start ssr               #
+# 停止SSR：pm2 stop ssr                #
+# 重启SSR：pm2 restart ssr             #
+# 或：srs                              #
+########################################"
+}
+
+update_pm2(){
+	#更新node.js
+		npm i -g npm
+    #更新PM2
+        npm install -g pm2 --unsafe-perm
+        pm2 save
+        pm2 update
+	    pm2 startup
+}
+
+remove_pm2(){
+	    if [ ! -f /usr/bin/pm2 ];then
+		    echo "PM2已卸载"
+		else
+		    sudo npm uninstall -g pm2
+		    rm -rf "/usr/bin/node"
+	        rm -rf "/usr/bin/npm"
+	        rm -rf "/root/.npm"
+
+		    rm -rf "/usr/bin/pm2"
+		    rm -rf "/root/.pm2"
+		    rm -rf "/root/node*"
+		    sleep 1s
+		    echo "PM2完成卸载"
+		fi
+}
+
+#supervisor-[2]
+supervisor(){
+	#检查 Root账户
+	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
+	#检查系统版本
+	check_sys(){
+		if [[ -f /etc/redhat-release ]]; then
+			release="centos"
+		elif cat /etc/issue | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+		elif cat /proc/version | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /proc/version | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+	  fi
+	}
+	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
+	read supervisor_option
+	if [ ${supervisor_option} = '1' ];then
+        install_supervisor_for_each(){
+		    check_sys
+		if [[ ${release} = "centos" ]]; then
+			install_centos_supervisor
+		else
+			echo "暂时只完美支持Centos,请更换PM2管理";exit 0
+		fi
+	    }
+    elif [ ${supervisor_option} = '2' ];then
+    	remove_supervisor_for_each(){
+		    check_sys
+		if [[ ${release} = "centos" ]]; then
+			remove_centos_supervisor
+		else
+			remove_centos_supervisor
+		fi
+	elif [ ${supervisor_option} = '3' ];then
+    	    kill_supervisor
+	else
+		echo "选项不在范围,操作中止.";exit 0
+	fi
+}
+install_centos_supervisor(){
+	#判断/usr/bin/supervisord文件是否存在
+	if [ ! -f /usr/bin/supervisord ];then
+		echo "已经卸载supervisor";exit 0
+	else
+		#判断/usr/bin/killall文件是否存在
+	    if [ ! -f /usr/bin/killall ];then
+	        echo "检查到您未安装psmisc,脚本将先进行安装"
+	        yum -y update
+	        yum -y install psmisc
+	    fi
+	        echo "开始卸载supervisor"
+            yum -y remove supervisor
+            rm -rf "/etc/supervisord.conf"
+            rm -rf "/usr/bin/srs"
+            yum -y install supervisor
+        #启用supervisord
+            echo_supervisord_conf > /etc/supervisord.conf
+            sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+            supervisord
+        #iptables
+            iptables -F
+            iptables -X  
+            iptables -I INPUT -p tcp -m tcp —dport 104 -j ACCEPT
+            iptables -I INPUT -p udp -m udp —dport 104 -j ACCEPT
+            iptables -I INPUT -p tcp -m tcp —dport 1024: -j ACCEPT
+            iptables -I INPUT -p udp -m udp —dport 1024: -j ACCEPT
+            iptables-save >/etc/sysconfig/iptables
+            echo 'iptables-restore /etc/sysconfig/iptables' » /etc/rc.local
+            echo "/usr/bin/supervisord -c /etc/supervisord.conf" » /etc/rc.local
+        #创建快捷重启命令
+            echo "#!/bin/bash" » /usr/bin/srs
+            echo "supervisorctl restart ssr" » /usr/bin/srs
+            chmod 777 /usr/bin/srs
+        #最后配置
+        #/usr/bin/supervisord -c /etc/supervisord.conf
+            srs
+        #开机自启
+            curl https://raw.githubusercontent.com/Supervisor/initscripts/master/centos-systemd-etcs > supervisord.service
+            mv supervisord.service /etc/systemd/system
+            chmod 644 /etc/systemd/system/supervisord.service
+            systemctl daemon-reload
+            systemctl start supervisord.service
+            systemctl enable supervisord
+            systemctl is-enabled supervisord
+    fi        
+}
+remove_debian_supervisor(){
+	#判断/usr/bin/supervisord文件是否存在
+	if [ ! -f /usr/bin/supervisord ];then
+		echo "已经卸载supervisor";exit 0
+	else
+	    if [ ! -f /usr/bin/killall ];then
+		    echo "检查到您未安装psmisc,脚本将先进行安装";exit 0
+        else
+		    echo "现在开始卸载supervisor"
+	        sudo apt-get update
+	        sudo apt-get install psmisc
+            killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        sudo apt-get remove --purge supervisor 
+            rm -rf "/etc/supervisord.conf"
+            rm -rf "/usr/bin/srs"
+        fi
+	fi
+}
+kill_supervisor(){
+	#判断/usr/bin/killall文件是否存在
+	if [ ! -f /usr/bin/killall ];then
+	    echo "检查到您未安装,脚本将先进行安装..."
+	    yum -y update
+	    yum -y install psmisc
+	    sudo apt-get install psmisc
+        killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    supervisord
+	else
+		killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    supervisord
+	fi
+}
+
+
+#节点-[3]
+modify_node_info(){
+	#检测
+	if [ ! -f /root/shadowsocks/userapiconfig.py ];then
+		echo "ssr服务端未安装,不能执行该选项.";exit
+	else
+		#清屏
+		clear
+		#输出当前节点配置
+		echo "当前节点配置如下:"
+		echo "------------------------------------"
+		sed -n '3p' /root/shadowsocks/userapiconfig.py
+		sed -n '17,18p' /root/shadowsocks/userapiconfig.py
+		echo "------------------------------------"
+		#获取新节点配置信息
+		read -p "新的前端地址是:" Userdomain
+		read -p "新的节点ID是:" UserNODE_ID
+		read -p "新的MuKey是:" Usermukey
+	
+			#检查
+			if [ ! -f /root/shadowsocks/userapiconfig.py.bak ];then
+				wget https://github.com/Super-box/v3/raw/master/userapiconfig.py
+			else
+			#还原
+				rm -rf /root/shadowsocks/userapiconfig.py
+				cp /root/shadowsocks/userapiconfig.py.bak /root/shadowsocks/userapiconfig.py
+			fi
+	
+		#修改
+		Userdomain=${Userdomain:-"http://${server_ip}"}
+		sed -i "s#https://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
+		Usermukey=${Usermukey:-"mupass"}
+		sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
+		UserNODE_ID=${UserNODE_ID:-"3"}
+		sed -i '2d' /root/shadowsocks/userapiconfig.py
+		sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
+	fi
+}
+
+#安装后端-[4]
 install_centos_ssr(){
 	yum -y update
 	yum -y install git
 	yum -y install python-setuptools && easy_install pip
 	yum -y groupinstall "Development Tools"
-	#增加1G的Swap分区
-	dd if=/dev/zero of=/var/swap bs=1024 count=1048576
-	mkswap /var/swap;chmod 0644 /var/swap;swapon /var/swap
-	echo '/var/swap   swap   swap   default 0 0' >> /etc/fstab
+
 	#编译安装libsodium
 	wget "http://sspanel-1252089354.coshk.myqcloud.com/libsodium-1.0.13.tar.gz"
 	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
@@ -197,8 +514,10 @@ install_node(){
 			install_ubuntu_ssr
 		fi
 	}
+
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
+
 	#帮助信息
 	echo "#########################################################################################
 【前端地址填写规范】
@@ -263,396 +582,63 @@ install_node(){
 # 重启SSR：supervisorctl restart ssr   #
 # 或：srs                              #
 ########################################"
-
 }
 
-feiyang(){
-	wget -N --no-check-certificate https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/ss-panel-v3-mod.sh && chmod +x ss-panel-v3-mod.sh && bash ss-panel-v3-mod.sh
-}
+#More-[5]
+python_more(){
+    echo "选项：[1]安装Gost服务器 [2]Git更新后端 [3] [4]"
+	read more_option
+	if [ ${more_option} = '1' ];then
+		install_gost(){
+			#检查文件gost.sh是否存在,若不存在,则下载该文件
+			if [ ! -f /root/gost.sh ];then
+		    wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
+            chmod +x gost.sh
+        fi
+            bash gost.sh
+        }
+    fi
+	elif [ ${more_option} = '2' ];then
+		git_update(){
+            wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x /root/shadowsocks/00.patch
+            wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x /root/shadowsocks/01.patch
+            cd /root/shadowsocks
+            git apply 00.patch
+            git apply 01.patch
+        }
+	elif [ ${more_option} = '3' ];then
+	     
+	elif [ ${more_option} = '4' ];then
 
-reboot_system(){
-	read -p "需重启服务器使配置生效,现在重启? [y/n]" is_reboot
-	if [ ${is_reboot} = 'y' ];then
-		reboot
 	else
-		echo "需重启服务器使配置生效,稍后请务必手动重启服务器.";exit
+		    echo "选项不在范围,操作中止.";exit 0
 	fi
 }
 
-install_bbr(){
-	wget -N --no-check-certificate https://raw.githubusercontent.com/teddysun/across/master/bbr.sh
-	chmod 777 bbr.sh;bash bbr.sh
-}
-
-more(){
-echo "选项：[1]强制重启supervisord后端 [2]安装Gost服务器 [3]卸载PM2 [4]更新PM2"
+#一键安装加速-[6]
+serverspeeder(){
+	echo "选项：[1]KVM安装 [2]OVZ安装"
 	read serverspeeder_option
 	if [ ${serverspeeder_option} = '1' ];then
-		#判断/usr/bin/killall文件是否存在
-		if [ ! -f /usr/bin/killall ];then
-	        echo "检查到您未安装,脚本将先进行安装..."
-	        yum -y update;yum -y install psmisc
-                killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        supervisord
-		else
-		killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        supervisord
-		fi
+		#检查文件tcp.sh是否存在,若不存在,则下载该文件
+	    if [ ! -f /root/tcp.sh ];then
+		wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh"
+		chmod +x tcp.sh
+	    fi
+	    #执行
+		./tcp.sh
 	elif [ ${serverspeeder_option} = '2' ];then
-	        wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
-                chmod +x bash gost.sh
-                bash bash gost.sh
-	elif [ ${serverspeeder_option} = '3' ];then
-	        if [ ! -f /usr/bin/pm2 ];then
-		echo "PM2已卸载"
-		else
-		sudo npm uninstall -g pm2
-		rm -rf /usr/bin/node
-	        rm -rf /usr/bin/npm
-		rm -rf /usr/bin/pm2
-		rm -rf /root/.pm2
-		rm -rf /root/node*
-		sleep 1s
-            echo "PM2卸载完成"
-	fi
-	elif [ ${serverspeeder_option} = '4' ];then
-	npm i -g npm
-        npm install -g pm2 --unsafe-perm
-	
-        pm2 save
-        pm2 update
-	pm2 startup
-	fi
-}
-
-
-install_ssh_port(){
-	wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
-	chmod 777 sshport.sh;bash sshport.sh
-}
-
-restart_ssh_port(){
-	systemctl restart sshd.service
-}
-
-install_ssrstatus(){
-	wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/status.sh && chmod +x status.sh
-	chmod 777 status.sh;bash status.sh
-}
-
-install_screen(){
-	yum install screen
-}
-
-use_keep(){
-	wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/keep.sh
-	screen -S ss
-	bash keep.sh
-}
-
-update_git(){   
-    wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x /root/shadowsocks/00.patch
-    wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x /root/shadowsocks/01.patch
-    cd /root/shadowsocks
-    git apply 00.patch
-    git apply 01.patch
-
-}
-
-install_pm2(){
-	#判断/usr/bin/pm2文件是否存在
-	    if [ ! -f /usr/bin/pm2 ];then
-            echo "检查到您未安装pm2,脚本将先进行安装..."
-	    #安装Node.js
-	    apt install xz
-    	    apt install wget
-    	    yum -y install xz
-    	    yum -y install wget
-    	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
-	    
-    	    tar -xvf node-v9.9.0-linux-x64.tar.xz
-    	    #设置权限
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
-	    if [ ! -f /usr/bin/node ];then
-    	    #创建软连接
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	    else
-	    rm -rf /usr/bin/node
-	    rm -rf /usr/bin/npm
-	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+		#检查文件tcp.sh是否存在,若不存在,则下载该文件
+	    if [ ! -f /root/tcp.sh ];then
+		wget -N --no-check-certificate "https://raw.githubusercontent.com/nanqinlang/tcp_nanqinlang-test/master/tcp_nanqinlang-test.sh"
+        chmod +x tcp_nanqinlang-test.sh
 	    fi
-	    #升级Node
-	    npm i -g npm
-	    
-	    #安装PM2
-    	    npm install -g pm2 --unsafe-perm
-	    
-	  
-    	    #创建软连接x2
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
-	    else
-	        
-		echo "已经安装pm2，开始配置pm2"
-	    fi
-}
-
-use_pm2(){
-    pm2 delete all
-    
-    #判断内存
-    all=`free -m | awk 'NR==2' | awk '{print $2}'`
-    used=`free -m | awk 'NR==2' | awk '{print $3}'`
-    free=`free -m | awk 'NR==2' | awk '{print $4}'`
-    echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
-    sleep 2s
-    if [ $all -le 256 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
-    elif [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
-    elif [ $all -le 1024 ] ; then
-	pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
-    else 
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
-    fi
-    sleep 2s
-    #创建快捷方式
-    rm -rf /usr/bin/srs
-    echo "#!/bin/bash" >> /usr/bin/srs
-    echo "pm2 restart ssr" >> /usr/bin/srs
-    chmod 777 /usr/bin/srs
-    #创建pm2日志清理
-    rm -rf /var/spool/cron/root
-    if [ ! -f /root/ddns.sh ] ; then
-        echo "未检测到ddns.sh"
-    else
-	echo "添加ddns.sh定时启动"
-    sleep 2s
-    echo '###DDNS' >> /var/spool/cron/root
-    echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
-    fi
-    
-    if [ ! -f /usr/local/gost/gostproxy ] ; then
-        echo "未检测到gost"
-    else
-	echo "添加gost定时启动"
-    sleep 2s
-    echo '###Gost' >> /var/spool/cron/root
-    echo '0 3 * * * gost start' >> /var/spool/cron/root
-    fi
-    
-    echo 'SHELL=/bin/bash' >> /var/spool/cron/root
-    echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
-    echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
-    echo '0 3 * * * pm2 update' >> /var/spool/cron/root
-    #清理缓存
-    echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-    echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-    echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-    
-    /sbin/service crond restart
-    #查看cron进程
-    crontab -l
-    sleep 2s
-    #创建开机自启动
-	pm2 save
-	pm2 startup
-		#完成提示
-	clear;echo "########################################
-# SS NODE 已安装完成                   #
-########################################
-# 启动SSR：pm2 start ssr               #
-# 停止SSR：pm2 stop ssr                #
-# 重启SSR：pm2 restart ssr             #
-# 或：srs                              #
-########################################"
-}
-
-remove_supervisor(){
-		#判断/usr/bin/supervisord文件是否存在
-		if [ ! -f /usr/bin/supervisord ];then
-			echo "supervisor已经卸载"
-		else
-			killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        killall supervisord
-            yum remove supervisor
-            apt remove supervisor
-		fi
-}
-
-install_supervisor(){
-   yum install psmisc
-   killall supervisord
-   yum -y remove supervisor
-   rm -rf /etc/supervisord.conf
-   rm -rf /usr/bin/srs
-   yum -y install supervisor
-  #启用supervisord
-  echo_supervisord_conf > /etc/supervisord.conf
-  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
-  supervisord
-  #iptables
-  iptables -F
-  iptables -X  
-  iptables -I INPUT -p tcp -m tcp —dport 104 -j ACCEPT
-  iptables -I INPUT -p udp -m udp —dport 104 -j ACCEPT
-  iptables -I INPUT -p tcp -m tcp —dport 1024: -j ACCEPT
-  iptables -I INPUT -p udp -m udp —dport 1024: -j ACCEPT
-  iptables-save >/etc/sysconfig/iptables
-  echo 'iptables-restore /etc/sysconfig/iptables' » /etc/rc.local
-  echo "/usr/bin/supervisord -c /etc/supervisord.conf" » /etc/rc.local
-  #创建快捷重启命令
-  echo "#!/bin/bash" » /usr/bin/srs
-  echo "supervisorctl restart ssr" » /usr/bin/srs
-  chmod 777 /usr/bin/srs
-  #最后配置
-  #/usr/bin/supervisord -c /etc/supervisord.conf
-  srs
-  #开机自启
-  curl https://raw.githubusercontent.com/Supervisor/initscripts/master/centos-systemd-etcs > supervisord.service
-mv supervisord.service /etc/systemd/system
-chmod 644 /etc/systemd/system/supervisord.service
-systemctl daemon-reload
-systemctl start supervisord.service
-systemctl enable supervisord
-systemctl is-enabled supervisord
-}
-
-modify_node_info(){
-	#检测
-	if [ ! -f /root/shadowsocks/userapiconfig.py ];then
-		echo "ssr服务端未安装,不能执行该选项.";exit
-	else
-		#清屏
-		clear
-		#输出当前节点配置
-		echo "当前节点配置如下:"
-		echo "------------------------------------"
-		sed -n '3p' /root/shadowsocks/userapiconfig.py
-		sed -n '17,18p' /root/shadowsocks/userapiconfig.py
-		echo "------------------------------------"
-		#获取新节点配置信息
-		read -p "新的前端地址是:" Userdomain
-		read -p "新的节点ID是:" UserNODE_ID
-		read -p "新的MuKey是:" Usermukey
-	
-			#检查
-			if [ ! -f /root/shadowsocks/userapiconfig.py.bak ];then
-				wget https://github.com/Super-box/v3/raw/master/userapiconfig.py
-			else
-			#还原
-				rm -rf /root/shadowsocks/userapiconfig.py
-				cp /root/shadowsocks/userapiconfig.py.bak /root/shadowsocks/userapiconfig.py
-			fi
-	
-		#修改
-		Userdomain=${Userdomain:-"http://${server_ip}"}
-		sed -i "s#https://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
-		Usermukey=${Usermukey:-"mupass"}
-		sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
-		UserNODE_ID=${UserNODE_ID:-"3"}
-		sed -i '2d' /root/shadowsocks/userapiconfig.py
-		sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
+		#执行
+        ./tcp_nanqinlang-test.sh
 	fi
 }
 
-repair_ssr_operation(){
-	echo "正在尝试修复..."
-	/usr/bin/supervisord -c /etc/supervisord.conf
-	echo "正在重启ssr服务端..."
-	supervisorctl restart ssr
-	echo "已完成常规修复,若节点仍未恢复正常,请重新启动服务器,然后执行修复."
-	echo "少数情况下您可以通过切换系统镜像,或更换安装源来解决此问题."
-	echo "同时您应该确认无法连接的问题不是因为防火墙而引发的."
-}
-
-update_the_shell(){
-
-		rm -rf /root/v3.sh v3.sh.*
-		wget "https://github.com/Super-box/v3/raw/master/v3.sh"
-
-	#将脚本作为命令放置在/usr/bin目录内,最后执行
-	rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
-	v3
-}
-
-replacement_of_installation_source(){
-	echo "请选择更换目标源： [1]网易163 [2]阿里云 [3]自定义 [4]恢复默认源"
-	read change_target_source
-	
-	#备份
-	mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
-	
-	#执行
-	if [ ${change_target_source} = '1' ];then
-		echo "更换目标源:网易163,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
-		read operating_system_version
-		if [ ${operating_system_version} = '1' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS5-Base-163.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '2' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS6-Base-163.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '3' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo;yum clean all;yum makecache
-		fi
-	elif [ ${change_target_source} = '2' ];then
-		echo "更换目标源:阿里云,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
-		read operating_system_version
-		if [ ${operating_system_version} = '1' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-5.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '2' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '3' ];then
-			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo;yum clean all;yum makecache
-		fi
-	elif [ ${change_target_source} = '3' ];then
-		echo "更换目标源:自定义,请确定您需使用的自定义的源与您的操作系统相符！";echo "请输入自定义源地址："
-		read customize_the_source_address
-		wget -O /etc/yum.repos.d/CentOS-Base.repo ${customize_the_source_address};yum clean all;yum makecache
-	elif [ ${change_target_source} = '4' ];then
-		rm -rf /etc/yum.repos.d/CentOS-Base.repo
-		mv /etc/yum.repos.d/CentOS-Base.repo.bak /etc/yum.repos.d/CentOS-Base.repo
-		yum clean all;yum makecache
-	fi
-}
-
-configure_firewall(){
-	echo "请选择操作： [1]关闭firewall"
-	read firewall_operation
-	
-	if [ ${firewall_operation} = '1' ];then
-		echo "停止firewall..."
-		systemctl stop firewalld.service
-		echo "禁止firewall开机启动"
-		systemctl disable firewalld.service
-		echo "查看默认防火墙状态,关闭后显示notrunning,开启后显示running"
-		firewall-cmd --state
-	else
-		echo "选项不在范围,操作中止.";exit 0
-	fi
-}
-
-check_bbr_installation(){
-	echo "查看内核版本,含有4.12即可";uname -r
-	echo "------------------------------------------------------------"
-	echo "返回：net.ipv4.tcp_available_congestion_control = bbr cubic reno 即可";sysctl net.ipv4.tcp_available_congestion_control
-	echo "------------------------------------------------------------"
-	echo "返回：net.ipv4.tcp_congestion_control = bbr 即可";sysctl net.ipv4.tcp_congestion_control
-	echo "------------------------------------------------------------"
-	echo "返回：net.core.default_qdisc = fq 即可";sysctl net.core.default_qdisc
-	echo "------------------------------------------------------------"
-	echo "返回值有 tcp_bbr 模块即说明bbr已启动";lsmod | grep bbr
-}
-
+#一键全面测速-[7]
 speedtest(){
 	#检查文件ZBench-CN.sh是否存在,若不存在,则下载该文件
 	if [ ! -f /root/ZBench-CN.sh ];then
@@ -663,14 +649,21 @@ speedtest(){
 	bash /root/ZBench-CN.sh
 }
 
-speed(){
-	#检查文件superspeed.sh是否存在,若不存在,则下载该文件
-	if [ ! -f /root/superspeed.sh ];then
-		wget --no-check-certificate https://raw.githubusercontent.com/wn789/Superspeed/master/superspeed.sh
-		chmod 777 superspeed.sh
+#More-[8]
+system_more(){
+    echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本 [4]"
+	read more_option
+    if [ ${more_option} = '1' ];then
+        swap
+	elif [ ${more_option} = '2' ];then
+		install_ssh_port
+	elif [ ${more_option} = '3' ];then
+	    ddns
+	elif [ ${more_option} = '4' ];then
+
+	else
+		    echo "选项不在范围,操作中止.";exit 0
 	fi
-	#执行测试
-    ./superspeed.sh
 }
 
 swap(){
@@ -689,7 +682,7 @@ swap(){
 		fi
 
 	elif [ ${swap} = '2' ];then
-		#判断/var/swapfile2文件是否存在
+		#判断/var/swapfile1文件是否存在
 		if [ ! -f /var/swapfile1 ];then
 		dd if=/dev/zero of=/var/swapfile1 bs=1024 count=1048576
 	        mkswap /var/swapfile1;chmod 0644 /var/swapfile1;swapon /var/swapfile1
@@ -713,22 +706,184 @@ swap(){
 	fi
 }
 
-install_socks5(){
-           wget -N —no-check-certificate https://raw.githubusercontent.com/qinghuas/socks5-install/master/ss5.sh
-	   chmod 777 ss5.sh;bash ss5.sh
+install_ssh_port(){
+	#检查文件sshport.sh是否存在,若不存在,则下载该文件
+	if [ ! -f /root/sshport.sh ];then
+		wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
+	    chmod 777 sshport.sh
+	fi
+	    bash sshport.sh
 }
-
-network(){
-	    service network restart
-}
-
 
 ddns(){
-	    wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
-	    chmod 777 ddns.sh;bash ddns.sh
+	#检查文件ddns.sh是否存在,若不存在,则下载该文件
+	if [ ! -f /root/ddns.sh ];then
+		wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
+		chmod +x ddns.sh
+	fi
+	    bash ddns.sh
 }
 
+#卸载各类云盾-[a]
+uninstall_ali_cloud_shield(){
+	echo "请选择：[1]卸载阿里云盾 [2]卸载腾讯云盾";read uninstall_ali_cloud_shield
 
+	if [ ${uninstall_ali_cloud_shield} = '1' ];then
+    yum -y install redhat-lsb
+       var=`lsb_release -a | grep Gentoo`
+    if [ -z "${var}" ]; then 
+	   var=`cat /etc/issue | grep Gentoo`
+    fi
+
+    if [ -d "/etc/runlevels/default" -a -n "${var}" ]; then
+	   LINUX_RELEASE="GENTOO"
+    else
+	   LINUX_RELEASE="OTHER"
+    fi
+
+    stop_aegis(){
+	killall -9 aegis_cli >/dev/null 2>&1
+	killall -9 aegis_update >/dev/null 2>&1
+	killall -9 aegis_cli >/dev/null 2>&1
+	killall -9 AliYunDun >/dev/null 2>&1
+	killall -9 AliHids >/dev/null 2>&1
+	killall -9 AliYunDunUpdate >/dev/null 2>&1
+    printf "%-40s %40s\n" "Stopping aegis" "[  OK  ]"
+    }
+
+    remove_aegis(){
+    if [ -d /usr/local/aegis ];then
+       rm -rf /usr/local/aegis/aegis_client
+       rm -rf /usr/local/aegis/aegis_update
+	   rm -rf /usr/local/aegis/alihids
+    fi
+    }
+
+   uninstall_service() {
+   
+   if [ -f "/etc/init.d/aegis" ]; then
+		/etc/init.d/aegis stop  >/dev/null 2>&1
+		rm -f /etc/init.d/aegis 
+   fi
+
+	if [ $LINUX_RELEASE = "GENTOO" ]; then
+		rc-update del aegis default 2>/dev/null
+		if [ -f "/etc/runlevels/default/aegis" ]; then
+			rm -f "/etc/runlevels/default/aegis" >/dev/null 2>&1;
+		fi
+    elif [ -f /etc/init.d/aegis ]; then
+         /etc/init.d/aegis  uninstall
+	    for ((var=2; var<=5; var++)) do
+			if [ -d "/etc/rc${var}.d/" ];then
+				 rm -f "/etc/rc${var}.d/S80aegis"
+		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
+				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
+			fi
+		done
+    fi
+
+    }
+    
+    stop_aegis
+    uninstall_service
+    remove_aegis
+    
+    printf "%-40s %40s\n" "Uninstalling aegis"  "[  OK  ]"
+    
+    var=`lsb_release -a | grep Gentoo`
+    if [ -z "${var}" ]; then 
+    	var=`cat /etc/issue | grep Gentoo`
+    fi
+    
+    if [ -d "/etc/runlevels/default" -a -n "${var}" ]; then
+    	LINUX_RELEASE="GENTOO"
+    else
+    	LINUX_RELEASE="OTHER"
+    fi
+    
+    stop_aegis(){
+    	killall -9 aegis_cli >/dev/null 2>&1
+    	killall -9 aegis_update >/dev/null 2>&1
+    	killall -9 aegis_cli >/dev/null 2>&1
+        printf "%-40s %40s\n" "Stopping aegis" "[  OK  ]"
+    }
+    
+    stop_quartz(){
+    	killall -9 aegis_quartz >/dev/null 2>&1
+            printf "%-40s %40s\n" "Stopping quartz" "[  OK  ]"
+    }
+    
+    remove_aegis(){
+    if [ -d /usr/local/aegis ];then
+        rm -rf /usr/local/aegis/aegis_client
+        rm -rf /usr/local/aegis/aegis_update
+    fi
+    }
+    
+    remove_quartz(){
+    if [ -d /usr/local/aegis ];then
+    	rm -rf /usr/local/aegis/aegis_quartz
+    fi
+    }
+    
+    
+    uninstall_service() {
+       
+       if [ -f "/etc/init.d/aegis" ]; then
+    		/etc/init.d/aegis stop  >/dev/null 2>&1
+    		rm -f /etc/init.d/aegis 
+       fi
+    
+    	if [ $LINUX_RELEASE = "GENTOO" ]; then
+    		rc-update del aegis default 2>/dev/null
+    		if [ -f "/etc/runlevels/default/aegis" ]; then
+    			rm -f "/etc/runlevels/default/aegis" >/dev/null 2>&1;
+    		fi
+        elif [ -f /etc/init.d/aegis ]; then
+             /etc/init.d/aegis  uninstall
+    	    for ((var=2; var<=5; var++)) do
+    			if [ -d "/etc/rc${var}.d/" ];then
+    				 rm -f "/etc/rc${var}.d/S80aegis"
+    		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
+    				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
+    			fi
+    		done
+        fi
+    
+    }
+            stop_aegis
+            stop_quartz
+            uninstall_service
+            remove_aegis
+            remove_quartz
+            printf "%-40s %40s\n" "Uninstalling aegis_quartz"  "[  OK  ]"
+            pkill aliyun-service
+            rm -fr /etc/init.d/agentwatch /usr/sbin/aliyun-service
+            rm -rf /usr/local/aegis*
+            iptables -I INPUT -s 140.205.201.0/28 -j DROP
+            iptables -I INPUT -s 140.205.201.16/29 -j DROP
+            iptables -I INPUT -s 140.205.201.32/28 -j DROP
+            iptables -I INPUT -s 140.205.225.192/29 -j DROP
+            iptables -I INPUT -s 140.205.225.200/30 -j DROP
+            iptables -I INPUT -s 140.205.225.184/29 -j DROP
+            iptables -I INPUT -s 140.205.225.183/32 -j DROP
+            iptables -I INPUT -s 140.205.225.206/32 -j DROP
+            iptables -I INPUT -s 140.205.225.205/32 -j DROP
+            iptables -I INPUT -s 140.205.225.195/32 -j DROP
+            iptables -I INPUT -s 140.205.225.204/32 -j DROP
+        elif [ ${uninstall_ali_cloud_shield} = '2' ];then
+        	#检查文件uninstal_qcloud.sh是否存在,若不存在,则下载该文件
+	    if [ ! -f /root/uninstal_qcloud.sh ];then
+	    	curl -sSL https://down.oldking.net/Script/uninstal_qcloud.sh
+	    	chmod +x uninstal_qcloud.sh
+	    fi
+            sudo bash uninstal_qcloud.sh
+    	else
+    		echo "选项不在范围内,更新中止.";exit 0
+    	fi
+}
+
+#回程路由测试-[b]
 nali_test(){
 	echo "请输入目标IP：";read purpose_ip
 	nali-traceroute -q 1 ${purpose_ip}
@@ -788,16 +943,95 @@ detect_backhaul_routing(){
 	fi
 }
 
-serverspeeder(){
-	echo "选项：[1]普通安装 [2]安装OVZ BBR"
-	read serverspeeder_option
-	if [ ${serverspeeder_option} = '1' ];then
-		wget -c "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
-	elif [ ${serverspeeder_option} = '2' ];then
-		wget https://raw.githubusercontent.com/nanqinlang-tcp/tcp_nanqinlang/master/LKL/bash/tcp_nanqinlang-lkl-centos-1.1.1.sh
-        chmod +x tcp_nanqinlang-lkl-centos-1.1.1.sh
-        bash tcp_nanqinlang-lkl-centos-1.1.1.sh
+#简易测速-[c]
+superspeed(){
+	#检查文件superspeed.sh是否存在,若不存在,则下载该文件
+	if [ ! -f /root/superspeed.sh ];then
+		wget --no-check-certificate https://raw.githubusercontent.com/wn789/Superspeed/master/superspeed.sh
+		chmod +x superspeed.sh
 	fi
+	#执行测试
+    ./superspeed.sh
+}
+
+#检测BBR安装状态-[d]
+check_bbr_installation(){
+	echo "查看内核版本,含有4.12即可";uname -r
+	echo "------------------------------------------------------------"
+	echo "返回：net.ipv4.tcp_available_congestion_control = bbr cubic reno 即可";sysctl net.ipv4.tcp_available_congestion_control
+	echo "------------------------------------------------------------"
+	echo "返回：net.ipv4.tcp_congestion_control = bbr 即可";sysctl net.ipv4.tcp_congestion_control
+	echo "------------------------------------------------------------"
+	echo "返回：net.core.default_qdisc = fq 即可";sysctl net.core.default_qdisc
+	echo "------------------------------------------------------------"
+	echo "返回值有 tcp_bbr 模块即说明bbr已启动";lsmod | grep bbr
+}
+
+#更换默认源-[g]
+replacement_of_installation_source(){
+	echo "请选择更换目标源： [1]网易163 [2]阿里云 [3]自定义 [4]恢复默认源"
+	read change_target_source
+	
+	#备份
+	mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+	
+	#执行
+	if [ ${change_target_source} = '1' ];then
+		echo "更换目标源:网易163,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
+		read operating_system_version
+		if [ ${operating_system_version} = '1' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS5-Base-163.repo;yum clean all;yum makecache
+		elif [ ${operating_system_version} = '2' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS6-Base-163.repo;yum clean all;yum makecache
+		elif [ ${operating_system_version} = '3' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo;yum clean all;yum makecache
+		fi
+	elif [ ${change_target_source} = '2' ];then
+		echo "更换目标源:阿里云,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
+		read operating_system_version
+		if [ ${operating_system_version} = '1' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-5.repo;yum clean all;yum makecache
+		elif [ ${operating_system_version} = '2' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo;yum clean all;yum makecache
+		elif [ ${operating_system_version} = '3' ];then
+			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo;yum clean all;yum makecache
+		fi
+	elif [ ${change_target_source} = '3' ];then
+		echo "更换目标源:自定义,请确定您需使用的自定义的源与您的操作系统相符！";echo "请输入自定义源地址："
+		read customize_the_source_address
+		wget -O /etc/yum.repos.d/CentOS-Base.repo ${customize_the_source_address};yum clean all;yum makecache
+	elif [ ${change_target_source} = '4' ];then
+		rm -rf /etc/yum.repos.d/CentOS-Base.repo
+		mv /etc/yum.repos.d/CentOS-Base.repo.bak /etc/yum.repos.d/CentOS-Base.repo
+		yum clean all;yum makecache
+	fi
+}
+
+#配置防火墙-[e]
+configure_firewall(){
+	echo "请选择操作： [1]关闭firewall"
+	read firewall_operation
+	
+	if [ ${firewall_operation} = '1' ];then
+		echo "停止firewall..."
+		systemctl stop firewalld.service
+		echo "禁止firewall开机启动"
+		systemctl disable firewalld.service
+		echo "查看默认防火墙状态,关闭后显示notrunning,开启后显示running"
+		firewall-cmd --state
+	else
+		echo "选项不在范围,操作中止.";exit 0
+	fi
+}
+
+update_the_shell(){
+
+		rm -rf /root/v3.sh v3.sh.*
+		wget "https://github.com/Super-box/v3/raw/master/v3.sh"
+
+	#将脚本作为命令放置在/usr/bin目录内,最后执行
+	    rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
+	    v3
 }
 
 safe_dog(){
@@ -813,159 +1047,6 @@ safe_dog(){
 		echo "安装完成,请您重新执行脚本."
 	else
 		sdui
-	fi
-}
-
-uninstall_ali_cloud_shield(){
-	echo "请选择：[1]卸载阿里云盾 [2]卸载腾讯云盾";read uninstall_ali_cloud_shield
-
-	if [ ${uninstall_ali_cloud_shield} = '1' ];then
-    yum -y install redhat-lsb
-       var=`lsb_release -a | grep Gentoo`
-    if [ -z "${var}" ]; then 
-	   var=`cat /etc/issue | grep Gentoo`
-    fi
-
-    if [ -d "/etc/runlevels/default" -a -n "${var}" ]; then
-	   LINUX_RELEASE="GENTOO"
-    else
-	   LINUX_RELEASE="OTHER"
-    fi
-
-    stop_aegis(){
-	killall -9 aegis_cli >/dev/null 2>&1
-	killall -9 aegis_update >/dev/null 2>&1
-	killall -9 aegis_cli >/dev/null 2>&1
-	killall -9 AliYunDun >/dev/null 2>&1
-	killall -9 AliHids >/dev/null 2>&1
-	killall -9 AliYunDunUpdate >/dev/null 2>&1
-    printf "%-40s %40s\n" "Stopping aegis" "[  OK  ]"
-    }
-
-    remove_aegis(){
-    if [ -d /usr/local/aegis ];then
-       rm -rf /usr/local/aegis/aegis_client
-       rm -rf /usr/local/aegis/aegis_update
-	   rm -rf /usr/local/aegis/alihids
-    fi
-    }
-
-   uninstall_service() {
-   
-   if [ -f "/etc/init.d/aegis" ]; then
-		/etc/init.d/aegis stop  >/dev/null 2>&1
-		rm -f /etc/init.d/aegis 
-   fi
-
-	if [ $LINUX_RELEASE = "GENTOO" ]; then
-		rc-update del aegis default 2>/dev/null
-		if [ -f "/etc/runlevels/default/aegis" ]; then
-			rm -f "/etc/runlevels/default/aegis" >/dev/null 2>&1;
-		fi
-    elif [ -f /etc/init.d/aegis ]; then
-         /etc/init.d/aegis  uninstall
-	    for ((var=2; var<=5; var++)) do
-			if [ -d "/etc/rc${var}.d/" ];then
-				 rm -f "/etc/rc${var}.d/S80aegis"
-		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
-				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
-			fi
-		done
-    fi
-
-}
-
-stop_aegis
-uninstall_service
-remove_aegis
-
-printf "%-40s %40s\n" "Uninstalling aegis"  "[  OK  ]"
-
-var=`lsb_release -a | grep Gentoo`
-if [ -z "${var}" ]; then 
-	var=`cat /etc/issue | grep Gentoo`
-fi
-
-if [ -d "/etc/runlevels/default" -a -n "${var}" ]; then
-	LINUX_RELEASE="GENTOO"
-else
-	LINUX_RELEASE="OTHER"
-fi
-
-stop_aegis(){
-	killall -9 aegis_cli >/dev/null 2>&1
-	killall -9 aegis_update >/dev/null 2>&1
-	killall -9 aegis_cli >/dev/null 2>&1
-    printf "%-40s %40s\n" "Stopping aegis" "[  OK  ]"
-}
-
-stop_quartz(){
-	killall -9 aegis_quartz >/dev/null 2>&1
-        printf "%-40s %40s\n" "Stopping quartz" "[  OK  ]"
-}
-
-remove_aegis(){
-if [ -d /usr/local/aegis ];then
-    rm -rf /usr/local/aegis/aegis_client
-    rm -rf /usr/local/aegis/aegis_update
-fi
-}
-
-remove_quartz(){
-if [ -d /usr/local/aegis ];then
-	rm -rf /usr/local/aegis/aegis_quartz
-fi
-}
-
-
-uninstall_service() {
-   
-   if [ -f "/etc/init.d/aegis" ]; then
-		/etc/init.d/aegis stop  >/dev/null 2>&1
-		rm -f /etc/init.d/aegis 
-   fi
-
-	if [ $LINUX_RELEASE = "GENTOO" ]; then
-		rc-update del aegis default 2>/dev/null
-		if [ -f "/etc/runlevels/default/aegis" ]; then
-			rm -f "/etc/runlevels/default/aegis" >/dev/null 2>&1;
-		fi
-    elif [ -f /etc/init.d/aegis ]; then
-         /etc/init.d/aegis  uninstall
-	    for ((var=2; var<=5; var++)) do
-			if [ -d "/etc/rc${var}.d/" ];then
-				 rm -f "/etc/rc${var}.d/S80aegis"
-		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
-				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
-			fi
-		done
-    fi
-
-}
-stop_aegis
-stop_quartz
-uninstall_service
-remove_aegis
-remove_quartz
-printf "%-40s %40s\n" "Uninstalling aegis_quartz"  "[  OK  ]"
-pkill aliyun-service
-rm -fr /etc/init.d/agentwatch /usr/sbin/aliyun-service
-rm -rf /usr/local/aegis*
-iptables -I INPUT -s 140.205.201.0/28 -j DROP
-iptables -I INPUT -s 140.205.201.16/29 -j DROP
-iptables -I INPUT -s 140.205.201.32/28 -j DROP
-iptables -I INPUT -s 140.205.225.192/29 -j DROP
-iptables -I INPUT -s 140.205.225.200/30 -j DROP
-iptables -I INPUT -s 140.205.225.184/29 -j DROP
-iptables -I INPUT -s 140.205.225.183/32 -j DROP
-iptables -I INPUT -s 140.205.225.206/32 -j DROP
-iptables -I INPUT -s 140.205.225.205/32 -j DROP
-iptables -I INPUT -s 140.205.225.195/32 -j DROP
-iptables -I INPUT -s 140.205.225.204/32 -j DROP
-    elif [ ${uninstall_ali_cloud_shield} = '2' ];then
-        curl -sSL https://down.oldking.net/Script/uninstal_qcloud.sh | sudo bash
-	else
-		echo "选项不在范围内,更新中止.";exit 0
 	fi
 }
 
@@ -1012,83 +1093,62 @@ get_server_ip_info
 
 #输出安装选项
 echo "####################################################################
-# 版本：V.2.3.3 2017-10-15                                         #
+# 版本：V.2.3.4 2018-05-20                                         #
 ####################################################################
-# [1] Git更新后端                                                  #
-# [2] 安装pm2守护后端SSR                                           #
+# [1] PM2管理后端                                                  #
+# [2] Supervisor管理后端                                           #
 # [3] 修改ssr节点配置                                              #
 # [4] 安装ssr节点（肥羊）                                          #
-# [5] 优化supervisor                                               #
-# [6] 一键安装socks5                                               #
-# [7] 一键添加SWAP                                                 #
-# [8] 一键更换SSH端口                                              #
-# [9] 更多                                                      #
+# [5] 后端更多选项                                                 #
+# [6] 一键安装加速                                                 #
+# [7] 一键服务器测速                                               #
+# [8] 更多功能                                                     #
 ####################################################################
-# [a]修复服务端故障 [b]检测BBR安装状态 [c]卸载各类云盾 [d]安装加速 #
-# [e]执行测速脚本 [f]查看回程路由 [g]动态IP解析 [h]SpeedTest       #
-# [i]配置防火墙 [j]列出开放端口 [k]更换默认源 [l]重启网卡          #
+# [a]卸载各类云盾 [b]查看回程路由 [c]简易测速 [d]检测BBR安装状态   #
+# [e]配置防火墙 [f]列出开放端口 [g]更换默认源                      #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
 # 此服务器IP信息：${server_ip_info}
 ####################################################################"
 
-stty erase '^H' && read -p "请选择安装项[1-9]/[a-n]:" num
+stty erase '^H' && read -p "请选择安装项[1-8]/[a-g]:" num
 clear
 case "$num" in
 	1)
-	update_git
-	;;
+	pm2;;
 	2)
-	remove_supervisor
-	install_pm2
-	use_pm2;;
+	supervisor;;
 	3)
 	modify_node_info;;
 	4)
-	feiyang
-	reboot_system;;
+	install_node;;
 	5)
-	install_supervisor;;
+	python_more;;
 	6)
-	install_socks5;;
+	serverspeeder;;
 	7)
-	swap;;
+    speedtest;;
 	8)
-	install_ssh_port
-	restart_ssh_port;;
-	9)
 	more;;
 	a)
-	repair_ssr_operation;;
-	b)
-	check_bbr_installation;;
-	c)
 	uninstall_ali_cloud_shield;;
+	b)
+    detect_backhaul_routing;;
+	c)
+	superspeed;;
 	d)
-	serverspeeder;;
+	check_bbr_installation;;
 	e)
-	speed;;
-	f)
-	detect_backhaul_routing;;
-	g)
-	ddns;;
-	h)
-	speedtest;;
-	i)
 	configure_firewall;;
-	j)
+	f)
 	yum install-y net-tools;netstat -lnp;;
-	k)
+	g)
 	replacement_of_installation_source;;
-	l)
-	network;;
+
 	x)
 	bash v3.sh;;
 	y)
 	update_the_shell;;
-	y2)
-	rm -rf /root/v3.sh v3.sh.* /usr/bin/v3;wget "https://file.52ll.win/v3.sh"
-	cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3;v3;;
 	z)
 	echo "已退出.";exit 0;;
 	*)
@@ -1100,7 +1160,7 @@ esac
 #继续还是中止
 echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:";read continue_or_stop
 if [ ${continue_or_stop} = 'y' ];then
-	bash v3.sh
+	bash /root/v3.sh
 fi
 
-#END 2017-10-15 11:47
+#END 2018年05月20日 08:50:56
