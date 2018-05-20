@@ -45,14 +45,24 @@ pm2(){
     elif [ ${pm2_option} = '2' ];then
         use_pm2_for_each(){
 		    check_sys
+    if [ ! -f /usr/bin/pm2 ];then
+            echo "检查到您未安装pm2,脚本将先进行安装"
+            install_pm2
+    else
 		if [[ ${release} = "centos" ]]; then
 			use_centos_pm2
 		else
-			use_ubuntu_pm2
+			use_debian_pm2
 		fi
+	fi
 	    }
     elif [ ${pm2_option} = '3' ];then
+        if [ ! -f /usr/bin/pm2 ];then
+            echo "检查到您未安装pm2,脚本将先进行安装"
+            install_pm2
+        else
             update_pm2
+        fi
     elif [ ${pm2_option} = '4' ];then
             remove_pm2
 	else
@@ -63,7 +73,7 @@ pm2(){
 install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
 	    if [ ! -f /usr/bin/pm2 ];then
-            echo "检查到您未安装pm2,脚本将先进行安装..."
+            echo "检查到您未安装pm2,脚本将先进行安装"
 	        #安装Node.js
     	    yum -y install xz
     	    yum -y install wget
@@ -88,8 +98,8 @@ install_pm2(){
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
-	    else	        
-		    echo "已经安装pm2，开始配置pm2"
+	    else
+		    echo "已经安装pm2，请配置pm2"
 	    fi
 }
 
@@ -164,7 +174,7 @@ use_centos_pm2(){
 ########################################"
 }
 
-use_ubuntu_pm2(){
+use_debian_pm2(){
 	#清空
         pm2 delete all
     #判断内存
