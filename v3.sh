@@ -312,7 +312,7 @@ supervisor(){
 		if [[ ${release} = "centos" ]]; then
 			remove_centos_supervisor
 		else
-			remove_centos_supervisor
+			remove_debian_supervisor
 		fi
 		}
 	elif [ ${super_option} = '3' ];then
@@ -369,6 +369,7 @@ install_centos_supervisor(){
             systemctl is-enabled supervisord
     fi        
 }
+
 remove_debian_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
 	if [ ! -f /usr/bin/supervisord ];then
@@ -390,6 +391,29 @@ remove_debian_supervisor(){
         fi
 	fi
 }
+
+remove_centos_supervisor(){
+	#判断/usr/bin/supervisord文件是否存在
+	if [ ! -f /usr/bin/supervisord ];then
+		echo "已经卸载supervisor";exit 0
+	else
+	    if [ ! -f /usr/bin/killall ];then
+		    echo "检查到您未安装psmisc,脚本将先进行安装";exit 0
+        else
+		    echo "现在开始卸载supervisor"
+	        yum -y update
+	        yum -y install psmisc
+            killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        yum -y remove supervisor
+            rm -rf "/etc/supervisord.conf"
+            rm -rf "/usr/bin/srs"
+        fi
+	fi
+}
+
 kill_supervisor(){
 	#判断/usr/bin/killall文件是否存在
 	if [ ! -f /usr/bin/killall ];then
