@@ -305,12 +305,14 @@ supervisor(){
 		else
 			remove_centos_supervisor
 		fi
+		}
 	elif [ ${supervisor_option} = '3' ];then
     	    kill_supervisor
 	else
 		echo "选项不在范围,操作中止.";exit 0
 	fi
 }
+
 install_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
 	if [ ! -f /usr/bin/supervisord ];then
@@ -586,7 +588,7 @@ install_node(){
 
 #More-[5]
 python_more(){
-    echo "选项：[1]安装Gost服务器 [2]Git更新后端 [3] [4]"
+    echo "选项：[1]安装Gost服务器 [2]Git更新后端"
 	read more_option
 	if [ ${more_option} = '1' ];then
 		install_gost(){
@@ -594,10 +596,9 @@ python_more(){
 			if [ ! -f /root/gost.sh ];then
 		    wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
             chmod +x gost.sh
-        fi
+            fi
             bash gost.sh
         }
-    fi
 	elif [ ${more_option} = '2' ];then
 		git_update(){
             wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x /root/shadowsocks/00.patch
@@ -606,12 +607,8 @@ python_more(){
             git apply 00.patch
             git apply 01.patch
         }
-	elif [ ${more_option} = '3' ];then
-	     
-	elif [ ${more_option} = '4' ];then
-
 	else
-		    echo "选项不在范围,操作中止.";exit 0
+		echo "选项不在范围,操作中止.";exit 0
 	fi
 }
 
@@ -651,7 +648,7 @@ speedtest(){
 
 #More-[8]
 system_more(){
-    echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本 [4]"
+    echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本"
 	read more_option
     if [ ${more_option} = '1' ];then
         swap
@@ -659,8 +656,6 @@ system_more(){
 		install_ssh_port
 	elif [ ${more_option} = '3' ];then
 	    ddns
-	elif [ ${more_option} = '4' ];then
-
 	else
 		    echo "选项不在范围,操作中止.";exit 0
 	fi
@@ -1034,6 +1029,7 @@ update_the_shell(){
 	    v3
 }
 
+###待更新
 safe_dog(){
 	#判断/usr/bin/sdui文件是否存在
 	if [ ! -f /usr/bin/sdui ];then
@@ -1129,7 +1125,7 @@ case "$num" in
 	7)
     speedtest;;
 	8)
-	more;;
+	system_more;;
 	a)
 	uninstall_ali_cloud_shield;;
 	b)
@@ -1146,7 +1142,7 @@ case "$num" in
 	replacement_of_installation_source;;
 
 	x)
-	bash v3.sh;;
+	bash /root/v3.sh;;
 	y)
 	update_the_shell;;
 	z)
