@@ -137,7 +137,14 @@ use_centos_pm2(){
             echo '###DDNS' >> /var/spool/cron/root
             echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
     fi
-    
+    if [ ! -f /root/Application/telegram-socks/server.js ] ; then
+            echo "未检测到socks5"
+    else
+	        echo "添加socks5定时启动"
+            sleep 2s
+            echo '###Socks5' >> /var/spool/cron/root
+            echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
+    fi
     if [ ! -f /usr/local/gost/gostproxy ] ; then
             echo "未检测到gost"
     else
@@ -149,7 +156,7 @@ use_centos_pm2(){
         #PM2定时重启
             echo 'SHELL=/bin/bash' >> /var/spool/cron/root
             echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
-            echo '* */1 * * * pm2 flush' >> /var/spool/cron/root
+            echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
         #清理缓存
             echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
@@ -297,8 +304,8 @@ supervisor(){
 	  fi
 	}
 	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
-	read supervisor_option
-	if [ ${supervisor_option} = '1' ];then
+	read super_option
+	if [ ${super_option} = '1' ];then
         install_supervisor_for_each(){
 		    check_sys
 		if [[ ${release} = "centos" ]]; then
@@ -307,7 +314,7 @@ supervisor(){
 			echo "暂时只完美支持Centos,请更换PM2管理";exit 0
 		fi
 	    }
-    elif [ ${supervisor_option} = '2' ];then
+    elif [ ${super_option} = '2' ];then
     	remove_supervisor_for_each(){
 		    check_sys
 		if [[ ${release} = "centos" ]]; then
@@ -316,7 +323,7 @@ supervisor(){
 			remove_centos_supervisor
 		fi
 		}
-	elif [ ${supervisor_option} = '3' ];then
+	elif [ ${super_option} = '3' ];then
     	    kill_supervisor
 	else
 		echo "选项不在范围,操作中止.";exit 0
