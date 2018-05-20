@@ -15,47 +15,37 @@ reboot_system(){
 		echo "需重启服务器使配置生效,稍后请务必手动重启服务器.";exit
 	fi
 }
-
 #PM2-[1]
 pm2(){
-	#检查 Root账户
-	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
-	#检查系统版本
 	check_sys(){
-		if [[ -f /etc/redhat-release ]]; then
-			release="centos"
-		elif cat /etc/issue | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-		elif cat /proc/version | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /proc/version | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-	  fi
-	}
+    if [ -f /etc/redhat-release ]; then
+        release="centos"
+    elif cat /etc/*-release | grep -q -E -i "debian"; then
+        release="debian"
+    elif cat /etc/*-release | grep -q -E -i "ubuntu"; then
+        release="ubuntu"
+    elif cat /etc/*-release | grep -q -E -i "centos|red hat|redhat"; then
+        release="centos"
+    elif cat /etc/*-release | grep -q -E -i "debian"; then
+        release="debian"
+    elif cat /etc/*-release | grep -q -E -i "ubuntu"; then
+        release="ubuntu"
+    elif cat /etc/*-release | grep -q -E -i "centos|red hat|redhat"; then
+        release="centos"
+    fi
+    }
 	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
 	read pm2_option
 	if [ ${pm2_option} = '1' ];then
             install_pm2
     elif [ ${pm2_option} = '2' ];then
-        use_pm2_for_each(){
-		    check_sys
-    if [ ! -f /usr/bin/pm2 ];then
-            echo "检查到您未安装pm2,脚本将先进行安装"
-            install_pm2
-    else
-		if [[ ${release} = "centos" ]]; then
+        check_sys
+        echo "$release"     
+        if [ "$release" = "centos" ]; then
 			use_centos_pm2
 		else
 			use_debian_pm2
 		fi
-	fi
-	    }
     elif [ ${pm2_option} = '3' ];then
         if [ ! -f /usr/bin/pm2 ];then
             echo "检查到您未安装pm2,脚本将先进行安装"
@@ -259,13 +249,15 @@ update_pm2(){
 		npm i -g npm
     #更新PM2
         npm install -g pm2 --unsafe-perm
+    #PM2 update
+        sleep 1s
         pm2 save
         pm2 update
 	    pm2 startup
 }
 
 remove_pm2(){
-	    if [ ! -f /usr/bin/pm2 ];then
+	    if [ ! -f /usr/bin/pm2];then
 		    echo "PM2已卸载"
 		else
 		    sudo npm uninstall -g pm2
@@ -275,7 +267,7 @@ remove_pm2(){
 
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
-		    rm -rf "/root/node*"
+		    rm -rf /root/node*
 		    sleep 1s
 		    echo "PM2完成卸载"
 		fi
