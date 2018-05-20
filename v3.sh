@@ -41,7 +41,7 @@ pm2(){
     elif [ ${pm2_option} = '2' ];then
         check_sys
         echo "$release"     
-        if [ "$release" = "centos" ]; then
+        if [ ${release} = 'centos' ]; then
 			use_centos_pm2
 		else
 			use_debian_pm2
@@ -74,20 +74,20 @@ install_pm2(){
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
 	    if [ ! -f /usr/bin/node ];then
     	    #创建软连接
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+    	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	        ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
     	    else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
 	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+    	        ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
 	    fi
 	        #升级Node
 	        npm i -g npm
 	        #安装PM2
-    	    npm install -g pm2 --unsafe-perm
-    	    #创建软连接x2
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+    	        npm install -g pm2 --unsafe-perm
+    	        #创建软连接x2
+    	        ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
 	    else
 		    echo "已经安装pm2，请配置pm2"
 	    fi
