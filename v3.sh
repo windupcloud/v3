@@ -310,7 +310,17 @@ supervisor_list(){
 	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
 	read super_option
 	if [ ${super_option} = '1' ];then
-        install_supervisor_for_each(){
+        install_supervisor_for_each
+    elif [ ${super_option} = '2' ];then
+    	remove_supervisor_for_each
+	elif [ ${super_option} = '3' ];then
+    	    kill_supervisor
+	else
+		echo "选项不在范围,操作中止.";exit 0
+	fi
+}
+
+install_supervisor_for_each(){
 		    check_sys
 		if [[ ${release} = "centos" ]]; then
 			install_centos_supervisor
@@ -318,8 +328,8 @@ supervisor_list(){
 			echo "暂时只完美支持Centos,请更换PM2管理";exit 0
 		fi
 	    }
-    elif [ ${super_option} = '2' ];then
-    	remove_supervisor_for_each(){
+
+remove_supervisor_for_each(){
 		    check_sys
 		if [[ ${release} = "centos" ]]; then
 			remove_centos_supervisor
@@ -327,12 +337,6 @@ supervisor_list(){
 			remove_debian_supervisor
 		fi
 		}
-	elif [ ${super_option} = '3' ];then
-    	    kill_supervisor
-	else
-		echo "选项不在范围,操作中止.";exit 0
-	fi
-}
 
 install_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
