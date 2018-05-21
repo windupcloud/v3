@@ -773,16 +773,25 @@ python_more(){
     echo "选项：[1]安装Gost服务器 [2]Git更新后端"
 	read more_option
 	if [ ${more_option} = '1' ];then
-		install_gost(){
-			#检查文件gost.sh是否存在,若不存在,则下载该文件
-			if [ ! -f /root/gost.sh ];then
-		    wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
+		install_gost
+        }
+	elif [ ${more_option} = '2' ];then
+		git_update
+	else
+		echo "选项不在范围,操作中止.";exit 0
+	fi
+}
+
+install_gost(){
+           #检查文件gost.sh是否存在,若不存在,则下载该文件
+		if [ ! -f /root/gost.sh ];then
+		   wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
             chmod +x gost.sh
             fi
             bash gost.sh
-        }
-	elif [ ${more_option} = '2' ];then
-		git_update(){
+	    }
+
+git_update(){
 	cp -r /root/shadowsocks/userapiconfig.py /root/userapiconfig.py
                 rm -rf /root/shadow*
 		git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
@@ -791,10 +800,7 @@ python_more(){
                 cp config.json user-config.json
                 cp -r  /root/userapiconfig.py /root/shadowsocks/userapiconfig.py
         }
-	else
-		echo "选项不在范围,操作中止.";exit 0
-	fi
-}
+	
 
 #一键安装加速-[6]
 serverspeeder(){
