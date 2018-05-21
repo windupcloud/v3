@@ -774,7 +774,7 @@ python_more(){
 	read more_option
 	if [ ${more_option} = '1' ];then
 		install_gost
-        }
+        
 	elif [ ${more_option} = '2' ];then
 		git_update
 	else
