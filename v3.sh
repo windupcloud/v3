@@ -783,11 +783,13 @@ python_more(){
         }
 	elif [ ${more_option} = '2' ];then
 		git_update(){
-            wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/00.patch";chmod +x /root/shadowsocks/00.patch
-            wget -P /root/shadowsocks -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/01.patch";chmod +x /root/shadowsocks/01.patch
-            cd /root/shadowsocks
-            git apply 00.patch
-            git apply 01.patch
+	cp -r /root/shadowsocks/userapiconfig.py /root/userapiconfig.py
+                rm -rf /root/shadow*
+		git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
+	        cd shadowsocks
+                cp apiconfig.py
+                cp config.json user-config.json
+                cp -r  /root/userapiconfig.py /root/shadowsocks/userapiconfig.py
         }
 	else
 		echo "选项不在范围,操作中止.";exit 0
