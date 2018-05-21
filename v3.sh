@@ -97,6 +97,11 @@ install_pm2(){
 }
 
 use_centos_pm2(){
+    if [ ! -f /usr/bin/killall ];then
+	echo "检查到您未安装psmisc,脚本将先进行安装"
+	yum -y update
+	yum -y install psmisc
+    fi
 	#清空
         pm2 delete all
     #判断内存
@@ -147,8 +152,8 @@ use_centos_pm2(){
             echo '0 3 * * * gost start' >> /var/spool/cron/root
     fi
         #PM2定时重启
-            echo 'SHELL=/bin/bash' >> /var/spool/cron/root
-            echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
+            echo '#DaliyJob' >> /var/spool/cron/root
+	    echo '*/30 * * * * killall sftp-server' >> /var/spool/cron/root
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
         #清理缓存
@@ -175,6 +180,10 @@ use_centos_pm2(){
 }
 
 use_debian_pm2(){
+    if [ ! -f /usr/bin/killall ];then
+	echo "检查到您未安装psmisc,脚本将先进行安装"
+	apt-get install psmisc
+    fi
 	#清空
         pm2 delete all
     #判断内存
@@ -219,9 +228,9 @@ use_debian_pm2(){
             echo '0 3 * * * gost start' >> /var/spool/cron/crontabs/root
     fi
         #PM2定时重启
-            echo 'SHELL=/bin/bash' >> /var/spool/cron/crontabs/root
-            echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/crontabs/root
-            echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
+            echo '#DaliyJob' >> /var/spool/cron/crontabs/root
+            echo '*/30 * * * * killall sftp-server' >> /var/spool/cron/crontabs/root
+            echo '*/30 * * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
         #清理缓存
             echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
@@ -256,7 +265,7 @@ update_pm2(){
         sleep 1s
         pm2 save
         pm2 update
-	    pm2 startup
+	pm2 startup
 }
 
 remove_pm2(){
@@ -335,14 +344,14 @@ install_centos_supervisor(){
 	        yum -y install psmisc
 	    fi
 	        echo "开始卸载supervisor"
-            yum -y remove supervisor
-            rm -rf "/etc/supervisord.conf"
-            rm -rf "/usr/bin/srs"
-            yum -y install supervisor
+                yum -y remove supervisor
+                rm -rf "/etc/supervisord.conf"
+                rm -rf "/usr/bin/srs"
+                yum -y install supervisor
         #启用supervisord
-            echo_supervisord_conf > /etc/supervisord.conf
-            sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
-            supervisord
+                echo_supervisord_conf > /etc/supervisord.conf
+                sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+                supervisord
         #iptables
             iptables -F
             iptables -X  
