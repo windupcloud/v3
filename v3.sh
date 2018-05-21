@@ -392,12 +392,13 @@ remove_debian_supervisor(){
 		echo "已经卸载supervisor";exit 0
 	else
 	    if [ ! -f /usr/bin/killall ];then
-		    echo "检查到您未安装psmisc,脚本将先进行安装";exit 0
+		    echo "检查到您未安装psmisc,脚本将先进行安装"
+		    
+	            sudo apt-get install psmisc
         else
 		    echo "现在开始卸载supervisor"
-	        sudo apt-get update
-	        sudo apt-get install psmisc
-            killall supervisord
+	        
+                killall supervisord
 	        killall supervisord
 	        killall supervisord
 	        killall supervisord
@@ -414,19 +415,18 @@ remove_centos_supervisor(){
 		echo "已经卸载supervisor";exit 0
 	else
 	    if [ ! -f /usr/bin/killall ];then
-		    echo "检查到您未安装psmisc,脚本将先进行安装";exit 0
-        else
-		    echo "现在开始卸载supervisor"
-	        yum -y update
+		    echo "检查到您未安装psmisc,脚本将先进行安装"
+		    yum -y update
 	        yum -y install psmisc
-            killall supervisord
+        fi
+	 echo "现在开始卸载supervisor"
+                killall supervisord
 	        killall supervisord
 	        killall supervisord
 	        killall supervisord
 	        yum -y remove supervisor
             rm -rf "/etc/supervisord.conf"
             rm -rf "/usr/bin/srs"
-        fi
 	fi
 }
 
