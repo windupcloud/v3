@@ -16,7 +16,7 @@ reboot_system(){
 	fi
 }
 #PM2-[1]
-pm2(){
+pm2_list(){
 	check_sys(){
     if [ -f /etc/redhat-release ]; then
         release="centos"
@@ -48,13 +48,16 @@ pm2(){
 		fi
     elif [ ${pm2_option} = '3' ];then
         if [ ! -f /usr/bin/pm2 ];then
-            echo "检查到您未安装pm2,脚本将先进行安装"
             install_pm2
         else
             update_pm2
         fi
     elif [ ${pm2_option} = '4' ];then
+            if [ ! -f /usr/bin/pm2 ];then
+            echo "已经卸载pm2"
+        else
             remove_pm2
+        fi
 	else
 		    echo "选项不在范围,操作中止.";exit 0
 	fi
@@ -274,7 +277,7 @@ remove_pm2(){
 }
 
 #supervisor-[2]
-supervisor(){
+supervisor_list(){
 	#检查 Root账户
 	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
 	#检查系统版本
@@ -325,8 +328,6 @@ supervisor(){
 install_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
 	if [ ! -f /usr/bin/supervisord ];then
-		echo "已经卸载supervisor";exit 0
-	else
 		#判断/usr/bin/killall文件是否存在
 	    if [ ! -f /usr/bin/killall ];then
 	        echo "检查到您未安装psmisc,脚本将先进行安装"
@@ -367,6 +368,8 @@ install_centos_supervisor(){
             systemctl start supervisord.service
             systemctl enable supervisord
             systemctl is-enabled supervisord
+	else
+		echo "已经安装supervisor";exit 0
     fi        
 }
 
@@ -575,7 +578,7 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
 	cd /root/shadowsocks
 	chkconfig supervisord on
 	#第一次安装
@@ -620,7 +623,7 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
 	cd shadowsocks
 	chkconfig supervisord on
 	#第一次安装
@@ -1275,9 +1278,9 @@ stty erase '^H' && read -p "请选择安装项[1-8]/[a-g]:" num
 clear
 case "$num" in
 	1)
-	pm2;;
+	pm2_list;;
 	2)
-	supervisor;;
+	supervisor_list;;
 	3)
 	modify_node_info;;
 	4)
