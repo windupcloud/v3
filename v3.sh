@@ -792,13 +792,16 @@ install_gost(){
 	    }
 
 git_update(){
+                if [ ! -f /root/shadowsocks ];then
+		   echo "Tan90°"
+                else
 	cp -r /root/shadowsocks/userapiconfig.py /root/userapiconfig.py
                 rm -rf /root/shadow*
 		git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
-	        cd shadowsocks
-                cp apiconfig.py
+	        cd shadowsocks                
                 cp config.json user-config.json
                 cp -r  /root/userapiconfig.py /root/shadowsocks/userapiconfig.py
+                fi
         }
 	
 
