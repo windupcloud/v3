@@ -798,11 +798,9 @@ git_update(){
                 if [ ! -f /root/shadowsocks/userapiconfig.py ];then
 		        echo "Tan90°"
                 else
-	            cp -r /root/shadowsocks/userapiconfig.py /root/userapiconfig.py
-                rm -rf /root/shadow*
-	         	git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"             
-                cp -r /root/shadowsocks/config.json /root/shadowsocks/user-config.json
-                cp -r /root/userapiconfig.py /root/shadowsocks/userapiconfig.py
+	         	git clone -b manyuser https://github.com/Super-box/p3.git          
+                        \cp -r -f /root/p3/* /root/shadowsocks
+			rm -rf /root/p3
                 fi
         }
 	
