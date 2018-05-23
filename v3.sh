@@ -273,9 +273,12 @@ remove_pm2(){
 		    echo "PM2已卸载"
 		else
 		    sudo npm uninstall -g pm2
+		    sleep 1s
+		    sudo npm uninstall -g npm
+		    sleep 1s
 		    rm -rf "/usr/bin/node"
-	        rm -rf "/usr/bin/npm"
-	        rm -rf "/root/.npm"
+	            rm -rf "/usr/bin/npm"
+	            rm -rf "/root/.npm"
 
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
