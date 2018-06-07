@@ -485,7 +485,7 @@ modify_node_info(){
 	
 		#修改
 		Userdomain=${Userdomain:-"http://${server_ip}"}
-		sed -i "s#https://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
+		sed -i "s#http://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
 		Usermukey=${Usermukey:-"mupass"}
 		sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
 		UserNODE_ID=${UserNODE_ID:-"3"}
@@ -732,7 +732,7 @@ install_node(){
 	cp /root/shadowsocks/userapiconfig.py /root/shadowsocks/userapiconfig.py.bak
 	#修改
 	Userdomain=${Userdomain:-"http://${server_ip}"}
-	sed -i "s#https://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
+	sed -i "s#http://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
 	Usermukey=${Usermukey:-"mupass"}
 	sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
 	UserNODE_ID=${UserNODE_ID:-"3"}
