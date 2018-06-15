@@ -67,7 +67,9 @@ install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
 	    if [ ! -f /usr/bin/pm2 ];then
             echo "检查到您未安装pm2,脚本将先进行安装"
-	        #安装Node.js
+	    #安装Node.js
+	    apt -y install xz
+	    apt -y install wget
     	    yum -y install xz
     	    yum -y install wget
     	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
@@ -113,11 +115,11 @@ use_centos_pm2(){
     if [ $all -le 256 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
     elif [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     elif [ $all -le 1024 ] ; then
-	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     else 
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     fi
     sleep 2s
         #创建快捷方式
