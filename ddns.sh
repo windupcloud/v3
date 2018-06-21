@@ -35,19 +35,19 @@ EOT
 
 # API key, see https://www.cloudflare.com/a/account/my-account,
 # incorrect api-key results in E_UNAUTH error
-CFKEY=8bf8eaff1c8d04b1a8b412f4b52e0b6726c40
+CFKEY=a80eedbe327abf16a473a26651efd73e
 
 # Zone name, will list all possible if missing, eg: example.com
-CFZONE=yahaha.win
+CFZONE=yahaha.pro
 
 # Domain id, will retrieve itself by default
-CFID=
+CFID=x
 
 # Username, eg: user@example.com
 CFUSER=472245834@qq.com
 
 # Hostname to update, eg: homeserver.example.com
-CFHOST=.yahaha.win
+CFHOST=x.yahaha.pro
 
 # Cloudflare TTL for record, between 120 and 86400 seconds
 CFTTL=120
