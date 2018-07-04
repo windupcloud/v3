@@ -36,7 +36,7 @@ CFUSER=472245834@qq.com
 CFZONE_NAME=yahaha.pro
 
 # Hostname to update, eg: homeserver.example.com
-CFRECORD_NAME=ddns.xxx.yahaha.pro
+CFRECORD_NAME=aaa.yahaha.pro
 
 # Cloudflare TTL for record, between 120 and 86400 seconds
 CFTTL=120
