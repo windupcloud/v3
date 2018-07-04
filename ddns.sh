@@ -7,18 +7,12 @@ set -o pipefail
 # Can retrieve cloudflare Domain id and list zone's, because, lazy
 
 # Place at:
-# /usr/local/bin/cf-ddns.sh
+# curl https://raw.githubusercontent.com/yulewang/cloudflare-api-v4-ddns/master/cf-v4-ddns.sh > /usr/local/bin/cf-ddns.sh && chmod +x /usr/local/bin/cf-ddns.sh
 # run `crontab -e` and add next line:
-# 0 * * * * /usr/local/bin/cf-ddns.sh >/dev/null 2>&1
+# */1 * * * * /usr/local/bin/cf-ddns.sh >/dev/null 2>&1
+# or you need log:
+# */1 * * * * /usr/local/bin/cf-ddns.sh >> /var/log/cf-ddns.log 2>&1
 
-# if you're lazy (like me) copy/paste the command BETWEEN the EOT
-: <<'EOT'
-curl https://gist.githubusercontent.com/larrybolt/6295160/raw > /usr/local/bin/cf-ddns.sh && chmod +x /usr/local/bin/cf-ddns.sh
-(crontab -l 2>/dev/null; echo "0 * * * * /usr/local/bin/cf-ddns.sh >/dev/null 2>&1") | crontab -
-$EDITOR /usr/local/bin/cf-ddns.sh
-/usr/local/bin/cf-ddns.sh
-EOT
-# run /usr/local/bin/cf-ddns.sh in terminal to check all settings are valid
 
 # Usage:
 # cf-ddns.sh -k cloudflare-api-key \
@@ -27,8 +21,6 @@ EOT
 #            -z example.com \          # will show you all zones if forgot, but you need this
 
 # Optional flags:
-#            -i cloudflare-record-id \ # script will show this
-#            -a true|false \           # auto get zone list and record id
 #            -f false|true \           # force dns update, disregard local stored ip
 
 # default config
@@ -37,36 +29,31 @@ EOT
 # incorrect api-key results in E_UNAUTH error
 CFKEY=8bf8eaff1c8d04b1a8b412f4b52e0b6726c40
 
-# Zone name, will list all possible if missing, eg: example.com
-CFZONE=yahaha.pro
-
-# Domain id, will retrieve itself by default
-CFID=
-
 # Username, eg: user@example.com
 CFUSER=472245834@qq.com
 
+# Zone name, eg: example.com
+CFZONE_NAME=yahaha.pro
+
 # Hostname to update, eg: homeserver.example.com
-CFHOST=.yahaha.pro
+CFRECORD_NAME=ddns.xxx.yahaha.pro
 
 # Cloudflare TTL for record, between 120 and 86400 seconds
 CFTTL=120
-# Get domain ID from Cloudflare using awk/sed and python json.tool
-GETID=true
+
 # Ignore local file, update ip anyway
 FORCE=false
+
 # Site to retrieve WAN ip, other examples are: bot.whatismyipaddress.com, https://api.ipify.org/ ...
 WANIPSITE="http://icanhazip.com"
 
 # get parameter
-while getopts a:k:i:u:h:z:f: opts; do
+while getopts k:u:h:z:f: opts; do
   case ${opts} in
-    a) GETID=${OPTARG} ;;
     k) CFKEY=${OPTARG} ;;
-    i) CFID=${OPTARG} ;;
     u) CFUSER=${OPTARG} ;;
-    h) CFHOST=${OPTARG} ;;
-    z) CFZONE=${OPTARG} ;;
+    h) CFRECORD_NAME=${OPTARG} ;;
+    z) CFZONE_NAME=${OPTARG} ;;
     f) FORCE=${OPTARG} ;;
   esac
 done
@@ -82,32 +69,16 @@ if [ "$CFUSER" = "" ]; then
   echo "and save in ${0} or using the -u flag"
   exit 2
 fi
-if [ "$CFHOST" = "" ]; then 
+if [ "$CFRECORD_NAME" = "" ]; then 
   echo "Missing hostname, what host do you want to update?"
   echo "save in ${0} or using the -h flag"
   exit 2
 fi
 
 # If the hostname is not a FQDN
-if [ "$CFHOST" != "$CFZONE" ] && ! [ -z "${CFHOST##*$CFZONE}" ]; then
-  CFHOST="$CFHOST.$CFZONE"
-  echo " => Hostname is not a FQDN, assuming $CFHOST"
-fi
-
-# If CFZONE is missing, retrieve them all from CF
-if [ "$CFZONE" = "" ]; then
-  echo "Missing zone"
-  if ! [ "$GETID" == true ]; then exit 2; fi
-  echo "listing all zones: (if api-key is valid)"
-  curl -s https://www.cloudflare.com/api_json.html \
-    -d a=zone_load_multi \
-    -d tkn=$CFKEY \
-    -d email=$CFUSER \
-    | grep -Eo '"zone_name":"([^"]+)"' \
-    | cut -d':' -f2 \
-    | awk '{gsub("\"","");print "* "$1}'
-  echo "Please specify the matching zone in ${0} or specify using the -z flag"
-  exit 2
+if [ "$CFRECORD_NAME" != "$CFZONE_NAME" ] && ! [ -z "${CFRECORD_NAME##*$CFZONE_NAME}" ]; then
+  CFRECORD_NAME="$CFRECORD_NAME.$CFZONE_NAME"
+  echo " => Hostname is not a FQDN, assuming $CFRECORD_NAME"
 fi
 
 # Get current and old WAN ip
@@ -125,56 +96,33 @@ if [ "$WAN_IP" = "$OLD_WAN_IP" ] && [ "$FORCE" = false ]; then
   exit 0
 fi
 
-# If CFID is missing retrieve and use it
-if [ "$CFID" = "" ]; then
-  echo "Missing DNS record ID"
-  if ! [ "$GETID" == true ]; then exit 2; fi
-  echo "fetching from Cloudflare..."
-  if ! CFID=$(
-  curl -s https://www.cloudflare.com/api_json.html \
-    -d a=rec_load_all \
-    -d tkn=$CFKEY \
-    -d email=$CFUSER \
-    -d z=$CFZONE \
-    | grep -Eo '"(rec_id|name|type)":"([^"]+)"' \
-    | cut -d':' -f2 \
-    | awk 'NR%3{gsub("\"","");printf $0" ";next;}1' \
-    | grep -E "${CFHOST//./\\.}" \
-    | grep -e '"A"' \
-    | grep -Eo "(^|\s)(\d+)(\s|$)"
-  ); then
-    echo " => Incorrect zone, or zone doesn't contain the A-record ${CFHOST}!"
-    echo "listing all records for zone ${CFZONE}:"
-    (printf "ID RECORD TYPE\n";
-    curl -s https://www.cloudflare.com/api_json.html \
-      -d a=rec_load_all \
-      -d tkn=$CFKEY \
-      -d email=$CFUSER \
-      -d z=$CFZONE \
-      | grep -Eo '"(rec_id|name|type)":"([^"]+)"' \
-      | cut -d':' -f2 \
-      | awk 'NR%3{gsub("\"","");printf $0" ";next;}1'
-    )| column -t
-    exit 2
-  fi
-  echo " => Found CFID=${CFID}, advising to save this to ${0} or set it using the -i flag"
+# Get zone_identifier & record_identifier
+ID_FILE=$HOME/.id-cf.txt
+if [ -f $ID_FILE ] && [ $(wc -l $ID_FILE | cut -d " " -f 1) == 4 ] \
+  && [ "$(sed -n '3,1p' "$ID_FILE")" == "$CFZONE_NAME" ] \
+  && [ "$(sed -n '4,1p' "$ID_FILE")" == "$CFRECORD_NAME" ]; then
+    CFZONE_ID=$(sed -n '1,1p' "$ID_FILE")
+    CFRECORD_ID=$(sed -n '2,1p' "$ID_FILE")
+else
+    echo "Updating zone_identifier & record_identifier"
+    CFZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$CFZONE_NAME" -H "X-Auth-Email: $CFUSER" -H "X-Auth-Key: $CFKEY" -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*' | head -1 )
+    CFRECORD_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$CFZONE_ID/dns_records?name=$CFRECORD_NAME" -H "X-Auth-Email: $CFUSER" -H "X-Auth-Key: $CFKEY" -H "Content-Type: application/json"  | grep -Po '(?<="id":")[^"]*')
+    echo "$CFZONE_ID" > $ID_FILE
+    echo "$CFRECORD_ID" >> $ID_FILE
+    echo "$CFZONE_NAME" >> $ID_FILE
+    echo "$CFRECORD_NAME" >> $ID_FILE
 fi
 
 # If WAN is changed, update cloudflare
 echo "Updating DNS to $WAN_IP"
-RESPONSE=$(
-curl -s https://www.cloudflare.com/api_json.html \
-  -d a=rec_edit \
-  -d tkn=$CFKEY \
-  -d email=$CFUSER \
-  -d z=$CFZONE \
-  -d id=$CFID \
-  -d ttl=$CFTTL \
-  -d type=A \
-  -d name=$CFHOST \
-  -d "content=$WAN_IP"
-) 
-if [ "$RESPONSE" != "${RESPONSE%success*}" ]; then
+
+RESPONSE=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$CFZONE_ID/dns_records/$CFRECORD_ID" \
+  -H "X-Auth-Email: $CFUSER" \
+  -H "X-Auth-Key: $CFKEY" \
+  -H "Content-Type: application/json" \
+  --data "{\"id\":\"$CFZONE_ID\",\"type\":\"A\",\"name\":\"$CFRECORD_NAME\",\"content\":\"$WAN_IP\", \"ttl\":\"$CFTTL\"}")
+
+if [ "$RESPONSE" != "${RESPONSE%success*}" ] && [ $(echo $RESPONSE | grep "\"success\":true") != "" ]; then
   echo "Updated succesfuly!"
   echo $WAN_IP > $HOME/.wan_ip-cf.txt
   exit
