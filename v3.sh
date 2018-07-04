@@ -906,12 +906,37 @@ install_ssh_port(){
 }
 
 ddns(){
-	#检查文件ddns.sh是否存在,若不存在,则下载该文件
 	if [ ! -f /root/ddns.sh ];then
+		echo "DDNS未配置，开始下载";
 		wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
-		chmod +x ddns.sh
+		chmod 777 ddns.sh
+	else
+		#清屏
+		clear
+		#输出当前节点配置
+		echo "当前DDNS配置如下:"
+		echo "------------------------------------"
+		sed -n '36p' /root/ddns.sh
+		sed -n '39p' /root/ddns.sh
+		echo "------------------------------------"
 	fi
-	    bash ddns.sh
+		#获取新节点配置信息
+		read -p "新的DDNS地址是:" CFRECORD_NAME
+
+			#检查
+			if [ ! -f /root/ddns.sh.bak ];then
+				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
+			else
+			#还原
+				rm -rf /root/ddns.sh
+				cp /root/ddns.sh.bak /root/ddns.sh
+			fi
+
+		#修改
+		CFRECORD_NAME=${CFRECORD_NAME}
+		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
+
+        bash /root/ddns.sh
 }
 
 #卸载各类云盾-[a]
