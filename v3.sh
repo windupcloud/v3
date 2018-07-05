@@ -65,13 +65,17 @@ pm2_list(){
 
 install_pm2(){
 	#判断/usr/bin/pm2文件是否存在
-	    if [ ! -f /usr/bin/pm2 ];then
-            echo "检查到您未安装pm2,脚本将先进行安装"
+	if [ ! -f /usr/bin/pm2 ];then
+        echo "检查到您未安装pm2,脚本将先进行安装"
 	    #安装Node.js
-	    apt -y install xz
-	    apt -y install wget
-    	    yum -y install xz
+	    if [ ${release} = 'centos' ]; then
+			yum -y install xz
     	    yum -y install wget
+		else
+			apt -y install xz
+	        apt -y install wget
+		fi
+	        #编译Node.js
     	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
     	    tar -xvf node-v9.9.0-linux-x64.tar.xz
     	    #设置权限
@@ -79,23 +83,28 @@ install_pm2(){
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
 	    if [ ! -f /usr/bin/node ];then
     	    #创建软连接
-    	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	        ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	    else
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+    	else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
 	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	        ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
 	    fi
 	        #升级Node
 	        npm i -g npm
 	        #安装PM2
-    	        npm install -g pm2 --unsafe-perm
-    	        #创建软连接x2
-    	        ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
-	    else
-		    echo "已经安装pm2，请配置pm2"
-	    fi
+    	    npm install -g pm2 --unsafe-perm
+    	    #创建软连接x2
+    	if [ ! -f /usr/bin/pm2 ];then
+    		ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+        else
+    	    rm -rf "/usr/bin/pm2"
+    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+        fi
+	else
+		echo "已经安装pm2，请配置pm2"
+	fi
 }
 
 use_centos_pm2(){
@@ -197,11 +206,11 @@ use_debian_pm2(){
     if [ $all -le 256 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
     elif [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 384M
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 300M
     elif [ $all -le 1024 ] ; then
-	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     else 
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 512M
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     fi
         sleep 2s
         #创建快捷方式
@@ -227,17 +236,17 @@ use_debian_pm2(){
 	        echo "添加gost定时启动"
             sleep 2s
             echo '###Gost' >> /var/spool/cron/crontabs/root
-            echo '0 3 * * * gost start' >> /var/spool/cron/crontabs/root
+            echo '0 1 * * * gost start' >> /var/spool/cron/crontabs/root
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-            echo '*/30 * * * * killall sftp-server' >> /var/spool/cron/crontabs/root
-            echo '*/30 * * * * pm2 flush' >> /var/spool/cron/crontabs/root
+            echo '* */6 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
         #清理缓存
-            echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
-            echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
-            echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
+            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
         #cron重启
             service cron restart
             service cron reload
@@ -267,21 +276,22 @@ update_pm2(){
         sleep 1s
         pm2 save
         pm2 update
-	pm2 startup
+	    pm2 startup
 }
 
 remove_pm2(){
-	    if [ ! -f /usr/bin/pm2];then
+	    if [ ! -f /usr/bin/pm2 ];then
 		    echo "PM2已卸载"
 		else
 		    sudo npm uninstall -g pm2
 		    sleep 1s
 		    sudo npm uninstall -g npm
 		    sleep 1s
+		    #卸载Node.js
 		    rm -rf "/usr/bin/node"
-	            rm -rf "/usr/bin/npm"
-	            rm -rf "/root/.npm"
-
+	        rm -rf "/usr/bin/npm"
+	        rm -rf "/root/.npm"
+            #卸载PM2
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
 		    rm -rf /root/node*
