@@ -906,23 +906,34 @@ install_ssh_port(){
 }
 
 ddns(){
-	if [ ! -f /root/ddns.sh ];then
-		echo "DDNS未配置，开始下载";
-		wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
-		chmod 777 ddns.sh
-	else
+    echo "选项：[1]安装 [2]配置 [3]运行"
+	read ddns
+	if [ ${ddns} = '1' ];then
+	    if [ ! -f /root/ddns.sh ];then
+	    	echo "DDNS未配置，开始下载";
+	    	wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
+	    	chmod 777 ddns.sh
+	    fi
+	    #清屏
+		clear
+		#获取新配置信息
+		read -p "新的DDNS地址是:" CFRECORD_NAME
+		#修改
+		CFRECORD_NAME=${CFRECORD_NAME}
+		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
+		#运行
+		bash /root/ddns.sh
+    elif [ ${ddns} = '2' ];then
 		#清屏
 		clear
-		#输出当前节点配置
+		#输出当前配置
 		echo "当前DDNS配置如下:"
 		echo "------------------------------------"
 		sed -n '36p' /root/ddns.sh
 		sed -n '39p' /root/ddns.sh
 		echo "------------------------------------"
-	fi
-		#获取新节点配置信息
+		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
-
 			#检查
 			if [ ! -f /root/ddns.sh.bak ];then
 				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
@@ -931,12 +942,27 @@ ddns(){
 				rm -rf /root/ddns.sh
 				cp /root/ddns.sh.bak /root/ddns.sh
 			fi
-
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
-
+        #运行
         bash /root/ddns.sh
+    elif [ ${ddns} = '3' ];then
+		#判断/var/swapfile1文件是否存在
+		if [ ! -f /root/ddns.sh ];then
+ 		    echo "检查到您未安装ddns"
+		else
+	        echo "当前DDNS配置如下:"
+		    echo "------------------------------------"
+		    sed -n '36p' /root/ddns.sh
+		    sed -n '39p' /root/ddns.sh
+		    echo "------------------------------------"
+		fi
+		    #运行
+		    bash /root/ddns.sh
+	else
+		echo "选项不在范围.";exit 0
+	fi
 }
 
 #卸载各类云盾-[a]
@@ -1377,4 +1403,4 @@ if [ ${continue_or_stop} = 'y' ];then
 	bash /root/v3.sh
 fi
 
-#END 2018年05月20日 08:50:56
+#END 2018年07月05日
