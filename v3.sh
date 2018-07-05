@@ -124,7 +124,7 @@ use_centos_pm2(){
     if [ $all -le 256 ] ; then
         pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
     elif [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
+        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 300M
     elif [ $all -le 1024 ] ; then
 	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
     else 
@@ -1326,12 +1326,17 @@ install_shell(){
 	if [ ! -f /usr/bin/v3 ];then
 		cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
 	else
+		rm -rf /usr/bin/v3
+		cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
 		clear;echo "Tips:您可通过命令[v3]快速启动本脚本!"
 	fi
 }
 
 get_server_ip_info(){
 	if [ ! -f /root/.server_ip_info.txt ];then
+		curl -s myip.ipip.net > /root/.server_ip_info.txt
+	else
+		rm -rf /root/.server_ip_info.txt
 		curl -s myip.ipip.net > /root/.server_ip_info.txt
 	fi
 	read server_ip_info < /root/.server_ip_info.txt
