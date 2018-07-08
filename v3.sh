@@ -643,11 +643,8 @@ install_ubuntu_ssr(){
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
 	#编译安装libsodium
-	wget -N —no-check-certificate $libAddr
-	tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
-	./configure && make -j2 && make install
-	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-	ldconfig
+	wget -N --no-check-certificate https://softs.loan/Bash/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+ 
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
