@@ -121,20 +121,40 @@ use_centos_pm2(){
     free=`free -m | awk 'NR==2' | awk '{print $4}'`
         echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
         sleep 2s
+    #判断几个后端
+    ssr_dirs=()
+    while IFS=  read -r -d $'\0'; do
+        ssr_dirs+=("$REPLY")
+    done < <(find /root/  -maxdepth 1 -name "shadowsocks*" -print0)
+
+    ssr_names=()
+    for ssr_dir in "${ssr_dirs[@]}"
+    do
+        ssr_names+=($(basename "$ssr_dir"))
+    done
+
+    $max_memory_limit = 320
     if [ $all -le 256 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 192M
+        $max_memory_limit = 192
     elif [ $all -le 512 ] ; then
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 300M
-    elif [ $all -le 1024 ] ; then
-	    pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
-    else 
-        pm2 start /root/shadowsocks/server.py --name ssr --max-memory-restart 320M
+        $max_memory_limit = 300
     fi
+
+    for ssr_name in "${ssr_names[@]}"
+    do
+        pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M
+    done
+
+
     sleep 2s
         #创建快捷方式
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
-            echo "pm2 restart ssr" >> /usr/bin/srs
+
+            for ssr_name in "${ssr_names[@]}"
+            do
+                echo "pm2 restart ${ssr_name}" >> /usr/bin/srs
+            done
             chmod 777 /usr/bin/srs
         #创建pm2日志清理
             rm -rf "/var/spool/cron/root"
