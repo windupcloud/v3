@@ -113,14 +113,17 @@ use_centos_pm2(){
 	yum -y update
 	yum -y install psmisc
     fi
-	#清空
-        pm2 delete all
+    
+    #清空
+    pm2 delete all
+    
     #判断内存
     all=`free -m | awk 'NR==2' | awk '{print $2}'`
     used=`free -m | awk 'NR==2' | awk '{print $3}'`
     free=`free -m | awk 'NR==2' | awk '{print $4}'`
-        echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
-        sleep 2s
+    
+    echo "Memory usage | [All：${all}MB] | [Use：${used}MB] | [Free：${free}MB]"
+    sleep 2s
     #判断几个后端
     ssr_dirs=()
     while IFS=  read -r -d $'\0'; do
@@ -133,11 +136,11 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit = 320
+        max_memory_limit=320
     if [ $all -le 256 ] ; then
-        max_memory_limit = 192
+        max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit = 300
+        max_memory_limit=300
     fi
 
     for ssr_name in "${ssr_names[@]}"
@@ -150,13 +153,18 @@ use_centos_pm2(){
         #创建快捷方式
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
-
             for ssr_name in "${ssr_names[@]}"
             do
-	        echo "pm2 delete all" >> /usr/bin/srs
-                echo "pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M" >> /usr/bin/srs
+	        echo "pm2 restart all" >> /usr/bin/srs
             done
-            chmod 777 /usr/bin/srs
+	    chmod 777 /usr/bin/srs
+	    
+	    rm -rf "/usr/bin/ssrr"
+	    echo "#!/bin/bash" >> /usr/bin/ssrr
+	    do
+	    echo "pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+            done
+            
         #创建pm2日志清理
             rm -rf "/var/spool/cron/root"
     if [ ! -f /root/ddns.sh ] ; then
@@ -178,7 +186,7 @@ use_centos_pm2(){
     if [ ! -f /usr/local/gost/gostproxy ] ; then
             echo "未检测到gost"
     else
-	        echo "添加gost定时启动"
+	    echo "添加gost定时启动"
             sleep 2s
             echo '###Gost' >> /var/spool/cron/root
             echo '0 3 * * * gost start' >> /var/spool/cron/root
@@ -186,6 +194,7 @@ use_centos_pm2(){
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/root
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
+	    echo '*/30 * * * * ssrr' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
 	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
         #清理缓存
