@@ -153,7 +153,8 @@ use_centos_pm2(){
 
             for ssr_name in "${ssr_names[@]}"
             do
-                echo "pm2 restart ${ssr_name}" >> /usr/bin/srs
+	        echo "pm2 delete all" >> /usr/bin/srs
+                echo "pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M" >> /usr/bin/srs
             done
             chmod 777 /usr/bin/srs
         #创建pm2日志清理
