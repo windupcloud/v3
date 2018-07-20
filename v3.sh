@@ -184,14 +184,14 @@ use_centos_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/root
-	    echo '*/30 * * * * killall sftp-server' >> /var/spool/cron/root
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
+	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
         #清理缓存
             echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
             echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
             echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-       
+	    
             /sbin/service crond restart
         #查看cron进程
             crontab -l
@@ -260,9 +260,9 @@ use_debian_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-            echo '* */6 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
             echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
+	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
         #清理缓存
             echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
             echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
