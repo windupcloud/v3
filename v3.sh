@@ -161,10 +161,9 @@ use_centos_pm2(){
 	    
 	    rm -rf "/usr/bin/ssrr"
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
-	    do
 	    echo "pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
-            done
-            
+            chmod 777 /usr/bin/ssrr
+	    
         #创建pm2日志清理
             rm -rf "/var/spool/cron/root"
     if [ ! -f /root/ddns.sh ] ; then
