@@ -133,11 +133,11 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-    $max_memory_limit = 320
+        max_memory_limit = 320
     if [ $all -le 256 ] ; then
-        $max_memory_limit = 192
+        max_memory_limit = 192
     elif [ $all -le 512 ] ; then
-        $max_memory_limit = 300
+        max_memory_limit = 300
     fi
 
     for ssr_name in "${ssr_names[@]}"
@@ -161,7 +161,7 @@ use_centos_pm2(){
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
-	        echo "添加ddns.sh定时启动"
+	    echo "添加ddns.sh定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/root
             echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
@@ -169,7 +169,7 @@ use_centos_pm2(){
     if [ ! -f /root/Application/telegram-socks/server.js ] ; then
             echo "未检测到socks5"
     else
-	        echo "添加socks5定时启动"
+	    echo "添加socks5定时启动"
             sleep 2s
             echo '###Socks5' >> /var/spool/cron/root
             echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
@@ -188,9 +188,9 @@ use_centos_pm2(){
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
         #清理缓存
-            echo '0 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '0 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '0 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
        
             /sbin/service crond restart
         #查看cron进程
@@ -243,7 +243,7 @@ use_debian_pm2(){
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
-	        echo "添加ddns.sh定时启动"
+	    echo "添加ddns.sh定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
             echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/crontabs/root
@@ -253,7 +253,7 @@ use_debian_pm2(){
             echo "未检测到gost"
     else
     	#Gost定时重启
-	        echo "添加gost定时启动"
+	    echo "添加gost定时启动"
             sleep 2s
             echo '###Gost' >> /var/spool/cron/crontabs/root
             echo '0 1 * * * gost start' >> /var/spool/cron/crontabs/root
