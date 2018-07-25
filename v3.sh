@@ -196,7 +196,7 @@ use_centos_pm2(){
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/root
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
-	    echo '*/30 * * * * ssrr' >> /var/spool/cron/root
+	    echo '2 3 * * * ssrr' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
 	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
         #清理缓存
