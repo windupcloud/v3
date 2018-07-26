@@ -4,9 +4,9 @@ for (( i=0; i < 88888 ; i++))
 do
 
 ip=$(curl -s whatismyip.akamai.com)
-test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep true)
+test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep false)
 
-if [[ $test =~ "true" ]];then
+if [[ $test =~ "false" ]];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 count=$count+1
