@@ -1,13 +1,25 @@
 #!/bin/bash
-sleep 6s
-dhclient -r -v eth0
-rm -rf /var/lib/dhclient/*
-dhclient -v eth0
+Ver="1.0"
+for (( i=0; i < 88888 ; i++))
+do
 
-systemctl restart network
+ip=$(curl -s whatismyip.akamai.com)
+test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep true)
 
-sleep 1s
-ip=$(curl -s whatismyip.akamai.com)                                             
-echo $ip
+if [[ $test =~ "true" ]];then
+clear
+echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
+count=$count+1
+else
+bash /root/ddns.sh
+clear
+echo -e "\033[32mTip\033[0m No.$i Now \033[32m IP:$ip \033[0m"
+break
+fi
 
-bash ddns.sh
+dhclient -r -v
+rm -rf /var/lib/dhclient/dhclient.leases
+ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+dhclient -v
+
+done
