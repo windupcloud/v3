@@ -3,6 +3,8 @@ Ver="1.0"
 for (( i=0; i < 88888 ; i++))
 do
 
+bot_api_key=
+
 ip=$(curl -s whatismyip.akamai.com)
 test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep false)
 
@@ -15,6 +17,9 @@ else
 bash /root/ddns.sh
 clear
 echo -e "\033[32mTip\033[0m No.$i Now \033[32m IP:$ip \033[0m"
+#Telegram发送IP
+curl "https://api.telegram.org/bot$bot_api_key/sendMessage?text=$2&chat_id=$1&parse_mode=Markdown"
+
 break
 fi
 
