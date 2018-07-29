@@ -4,6 +4,9 @@ Ver="1.2"
 bot_api_key=691747910:AAFWdhSKsTaNYeRa6pYyyt6cL7gX2CbhxVo
 id=-1001394536510
 
+if [ ! -f /root/banip.txt ];then
+		   echo 8.8.8.8 >> /root/banip.txt
+fi
 for (( i=0; i < 88888 ; i++))
 do
 
@@ -21,7 +24,7 @@ clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 
 if [ `grep -c $ip banip.txt` -eq '0' ];then
-echo $ip >> banip.txt
+echo $ip >> /root/banip.txt
 fi
 
 count=$count+1
