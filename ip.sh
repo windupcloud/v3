@@ -1,5 +1,5 @@
 #!/bin/bash
-Ver="1.1"
+Ver="1.2"
 #Telegram API
 bot_api_key=691747910:AAFWdhSKsTaNYeRa6pYyyt6cL7gX2CbhxVo
 id=-1001394536510
