@@ -9,10 +9,11 @@ do
 
 ip=$(curl -s whatismyip.akamai.com)
 
-if [ `grep -c $ip banip.txt` -eq'1' ];then
+if [ `grep -c $ip banip.txt` -eq '1' ];then
 test='false'
 else
-test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep false)
+[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
+test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/$ssh_port | grep false)
 fi
 
 if [[ $test =~ "false" ]];then
