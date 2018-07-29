@@ -9,7 +9,7 @@ do
 
 ip=$(curl -s whatismyip.akamai.com)
 
-if [ `grep -c $ip banip.txt` -eq '1' ];then
+if [ `grep -c $ip banip.txt` -eq'1' ];then
 test='false'
 else
 test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/22 | grep false)
@@ -19,7 +19,7 @@ if [[ $test =~ "false" ]];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 
-if [ `grep -c $ip banip.txt` -eq '0' ];then
+if [ `grep -c $ip banip.txt` -eq'0' ];then
 echo $ip >> banip.txt
 fi
 
