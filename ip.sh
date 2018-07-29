@@ -45,7 +45,3 @@ ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/
 dhclient -v
 
 done
-if [ -z $1 ] || [ -z '$2' ];then
-    echo "failed to get params"
-    exit 1
-fi
