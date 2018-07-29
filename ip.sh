@@ -10,6 +10,7 @@ if [[ $test =~ "false" ]];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 count=$count+1
+service network restart
 else
 bash /root/ddns.sh
 clear
