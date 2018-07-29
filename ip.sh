@@ -5,8 +5,9 @@ bot_api_key=691747910:AAFWdhSKsTaNYeRa6pYyyt6cL7gX2CbhxVo
 id=-1001394536510
 
 if [ ! -f /root/banip.txt ];then
-		   echo 8.8.8.8 >> /root/banip.txt
+   echo 8.8.8.8 >> /root/banip.txt
 fi
+
 for (( i=0; i < 88888 ; i++))
 do
 
