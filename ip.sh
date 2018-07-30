@@ -17,7 +17,7 @@ if [ `grep -c $ip banip.txt` -eq '1' ];then
 f=3
 else
 f=0
-for (( i=0; i < 3 ; i++))
+for (( z=0; z < 3 ; z++))
 do
 [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
 test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/$ssh_port | grep false)
@@ -27,7 +27,7 @@ fi
 done
 fi
 
-if [ $f >= 2 ];then
+if [ $f -ge '2' ];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 if [ `grep -c $ip banip.txt` -eq '0' ];then
