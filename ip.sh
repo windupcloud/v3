@@ -27,7 +27,7 @@ fi
 done
 fi
 
-if [[ $f >= 2 ]];then
+if [ $f >= 2 ];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
 if [ `grep -c $ip banip.txt` -eq '0' ];then
