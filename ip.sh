@@ -16,21 +16,24 @@ ip=$(curl -s whatismyip.akamai.com)
 if [ `grep -c $ip banip.txt` -eq '1' ];then
 test='false'
 else
+f=0
+for (( i=0; i < 3 ; i++))
+do
 [ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
 test=$(curl -s https://cn-qz-tcping.torch.njs.app/$ip/$ssh_port | grep false)
+if [[ $test =~ "false" ]];then
+f=`expr $f + 1`
+fi
+done
 fi
 
-if [[ $test =~ "false" ]];then
+if [[ $f >= 2 ]];then
 clear
 echo -e "\033[31mWARNING\033[0m No.$i \033[31m IP:$ip \033[0m TCP block" 
-
 if [ `grep -c $ip banip.txt` -eq '0' ];then
 echo $ip >> /root/banip.txt
 fi
-
-count=$count+1
 service network restart
-
 else
 bash /root/ddns.sh
 clear
@@ -39,7 +42,6 @@ echo -e "\033[32mTip\033[0m No.$i Now \033[32m IP:$ip \033[0m"
 now_time=$(date '+%Y-%m-%d %H:%M:%S')
 message="Date:      $now_time%0ANew ip:  \`\`\`$ip\`\`\`"
 curl "https://api.telegram.org/bot$bot_api_key/sendMessage?text=$message&chat_id=$id&parse_mode=Markdown"
-
 break
 fi
 
