@@ -14,7 +14,7 @@ do
 ip=$(curl -s whatismyip.akamai.com)
 
 if [ `grep -c $ip banip.txt` -eq '1' ];then
-test='false'
+f=3
 else
 f=0
 for (( i=0; i < 3 ; i++))
