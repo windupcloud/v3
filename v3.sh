@@ -195,6 +195,7 @@ use_centos_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/root
+	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
             echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
 	    echo '2 3 * * * ssrr' >> /var/spool/cron/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/root
@@ -296,6 +297,7 @@ use_debian_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
+	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
             echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
 	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
