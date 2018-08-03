@@ -145,7 +145,7 @@ use_centos_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks/-//') --max-memory-restart ${max_memory_limit}M
     done
 
 
@@ -163,7 +163,7 @@ use_centos_pm2(){
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
 	    for ssr_name in "${ssr_names[@]}"
 	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name ${ssr_name} --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks/-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
             done
 	    chmod 777 /usr/bin/ssrr
 	    
@@ -255,14 +255,25 @@ use_debian_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks/-//') --max-memory-restart ${max_memory_limit}M
     done
         sleep 2s
         #创建快捷方式
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
-            echo "pm2 restart ssr" >> /usr/bin/srs
-            chmod 777 /usr/bin/srs
+            for ssr_name in "${ssr_names[@]}"
+            do
+	        echo "pm2 restart all" >> /usr/bin/srs
+            done
+	    chmod 777 /usr/bin/srs
+	    
+	    rm -rf "/usr/bin/ssrr"
+	    echo "#!/bin/bash" >> /usr/bin/ssrr
+	    for ssr_name in "${ssr_names[@]}"
+	    do
+	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks/-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+            done
+	    chmod 777 /usr/bin/ssrr
         #创建pm2日志清理
             rm -rf "/var/spool/cron/crontabs/root"
     if [ ! -f /root/ddns.sh ] ; then
