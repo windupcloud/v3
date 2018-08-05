@@ -27,9 +27,9 @@ Change_IP(){
 	[[ ! -n "$( cat banip.txt | grep ${IP} )" ]] && echo -e "${IP}" >> banip.txt
 	service network restart
 	dhclient -r -v
-     rm -rf /var/lib/dhclient/dhclient.leases
-     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-     dhclient -v
+    rm -rf /var/lib/dhclient/dhclient.leases
+    ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+    dhclient -v
 	last_times=$(cat /tmp/times.log)
 	now_times=$[${last_times}+1]
 	echo "${now_times}" > /tmp/times.log
