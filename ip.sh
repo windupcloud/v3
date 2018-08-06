@@ -22,8 +22,8 @@ Separator="———————————————————————
 
 
 Change_IP(){
-	clear
-	echo -e " ${WARNING} IP:${IP} is blocked by TCP."
+        clear
+	echo -e " ${WARNING} No.${now_times} IP:${IP} is blocked by TCP."
 	[[ ! -n "$( cat banip.txt | grep ${IP} )" ]] && echo -e "${IP}" >> banip.txt
 	service network restart
 	dhclient -r -v
