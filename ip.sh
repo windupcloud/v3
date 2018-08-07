@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+#HostName
+HostName=$(cat /proc/sys/kernel/hostname)
 #Telegram API
 bot_api_key="691747910:AAFWdhSKsTaNYeRa6pYyyt6cL7gX2CbhxVo"
 chat_id="-1001394536510"
@@ -22,14 +23,14 @@ Separator="———————————————————————
 
 
 Change_IP(){
-        clear
-	echo -e " ${WARNING} No.${now_times} IP:${IP} is blocked by TCP."
+	clear
+	echo -e " ${WARNING} IP:${IP} is blocked by TCP."
 	[[ ! -n "$( cat banip.txt | grep ${IP} )" ]] && echo -e "${IP}" >> banip.txt
 	service network restart
 	dhclient -r -v
-    rm -rf /var/lib/dhclient/dhclient.leases
-    ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-    dhclient -v
+     rm -rf /var/lib/dhclient/dhclient.leases
+     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+     dhclient -v
 	last_times=$(cat /tmp/times.log)
 	now_times=$[${last_times}+1]
 	echo "${now_times}" > /tmp/times.log
