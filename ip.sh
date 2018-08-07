@@ -43,7 +43,7 @@ Send_TG_Message(){
 		echo -e " ${Tip} No changes."
 		break
 	else
-		Message="Date:\[ $(date +"%Y-%m-%d %X") ] Now IP:  ***${New_IP}***"
+		Message="HostName: ***${HostName}*** Date:\[ $(date +"%Y-%m-%d %X") ] Now IP:  ***${New_IP}***"
 		curl -g "https://api.telegram.org/bot${bot_api_key}/sendMessage?text=${Message}&chat_id=${chat_id}&parse_mode=Markdown"
 		echo "${New_IP}" > nowip.txt
 		clear
