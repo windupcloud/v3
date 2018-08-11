@@ -153,10 +153,7 @@ use_centos_pm2(){
         #创建快捷方式
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
-            for ssr_name in "${ssr_names[@]}"
-            do
 	        echo "pm2 restart all" >> /usr/bin/srs
-            done
 	    chmod 777 /usr/bin/srs
 	    
 	    rm -rf "/usr/bin/ssrr"
