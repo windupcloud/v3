@@ -661,8 +661,8 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
-	cd /root/shadowsocks
+	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-{$Username}"
+	cd /root/shadowsocks-{$Username}
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -690,8 +690,7 @@ install_centos_ssr(){
 	fi	
 	systemctl stop firewalld.service
 	systemctl disable firewalld.service
-	cp apiconfig.py userapiconfig.py
-	cp config.json user-config.json
+	cp apiconfig.py userapiconfig.py	
 }
 
 install_ubuntu_ssr(){
@@ -789,6 +788,7 @@ install_node(){
 	read -p "前端地址是:" Userdomain
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
+	read -p "后端名字是:" Username
 	install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks
