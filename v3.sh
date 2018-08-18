@@ -513,7 +513,7 @@ kill_supervisor(){
 	    killall supervisord
 	    supervisord
 	else
-		killall supervisord
+	    killall supervisord
 	    killall supervisord
 	    killall supervisord
 	    killall supervisord
@@ -661,8 +661,8 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-$Username"
-	cd /root/shadowsocks-$Username
+	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -702,8 +702,8 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-$Username"
-	cd /root/shadowsocks-$Username
+	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -791,24 +791,26 @@ install_node(){
 	read -p "后端名字是:" Username
 	install_ssr_for_each
 	#配置节点信息
-	cd /root/shadowsocks
+	cd /root/shadowsocks-${Username}
 	#备份
-	cp /root/shadowsocks/userapiconfig.py /root/shadowsocks/userapiconfig.py.bak
+	cp /root/shadowsocks-${Username}/userapiconfig.py /root/shadowsocks-${Username}/userapiconfig.py.bak
 	#修改
 	Userdomain=${Userdomain:-"http://${server_ip}"}
-	sed -i "s#http://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
+	sed -i "s#http://zhaoj.in#${Userdomain}#" /root/shadowsocks-${Username}/userapiconfig.py
 	Usermukey=${Usermukey:-"mupass"}
-	sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
+	sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks-${Username}/userapiconfig.py
 	UserNODE_ID=${UserNODE_ID:-"3"}
-	sed -i '2d' /root/shadowsocks/userapiconfig.py
-	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
+	sed -i '2d' /root/shadowsocks-${Username}/userapiconfig.py
+	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks-${Username}/userapiconfig.py
 	#启用supervisord
 	echo_supervisord_conf > /etc/supervisord.conf
-	sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+	sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks-${Username}/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
 	supervisord
 	#iptables
+	iptables -P INPUT ACCEPT
 	iptables -F
-	iptables -X  
+	iptables -F
+	iptables -X
 	iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
 	iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 	iptables-save >/etc/sysconfig/iptables
