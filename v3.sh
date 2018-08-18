@@ -612,8 +612,7 @@ python_test(){
 }
 
 install_centos_ssr(){
-	read -p "是否是专用后端:[Y/N]" houduan
-
+	read -p "[y/n]是否是专用后端:" Houduan
 	cd /root
 	Get_Dist_Version
 	if [ $Version == "7" ]; then
@@ -659,9 +658,9 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	if [ ${houduan} = 'y' ];then
+	if [ ${Houduan} = 'y' ];then
 		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
-	elif [ ${houduan} = 'n' ];then
+	elif [ ${Houduan} = 'n' ];then
 		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
@@ -696,7 +695,7 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
-    read -p "是否是专用后端:[Y/N]" houduan
+    read -p "[y/n]是否是专用后端:" Houduan
 	
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
@@ -706,9 +705,9 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	if [ ${houduan} = 'y' ];then
+	if [ ${Houduan} = 'y' ];then
 		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
-	elif [ ${houduan} = 'n' ];then
+	elif [ ${Houduan} = 'n' ];then
 		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	fi
 	chkconfig supervisord on
