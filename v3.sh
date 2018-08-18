@@ -178,7 +178,7 @@ use_centos_pm2(){
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
-	    echo "添加ddns.sh定时启动"
+	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/root
             echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
@@ -286,7 +286,7 @@ use_debian_pm2(){
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
-	    echo "添加ddns.sh定时启动"
+	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
             echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/crontabs/root
@@ -983,14 +983,15 @@ ddns(){
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
 		#运行
 		bash /root/ddns.sh
-    elif [ ${ddns} = '2' ];then
+	     
+             elif [ ${ddns} = '2' ];then
 		#清屏
 		clear
 		#输出当前配置
 		echo "当前DDNS配置如下:"
 		echo "------------------------------------"
-		sed -n '36p' /root/ddns.sh
-		sed -n '39p' /root/ddns.sh
+		sed -n '6p' /root/ddns.sh
+		sed -n '7p' /root/ddns.sh
 		echo "------------------------------------"
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
@@ -1005,9 +1006,10 @@ ddns(){
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
-        #运行
-        bash /root/ddns.sh
-    elif [ ${ddns} = '3' ];then
+                #运行
+                bash /root/ddns.sh
+		
+                elif [ ${ddns} = '3' ];then
 		#判断/var/swapfile1文件是否存在
 		if [ ! -f /root/ddns.sh ];then
  		    echo "检查到您未安装ddns"
