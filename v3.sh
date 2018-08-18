@@ -660,9 +660,9 @@ install_centos_ssr(){
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
 	if [ ${Houduan} = 'y' ]; then
-		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
+	        git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
-		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
@@ -708,9 +708,9 @@ install_ubuntu_ssr(){
 	#clone shadowsocks
 	cd /root
 	if [ ${Houduan} = 'y' ]; then
-		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
+	        git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
-		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
 	fi
 	chkconfig supervisord on
 	#第一次安装
