@@ -612,6 +612,9 @@ python_test(){
 }
 
 install_centos_ssr(){
+	read -p "是否是专用后端:[Y/N]" houduan
+	read houduan
+
 	cd /root
 	Get_Dist_Version
 	if [ $Version == "7" ]; then
@@ -657,7 +660,11 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+	if [ ${houduan} = 'y' ];then
+		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
+	elif [ ${houduan} = 'n' ];then
+		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
@@ -690,6 +697,9 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
+        read -p "是否是专用后端:[Y/N]" houduan
+	read houduan
+	
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
 	#编译安装libsodium
@@ -698,8 +708,11 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
-	cd /root/shadowsocks-${Username}
+	if [ ${houduan} = 'y' ];then
+		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
+	elif [ ${houduan} = 'n' ];then
+		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
+	fi
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -785,7 +798,7 @@ install_node(){
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
 	read -p "后端名字是:" Username
-	install_ssr_for_each
+        install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks-${Username}
 	#备份
