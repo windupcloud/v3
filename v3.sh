@@ -1331,10 +1331,10 @@ configure_firewall(){
 
 update_the_shell(){
 		rm -rf /root/v3.sh v3.sh.*
-		wget "https://github.com/Super-box/v3/raw/master/v3.sh"
-	#将脚本作为命令放置在/usr/bin目录内,最后执行
-	    rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
-	    v3
+		wget -N "https://github.com/Super-box/v3/raw/master/v3.sh" /root
+	        #将脚本作为命令放置在/usr/bin目录内,最后执行
+	        rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
+	        v3
 }
 
 ###待更新
@@ -1436,7 +1436,7 @@ case "$num" in
 	6)
 	serverspeeder;;
 	7)
-    speedtest;;
+        speedtest;;
 	8)
 	system_more;;
 	a)
@@ -1453,9 +1453,9 @@ case "$num" in
 	yum install-y net-tools;netstat -lnp;;
 	g)
 	replacement_of_installation_source;;
-
 	x)
-	bash /root/v3.sh;;
+	rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
+	v3;;
 	y)
 	update_the_shell;;
 	z)
