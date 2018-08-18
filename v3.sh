@@ -68,29 +68,29 @@ install_pm2(){
 	if [ ! -f /usr/bin/pm2 ];then
         echo "检查到您未安装pm2,脚本将先进行安装"
 	    #安装Node.js
-	    if [ ${release} = 'centos' ]; then
-			yum -y install xz
-    	    yum -y install wget
-		else
-			apt -y install xz
+        if [[ ${release} = "centos" ]]; then
+		yum -y install xz
+    	        yum -y install wget
+        else
+		pt -y install xz
 	        apt -y install wget
-		fi
-	        #编译Node.js
+	fi
+	    #编译Node.js
     	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
     	    tar -xvf node-v9.9.0-linux-x64.tar.xz
     	    #设置权限
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
-	    if [ ! -f /usr/bin/node ];then
+	 if [ ! -f /usr/bin/node ];then
     	    #创建软连接
     	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
     	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	else
+    	 else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
-	        ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
+	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
     	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-	    fi
+	 fi
 	        #升级Node
 	        npm i -g npm
 	        #安装PM2
