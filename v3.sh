@@ -661,8 +661,8 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-{$Username}"
-	cd /root/shadowsocks-{$Username}
+	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-$Username"
+	cd /root/shadowsocks-$Username
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -702,8 +702,8 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	git clone -b manyuser https://github.com/Super-box/p3.git "/root/shadowsocks"
-	cd shadowsocks
+	git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-$Username"
+	cd /root/shadowsocks-$Username
 	chkconfig supervisord on
 	#第一次安装
 	python_test
