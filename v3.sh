@@ -9,7 +9,7 @@ separate_lines="################################################################
 
 reboot_system(){
 	read -p "需重启服务器使配置生效,现在重启? [y/n]" is_reboot
-	if [ ${is_reboot} = 'y' ];then
+	if [ ${is_reboot} = 'y' ]; then
 		reboot
 	else
 		echo "需重启服务器使配置生效,稍后请务必手动重启服务器.";exit
@@ -42,9 +42,9 @@ pm2_list(){
 	
 	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
 	read pm2_option
-	if [ ${pm2_option} = '1' ];then
+	if [ ${pm2_option} = '1' ]; then
             install_pm2
-    elif [ ${pm2_option} = '2' ];then
+    elif [ ${pm2_option} = '2' ]; then
         check_sys
         echo "$release"     
         if [ ${release} = 'centos' ]; then
@@ -52,14 +52,14 @@ pm2_list(){
 		else
 			use_debian_pm2
 		fi
-    elif [ ${pm2_option} = '3' ];then
-        if [ ! -f /usr/bin/pm2 ];then
+    elif [ ${pm2_option} = '3' ]; then
+        if [ ! -f /usr/bin/pm2 ]; then
             install_pm2
         else
             update_pm2
         fi
-    elif [ ${pm2_option} = '4' ];then
-            if [ ! -f /usr/bin/pm2 ];then
+    elif [ ${pm2_option} = '4' ]; then
+            if [ ! -f /usr/bin/pm2 ]; then
             echo "已经卸载pm2"
         else
             remove_pm2
@@ -74,7 +74,7 @@ install_pm2(){
         check_sys
 	
 	#判断/usr/bin/pm2文件是否存在
-	if [ ! -f /usr/bin/pm2 ];then
+	if [ ! -f /usr/bin/pm2 ]; then
         echo "检查到您未安装pm2,脚本将先进行安装"
 	    #安装Node.js
         if [[ ${release} = "centos" ]]; then
@@ -90,7 +90,7 @@ install_pm2(){
     	    #设置权限
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
     	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
-	 if [ ! -f /usr/bin/node ];then
+	 if [ ! -f /usr/bin/node ]; then
     	    #创建软连接
     	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
     	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
@@ -105,7 +105,7 @@ install_pm2(){
 	        #安装PM2
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
-    	if [ ! -f /usr/bin/pm2 ];then
+    	if [ ! -f /usr/bin/pm2 ]; then
     		ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
         else
     	    rm -rf "/usr/bin/pm2"
@@ -117,7 +117,7 @@ install_pm2(){
 }
 
 use_centos_pm2(){
-    if [ ! -f /usr/bin/killall ];then
+    if [ ! -f /usr/bin/killall ]; then
 	echo "检查到您未安装psmisc,脚本将先进行安装"
 	yum -y update
 	yum -y install psmisc
@@ -230,7 +230,7 @@ use_centos_pm2(){
 }
 
 use_debian_pm2(){
-    if [ ! -f /usr/bin/killall ];then
+    if [ ! -f /usr/bin/killall ]; then
 	echo "检查到您未安装psmisc,脚本将先进行安装"
 	apt-get install psmisc
     fi
@@ -344,7 +344,7 @@ update_pm2(){
 }
 
 remove_pm2(){
-	    if [ ! -f /usr/bin/pm2 ];then
+	    if [ ! -f /usr/bin/pm2 ]; then
 		    echo "PM2已卸载"
 		else
 		    sudo npm uninstall -g pm2
@@ -373,11 +373,11 @@ supervisor_list(){
 	
 	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
 	read super_option
-	if [ ${super_option} = '1' ];then
+	if [ ${super_option} = '1' ]; then
         install_supervisor_for_each
-    elif [ ${super_option} = '2' ];then
+    elif [ ${super_option} = '2' ]; then
     	remove_supervisor_for_each
-	elif [ ${super_option} = '3' ];then
+	elif [ ${super_option} = '3' ]; then
     	    kill_supervisor
 	else
 		echo "选项不在范围,操作中止.";exit 0
@@ -406,9 +406,9 @@ remove_supervisor_for_each(){
 
 install_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
-	if [ ! -f /usr/bin/supervisord ];then
+	if [ ! -f /usr/bin/supervisord ]; then
 		#判断/usr/bin/killall文件是否存在
-	    if [ ! -f /usr/bin/killall ];then
+	    if [ ! -f /usr/bin/killall ]; then
 	        echo "检查到您未安装psmisc,脚本将先进行安装"
 	        yum -y update
 	        yum -y install psmisc
@@ -454,10 +454,10 @@ install_centos_supervisor(){
 
 remove_debian_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
-	if [ ! -f /usr/bin/supervisord ];then
+	if [ ! -f /usr/bin/supervisord ]; then
 		echo "已经卸载supervisor";exit 0
 	else
-	    if [ ! -f /usr/bin/killall ];then
+	    if [ ! -f /usr/bin/killall ]; then
 		    echo "检查到您未安装psmisc,脚本将先进行安装"
 		    
 	            sudo apt-get install psmisc
@@ -477,10 +477,10 @@ remove_debian_supervisor(){
 
 remove_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
-	if [ ! -f /usr/bin/supervisord ];then
+	if [ ! -f /usr/bin/supervisord ]; then
 		echo "已经卸载supervisor";exit 0
 	else
-	    if [ ! -f /usr/bin/killall ];then
+	    if [ ! -f /usr/bin/killall ]; then
 		    echo "检查到您未安装psmisc,脚本将先进行安装"
 		    yum -y update
 	        yum -y install psmisc
@@ -498,7 +498,7 @@ remove_centos_supervisor(){
 
 kill_supervisor(){
 	#判断/usr/bin/killall文件是否存在
-	if [ ! -f /usr/bin/killall ];then
+	if [ ! -f /usr/bin/killall ]; then
 	    echo "检查到您未安装,脚本将先进行安装..."
 	    yum -y update
 	    yum -y install psmisc
@@ -521,7 +521,7 @@ kill_supervisor(){
 #节点-[3]
 modify_node_info(){
 	#检测
-	if [ ! -f /root/shadowsocks/userapiconfig.py ];then
+	if [ ! -f /root/shadowsocks/userapiconfig.py ]; then
 		echo "ssr服务端未安装,不能执行该选项.";exit
 	else
 		#清屏
@@ -538,7 +538,7 @@ modify_node_info(){
 		read -p "新的MuKey是:" Usermukey
 	
 			#检查
-			if [ ! -f /root/shadowsocks/userapiconfig.py.bak ];then
+			if [ ! -f /root/shadowsocks/userapiconfig.py.bak ]; then
 				wget https://github.com/Super-box/v3/raw/master/userapiconfig.py
 			else
 			#还原
@@ -567,7 +567,7 @@ Libtest(){
 	echo "$GIT_PING $GIT" > ping.pl
 	echo "$LIB_PING $LIB" >> ping.pl
 	libAddr=`sort -V ping.pl|sed -n '1p'|awk '{print $2}'`
-	if [ "$libAddr" == "$GIT" ];then
+	if [ "$libAddr" == "$GIT" ]; then
 		libAddr='https://github.com/Super-box/v3/raw/master/libsodium-1.0.16.tar.gz'
 	else
 		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz'
@@ -612,6 +612,7 @@ python_test(){
 }
 
 install_centos_ssr(){
+    read -p "后端名字是:" Username
 	read -p "[y/n]是否是专用后端:" Houduan
 	cd /root
 	Get_Dist_Version
@@ -658,9 +659,9 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	if [ ${Houduan} = 'y' ];then
+	if [ ${Houduan} = 'y' ]; then
 		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
-	elif [ ${Houduan} = 'n' ];then
+	elif [ ${Houduan} = 'n' ]; then
 		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
@@ -695,6 +696,7 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
+	read -p "后端名字是:" Username
     read -p "[y/n]是否是专用后端:" Houduan
 	
 	apt-get -y update
@@ -705,9 +707,9 @@ install_ubuntu_ssr(){
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
-	if [ ${Houduan} = 'y' ];then
+	if [ ${Houduan} = 'y' ]; then
 		git clone -b manyuser https://github.com/Super-box/p3-hezu.git "/root/shadowsocks-${Username}"
-	elif [ ${Houduan} = 'n' ];then
+	elif [ ${Houduan} = 'n' ]; then
 		git clone -b manyuser https://github.com/Super-box/p3-Superbox.git "/root/shadowsocks-${Username}"
 	fi
 	chkconfig supervisord on
@@ -794,7 +796,6 @@ install_node(){
 	read -p "前端地址是:" Userdomain
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
-	read -p "后端名字是:" Username
         install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks-${Username}
@@ -847,10 +848,10 @@ install_node(){
 python_more(){
     echo "选项：[1]安装Gost服务器 [2]Git更新后端"
 	read more_option
-	if [ ${more_option} = '1' ];then
+	if [ ${more_option} = '1' ]; then
 		install_gost
         
-	elif [ ${more_option} = '2' ];then
+	elif [ ${more_option} = '2' ]; then
 		git_update
 	else
 		echo "选项不在范围,操作中止.";exit 0
@@ -859,7 +860,7 @@ python_more(){
 
 install_gost(){
            #检查文件gost.sh是否存在,若不存在,则下载该文件
-		if [ ! -f /root/gost.sh ];then
+		if [ ! -f /root/gost.sh ]; then
 		   wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
             chmod +x gost.sh
             fi
@@ -867,7 +868,7 @@ install_gost(){
 	    }
 
 git_update(){
-                if [ ! -f /root/shadowsocks/userapiconfig.py ];then
+                if [ ! -f /root/shadowsocks/userapiconfig.py ]; then
 		        echo "Tan90°"
                 else
 	         	git clone -b manyuser https://github.com/Super-box/p3.git          
@@ -881,17 +882,17 @@ git_update(){
 serverspeeder(){
 	echo "选项：[1]KVM安装 [2]OVZ安装"
 	read serverspeeder_option
-	if [ ${serverspeeder_option} = '1' ];then
+	if [ ${serverspeeder_option} = '1' ]; then
 		#检查文件tcp.sh是否存在,若不存在,则下载该文件
-	    if [ ! -f /root/tcp.sh ];then
+	    if [ ! -f /root/tcp.sh ]; then
 		wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh"
 		chmod +x tcp.sh
 	    fi
 	    #执行
 		./tcp.sh
-	elif [ ${serverspeeder_option} = '2' ];then
+	elif [ ${serverspeeder_option} = '2' ]; then
 		#检查文件tcp.sh是否存在,若不存在,则下载该文件
-	    if [ ! -f /root/tcp.sh ];then
+	    if [ ! -f /root/tcp.sh ]; then
 	       wget -N --no-check-certificate "https://raw.githubusercontent.com/nanqinlang/tcp_nanqinlang-test/master/tcp_nanqinlang-test.sh"
                chmod +x tcp_nanqinlang-test.sh
 	    fi
@@ -903,7 +904,7 @@ serverspeeder(){
 #一键全面测速-[7]
 speedtest(){
 	#检查文件ZBench-CN.sh是否存在,若不存在,则下载该文件
-	if [ ! -f /root/ZBench-CN.sh ];then
+	if [ ! -f /root/ZBench-CN.sh ]; then
 		wget https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh
 		chmod 777 ZBench-CN.sh
 	fi
@@ -915,11 +916,11 @@ speedtest(){
 system_more(){
     echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本"
 	read more_option
-        if [ ${more_option} = '1' ];then
+        if [ ${more_option} = '1' ]; then
                 swap
-	elif [ ${more_option} = '2' ];then
+	elif [ ${more_option} = '2' ]; then
 		install_ssh_port
-	elif [ ${more_option} = '3' ];then
+	elif [ ${more_option} = '3' ]; then
 	    ddns
 	else
 		    echo "选项不在范围,操作中止.";exit 0
@@ -929,9 +930,9 @@ system_more(){
 swap(){
 	echo "选项：[1]500M [2]1G [3]删除SWAP"
 		read swap
-	if [ ${swap} = '1' ];then
+	if [ ${swap} = '1' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /var/swapfile1 ];then
+		if [ ! -f /var/swapfile1 ]; then
 			#增加500Mb的Swap分区
 			dd if=/dev/zero of=/var/swapfile1 bs=1024 count=512000
 			mkswap /var/swapfile1;chmod 0644 /var/swapfile1;swapon /var/swapfile1
@@ -941,9 +942,9 @@ swap(){
 			echo "检查到您已经添加SWAP,无需重复添加"
 		fi
 
-	elif [ ${swap} = '2' ];then
+	elif [ ${swap} = '2' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /var/swapfile1 ];then
+		if [ ! -f /var/swapfile1 ]; then
 		dd if=/dev/zero of=/var/swapfile1 bs=1024 count=1048576
 	        mkswap /var/swapfile1;chmod 0644 /var/swapfile1;swapon /var/swapfile1
 	        echo '/var/swapfile1 swap swap default 0 0' >> /etc/fstab
@@ -952,9 +953,9 @@ swap(){
 			echo "检查到您已经添加SWAP,无需重复添加"
 		fi
 
-	elif [ ${swap} = '3' ];then
+	elif [ ${swap} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /var/swapfile1 ];then
+		if [ ! -f /var/swapfile1 ]; then
  		    echo "检查到您未添加SWAP"
 		else
 	        swapoff /var/swapfile1
@@ -968,7 +969,7 @@ swap(){
 
 install_ssh_port(){
 	#检查文件sshport.sh是否存在,若不存在,则下载该文件
-	if [ ! -f /root/sshport.sh ];then
+	if [ ! -f /root/sshport.sh ]; then
 		wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
 	    chmod 777 sshport.sh
 	fi
@@ -978,8 +979,8 @@ install_ssh_port(){
 ddns(){
     echo "选项：[1]安装 [2]配置 [3]运行"
 	read ddns
-	if [ ${ddns} = '1' ];then
-	    if [ ! -f /root/ddns.sh ];then
+	if [ ${ddns} = '1' ]; then
+	    if [ ! -f /root/ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
 	    	wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
 	    	chmod 777 ddns.sh
@@ -994,7 +995,7 @@ ddns(){
 		#运行
 		bash /root/ddns.sh
 	     
-             elif [ ${ddns} = '2' ];then
+             elif [ ${ddns} = '2' ]; then
 		#清屏
 		clear
 		#输出当前配置
@@ -1006,7 +1007,7 @@ ddns(){
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
-			if [ ! -f /root/ddns.sh.bak ];then
+			if [ ! -f /root/ddns.sh.bak ]; then
 				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
 			else
 			#还原
@@ -1019,9 +1020,9 @@ ddns(){
                 #运行
                 bash /root/ddns.sh
 		
-                elif [ ${ddns} = '3' ];then
+                elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /root/ddns.sh ];then
+		if [ ! -f /root/ddns.sh ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
@@ -1041,7 +1042,7 @@ ddns(){
 uninstall_ali_cloud_shield(){
 	echo "请选择：[1]卸载阿里云盾 [2]卸载腾讯云盾";read uninstall_ali_cloud_shield
 
-	if [ ${uninstall_ali_cloud_shield} = '1' ];then
+	if [ ${uninstall_ali_cloud_shield} = '1' ]; then
     yum -y install redhat-lsb
        var=`lsb_release -a | grep Gentoo`
     if [ -z "${var}" ]; then 
@@ -1065,7 +1066,7 @@ uninstall_ali_cloud_shield(){
     }
 
     remove_aegis(){
-    if [ -d /usr/local/aegis ];then
+    if [ -d /usr/local/aegis ]; then
        rm -rf /usr/local/aegis/aegis_client
        rm -rf /usr/local/aegis/aegis_update
 	   rm -rf /usr/local/aegis/alihids
@@ -1087,9 +1088,9 @@ uninstall_ali_cloud_shield(){
     elif [ -f /etc/init.d/aegis ]; then
          /etc/init.d/aegis  uninstall
 	    for ((var=2; var<=5; var++)) do
-			if [ -d "/etc/rc${var}.d/" ];then
+			if [ -d "/etc/rc${var}.d/" ]; then
 				 rm -f "/etc/rc${var}.d/S80aegis"
-		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
+		    elif [ -d "/etc/rc.d/rc${var}.d" ]; then
 				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
 			fi
 		done
@@ -1127,14 +1128,14 @@ uninstall_ali_cloud_shield(){
     }
     
     remove_aegis(){
-    if [ -d /usr/local/aegis ];then
+    if [ -d /usr/local/aegis ]; then
         rm -rf /usr/local/aegis/aegis_client
         rm -rf /usr/local/aegis/aegis_update
     fi
     }
     
     remove_quartz(){
-    if [ -d /usr/local/aegis ];then
+    if [ -d /usr/local/aegis ]; then
     	rm -rf /usr/local/aegis/aegis_quartz
     fi
     }
@@ -1155,9 +1156,9 @@ uninstall_ali_cloud_shield(){
         elif [ -f /etc/init.d/aegis ]; then
              /etc/init.d/aegis  uninstall
     	    for ((var=2; var<=5; var++)) do
-    			if [ -d "/etc/rc${var}.d/" ];then
+    			if [ -d "/etc/rc${var}.d/" ]; then
     				 rm -f "/etc/rc${var}.d/S80aegis"
-    		    elif [ -d "/etc/rc.d/rc${var}.d" ];then
+    		    elif [ -d "/etc/rc.d/rc${var}.d" ]; then
     				rm -f "/etc/rc.d/rc${var}.d/S80aegis"
     			fi
     		done
@@ -1184,9 +1185,9 @@ uninstall_ali_cloud_shield(){
             iptables -I INPUT -s 140.205.225.205/32 -j DROP
             iptables -I INPUT -s 140.205.225.195/32 -j DROP
             iptables -I INPUT -s 140.205.225.204/32 -j DROP
-        elif [ ${uninstall_ali_cloud_shield} = '2' ];then
+        elif [ ${uninstall_ali_cloud_shield} = '2' ]; then
         	#检查文件uninstal_qcloud.sh是否存在,若不存在,则下载该文件
-	    if [ ! -f /root/uninstal_qcloud.sh ];then
+	    if [ ! -f /root/uninstal_qcloud.sh ]; then
 	    	curl -sSL https://down.oldking.net/Script/uninstal_qcloud.sh
 	    	chmod +x uninstal_qcloud.sh
 	    fi
@@ -1218,9 +1219,9 @@ mtr_test(){
 detect_backhaul_routing(){
 	echo "选项：[1]Nali [2]BestTrace [3]MTR"
 	read detect_backhaul_routing_version
-	if [ ${detect_backhaul_routing_version} = '1' ];then
+	if [ ${detect_backhaul_routing_version} = '1' ]; then
 		#判断/root/nali-ipip/configure文件是否存在
-		if [ ! -f /root/nali-ipip/configure ];then
+		if [ ! -f /root/nali-ipip/configure ]; then
 			echo "检查到您未安装,脚本将先进行安装..."
 			yum -y update;yum -y install traceroute git gcc make
 			git clone https://github.com/dzxx36gyy/nali-ipip.git
@@ -1230,9 +1231,9 @@ detect_backhaul_routing(){
 		else
 			nali_test
 		fi
-	elif [ ${detect_backhaul_routing_version} = '2' ];then
+	elif [ ${detect_backhaul_routing_version} = '2' ]; then
 		#判断/root/besttrace/besttrace文件是否存在
-		if [ ! -f /root/besttrace/besttrace ];then
+		if [ ! -f /root/besttrace/besttrace ]; then
 			echo "检查到您未安装,脚本将先进行安装..."
 			yum update -y
 			yum install traceroute -y
@@ -1242,9 +1243,9 @@ detect_backhaul_routing(){
 		else
 			besttrace_test
 		fi
-	elif [ ${detect_backhaul_routing_version} = '3' ];then
+	elif [ ${detect_backhaul_routing_version} = '3' ]; then
 		#判断/usr/sbin/mtr文件是否存在
-		if [ ! -f /usr/sbin/mtr ];then
+		if [ ! -f /usr/sbin/mtr ]; then
 			echo "检查到您未安装,脚本将先进行安装..."
 			yum update -y;yum install mtr -y
 			clear;mtr_test
@@ -1259,7 +1260,7 @@ detect_backhaul_routing(){
 #简易测速-[c]
 superspeed(){
 	#检查文件superspeed.sh是否存在,若不存在,则下载该文件
-	if [ ! -f /root/superspeed.sh ];then
+	if [ ! -f /root/superspeed.sh ]; then
 		wget --no-check-certificate https://raw.githubusercontent.com/wn789/Superspeed/master/superspeed.sh
 		chmod +x superspeed.sh
 	fi
@@ -1289,31 +1290,31 @@ replacement_of_installation_source(){
 	mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
 	
 	#执行
-	if [ ${change_target_source} = '1' ];then
+	if [ ${change_target_source} = '1' ]; then
 		echo "更换目标源:网易163,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
 		read operating_system_version
-		if [ ${operating_system_version} = '1' ];then
+		if [ ${operating_system_version} = '1' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS5-Base-163.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '2' ];then
+		elif [ ${operating_system_version} = '2' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS6-Base-163.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '3' ];then
+		elif [ ${operating_system_version} = '3' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS7-Base-163.repo;yum clean all;yum makecache
 		fi
-	elif [ ${change_target_source} = '2' ];then
+	elif [ ${change_target_source} = '2' ]; then
 		echo "更换目标源:阿里云,请选择操作系统版本： [1]Centos 5 [2]Centos 6 [3]Centos 7"
 		read operating_system_version
-		if [ ${operating_system_version} = '1' ];then
+		if [ ${operating_system_version} = '1' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-5.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '2' ];then
+		elif [ ${operating_system_version} = '2' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo;yum clean all;yum makecache
-		elif [ ${operating_system_version} = '3' ];then
+		elif [ ${operating_system_version} = '3' ]; then
 			wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo;yum clean all;yum makecache
 		fi
-	elif [ ${change_target_source} = '3' ];then
+	elif [ ${change_target_source} = '3' ]; then
 		echo "更换目标源:自定义,请确定您需使用的自定义的源与您的操作系统相符！";echo "请输入自定义源地址："
 		read customize_the_source_address
 		wget -O /etc/yum.repos.d/CentOS-Base.repo ${customize_the_source_address};yum clean all;yum makecache
-	elif [ ${change_target_source} = '4' ];then
+	elif [ ${change_target_source} = '4' ]; then
 		rm -rf /etc/yum.repos.d/CentOS-Base.repo
 		mv /etc/yum.repos.d/CentOS-Base.repo.bak /etc/yum.repos.d/CentOS-Base.repo
 		yum clean all;yum makecache
@@ -1325,7 +1326,7 @@ configure_firewall(){
 	echo "请选择操作： [1]关闭firewall"
 	read firewall_operation
 	
-	if [ ${firewall_operation} = '1' ];then
+	if [ ${firewall_operation} = '1' ]; then
 		echo "停止firewall..."
 		systemctl stop firewalld.service
 		echo "禁止firewall开机启动"
@@ -1348,7 +1349,7 @@ update_the_shell(){
 ###待更新
 safe_dog(){
 	#判断/usr/bin/sdui文件是否存在
-	if [ ! -f /usr/bin/sdui ];then
+	if [ ! -f /usr/bin/sdui ]; then
 		echo "检查到您未安装,脚本将先进行安装..."
 		wget -N —no-check-certificate  "http://sspanel-1252089354.coshk.myqcloud.com/safedog_linux64.tar.gz"
 		tar xzvf safedog_linux64.tar.gz
@@ -1365,17 +1366,17 @@ safe_dog(){
 install_fail2ban(){
 	echo "脚本来自:http://www.vpsps.com/225.html";echo "使用简介:https://linux.cn/article-5067-1.html";echo "感谢上述贡献者."
 	echo "选择选项: [1]安装fail2ban [2]卸载fail2ban [3]查看封禁列表 [4]为指定IP解锁";read fail2ban_option
-	if [ ${fail2ban_option} = '1' ];then
+	if [ ${fail2ban_option} = '1' ]; then
 		wget -N —no-check-certificate"http://sspanel-1252089354.coshk.myqcloud.com/fail2ban.sh";bash fail2ban.sh
-	elif [ ${fail2ban_option} = '2' ];then
+	elif [ ${fail2ban_option} = '2' ]; then
 		wget -N —no-check-certificate"https://raw.githubusercontent.com/FunctionClub/Fail2ban/master/uninstall.sh";bash uninstall.sh
-	elif [ ${fail2ban_option} = '3' ];then
+	elif [ ${fail2ban_option} = '3' ]; then
 		echo ${separate_lines};fail2ban-client ping;echo -e "\033[31m[↑]正常返回值:Server replied: pong\033[0m"
 		#iptables --list -n;echo -e "\033[31m#当前iptables禁止规则\033[0m"
 		fail2ban-client status;echo -e "\033[31m[↑]当前封禁列表\033[0m"
 		fail2ban-client status ssh-iptables;echo -e "\033[31m[↑]当前被封禁的IP列表\033[0m"
 		sed -n '12,14p' /etc/fail2ban/jail.local;echo -e "\033[31m[↑]当前fail2ban配置\033[0m"
-	elif [ ${fail2ban_option} = '4' ];then
+	elif [ ${fail2ban_option} = '4' ]; then
 		echo "请输入需要解锁的IP地址:";read need_to_unlock_the_ip_address
 		fail2ban-client set ssh-iptables unbanip ${need_to_unlock_the_ip_address}
 		echo "已为${need_to_unlock_the_ip_address}解除封禁."
@@ -1385,7 +1386,7 @@ install_fail2ban(){
 }
 
 install_shell(){
-	if [ ! -f /usr/bin/v3 ];then
+	if [ ! -f /usr/bin/v3 ]; then
 		cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
 	else
 		rm -rf /usr/bin/v3
@@ -1395,7 +1396,7 @@ install_shell(){
 }
 
 get_server_ip_info(){
-	if [ ! -f /root/.server_ip_info.txt ];then
+	if [ ! -f /root/.server_ip_info.txt ]; then
 		curl -s myip.ipip.net > /root/.server_ip_info.txt
 	else
 		rm -rf /root/.server_ip_info.txt
@@ -1476,7 +1477,7 @@ esac
 
 #继续还是中止
 echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:";read continue_or_stop
-if [ ${continue_or_stop} = 'y' ];then
+if [ ${continue_or_stop} = 'y' ]; then
 	bash /root/v3.sh
 fi
 
