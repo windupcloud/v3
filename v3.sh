@@ -613,7 +613,6 @@ python_test(){
 
 install_centos_ssr(){
 	read -p "是否是专用后端:[Y/N]" houduan
-	read houduan
 
 	cd /root
 	Get_Dist_Version
@@ -697,8 +696,7 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
-        read -p "是否是专用后端:[Y/N]" houduan
-	read houduan
+    read -p "是否是专用后端:[Y/N]" houduan
 	
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
