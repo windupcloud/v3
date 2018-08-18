@@ -15,25 +15,31 @@ reboot_system(){
 		echo "需重启服务器使配置生效,稍后请务必手动重启服务器.";exit
 	fi
 }
+
+#检查系统版本
+check_sys(){
+		if [[ -f /etc/redhat-release ]]; then
+			release="centos"
+		elif cat /etc/issue | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+		elif cat /proc/version | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /proc/version | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+	        fi
+}
+
 #PM2-[1]
 pm2_list(){
-	check_sys(){
-    if [ -f /etc/redhat-release ]; then
-        release="centos"
-    elif cat /etc/*-release | grep -q -E -i "debian"; then
-        release="debian"
-    elif cat /etc/*-release | grep -q -E -i "ubuntu"; then
-        release="ubuntu"
-    elif cat /etc/*-release | grep -q -E -i "centos|red hat|redhat"; then
-        release="centos"
-    elif cat /etc/*-release | grep -q -E -i "debian"; then
-        release="debian"
-    elif cat /etc/*-release | grep -q -E -i "ubuntu"; then
-        release="ubuntu"
-    elif cat /etc/*-release | grep -q -E -i "centos|red hat|redhat"; then
-        release="centos"
-    fi
-    }
+        #检查系统版本
+        check_sys
+	
 	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
 	read pm2_option
 	if [ ${pm2_option} = '1' ];then
@@ -64,6 +70,9 @@ pm2_list(){
 }
 
 install_pm2(){
+        #检查系统版本
+        check_sys
+	
 	#判断/usr/bin/pm2文件是否存在
 	if [ ! -f /usr/bin/pm2 ];then
         echo "检查到您未安装pm2,脚本将先进行安装"
@@ -323,15 +332,15 @@ use_debian_pm2(){
 }
 
 update_pm2(){
-	#更新node.js
-		npm i -g npm
+    #更新node.js
+	npm i -g npm
     #更新PM2
         npm install -g pm2 --unsafe-perm
     #PM2 update
         sleep 1s
         pm2 save
         pm2 update
-	    pm2 startup
+        pm2 startup
 }
 
 remove_pm2(){
@@ -344,9 +353,9 @@ remove_pm2(){
 		    sleep 1s
 		    #卸载Node.js
 		    rm -rf "/usr/bin/node"
-	        rm -rf "/usr/bin/npm"
-	        rm -rf "/root/.npm"
-            #卸载PM2
+	            rm -rf "/usr/bin/npm"
+	            rm -rf "/root/.npm"
+                    #卸载PM2
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
 		    rm -rf /root/node*
@@ -359,24 +368,9 @@ remove_pm2(){
 supervisor_list(){
 	#检查 Root账户
 	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
-	#检查系统版本
-	check_sys(){
-		if [[ -f /etc/redhat-release ]]; then
-			release="centos"
-		elif cat /etc/issue | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-		elif cat /proc/version | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /proc/version | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-	  fi
-	}
+        #检查系统版本
+        check_sys
+	
 	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
 	read super_option
 	if [ ${super_option} = '1' ];then
@@ -391,7 +385,8 @@ supervisor_list(){
 }
 
 install_supervisor_for_each(){
-		    check_sys
+                #检查系统版本
+                check_sys
 		if [[ ${release} = "centos" ]]; then
 			install_centos_supervisor
 		else
@@ -400,7 +395,8 @@ install_supervisor_for_each(){
 	    }
 
 remove_supervisor_for_each(){
-		    check_sys
+	        #检查系统版本
+                check_sys
 		if [[ ${release} = "centos" ]]; then
 			remove_centos_supervisor
 		else
@@ -886,8 +882,8 @@ serverspeeder(){
 	elif [ ${serverspeeder_option} = '2' ];then
 		#检查文件tcp.sh是否存在,若不存在,则下载该文件
 	    if [ ! -f /root/tcp.sh ];then
-		wget -N --no-check-certificate "https://raw.githubusercontent.com/nanqinlang/tcp_nanqinlang-test/master/tcp_nanqinlang-test.sh"
-        chmod +x tcp_nanqinlang-test.sh
+	       wget -N --no-check-certificate "https://raw.githubusercontent.com/nanqinlang/tcp_nanqinlang-test/master/tcp_nanqinlang-test.sh"
+               chmod +x tcp_nanqinlang-test.sh
 	    fi
 		#执行
         ./tcp_nanqinlang-test.sh
@@ -909,8 +905,8 @@ speedtest(){
 system_more(){
     echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本"
 	read more_option
-    if [ ${more_option} = '1' ];then
-        swap
+        if [ ${more_option} = '1' ];then
+                swap
 	elif [ ${more_option} = '2' ];then
 		install_ssh_port
 	elif [ ${more_option} = '3' ];then
