@@ -347,9 +347,9 @@ remove_pm2(){
 	    if [ ! -f /usr/bin/pm2 ]; then
 		    echo "PM2已卸载"
 		else
-		    sudo npm uninstall -g pm2
+		    npm uninstall -g pm2
 		    sleep 1s
-		    sudo npm uninstall -g npm
+		    npm uninstall -g npm
 		    sleep 1s
 		    #卸载Node.js
 		    rm -rf "/usr/bin/node"
@@ -460,7 +460,7 @@ remove_debian_supervisor(){
 	    if [ ! -f /usr/bin/killall ]; then
 		    echo "检查到您未安装psmisc,脚本将先进行安装"
 		    
-	            sudo apt-get install psmisc
+	            apt-get install psmisc
         else
 		    echo "现在开始卸载supervisor"
 	        
@@ -468,7 +468,7 @@ remove_debian_supervisor(){
 	        killall supervisord
 	        killall supervisord
 	        killall supervisord
-	        sudo apt-get remove --purge supervisor 
+	        apt-get remove --purge supervisor 
             rm -rf "/etc/supervisord.conf"
             rm -rf "/usr/bin/srs"
         fi
@@ -497,13 +497,19 @@ remove_centos_supervisor(){
 }
 
 kill_supervisor(){
+        #检查系统版本
+                check_sys
 	#判断/usr/bin/killall文件是否存在
 	if [ ! -f /usr/bin/killall ]; then
-	    echo "检查到您未安装,脚本将先进行安装..."
-	    yum -y update
-	    yum -y install psmisc
-	    sudo apt-get install psmisc
-        killall supervisord
+	    echo "检查到您未安装psmisc,脚本将先进行安装..."
+	if [[ ${release} = "centos" ]]; then
+	     yum -y update
+	     yum -y install psmisc
+	else
+	     apt-get -y update
+             apt-get -y install psmisc
+	fi
+            killall supervisord
 	    killall supervisord
 	    killall supervisord
 	    killall supervisord
