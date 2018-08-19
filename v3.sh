@@ -712,6 +712,7 @@ install_ubuntu_ssr(){
 	elif [ ${Houduan} = 'n' ]; then
 		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
+	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
 	python_test
@@ -740,7 +741,6 @@ install_ubuntu_ssr(){
 	chmod +x *.sh
 	# 配置程序
 	cp apiconfig.py userapiconfig.py
-	cp config.json user-config.json
 }
 
 
