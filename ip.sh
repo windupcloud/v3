@@ -58,7 +58,7 @@ while true
 		if [[ "$q" -ne "1" ]] ; then
 			[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
 			Test1=$(curl -s https://cn-sh-01.torch.flexible.njs.app/${IP}/${ssh_port} | grep false)
-			Test2=$(curl -s https://torch-indexyz.doge.me/${IP}/${ssh_port} | grep false)
+			Test2=$(curl -s https://cn-gz-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
 			Test3=$(curl -s https://cn-sh-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
 			Result=$( echo -e "${Test1}\n${Test2}\n${Test3}" | grep "false" | wc -l )
 			[[ "${Result}" -gt 2 ]] && q=1
