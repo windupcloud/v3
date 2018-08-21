@@ -8,7 +8,7 @@ wget -O /root/tcprelay.py https://raw.githubusercontent.com/Super-box/p3-Superbo
 ssr_dirs=()
     while IFS=  read -r -d $'\0'; do
         ssr_dirs+=("$REPLY")
-    done < <(find /root/  -maxdepth 1 -name "shadowsocks*" -print0)
+    done < <(find /root/  -maxdepth 1 -name "shadowsocks-*" -print0)
 
 for ssr_dir in "${ssr_dirs[@]}"
 do
@@ -17,5 +17,5 @@ do
     cp -f /root/tcprelay.py /root/${ssr_name}/shadowsocks/tcprelay.py
 done
 
+rm -rf /root/tcprelay.py
 echo "所有tcprelay.py替换成功"
-
