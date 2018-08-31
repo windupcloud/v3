@@ -1,4 +1,32 @@
 #!/usr/bin/env bash
+#检查系统版本
+check_sys(){
+		if [[ -f /etc/redhat-release ]]; then
+			release="centos"
+		elif cat /etc/issue | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+		elif cat /proc/version | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /proc/version | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+	        fi
+}
+#檢測centos版本
+Get_Dist_Version()
+{
+    if [ -s /usr/bin/python3 ]; then
+        Version=`/usr/bin/python3 -c 'import platform; print(platform.linux_distribution()[1][0])'`
+    elif [ -s /usr/bin/python2 ]; then
+        Version=`/usr/bin/python2 -c 'import platform; print platform.linux_distribution()[1][0]'`
+    fi
+}
+
 #HostName
 HostName=$(cat /proc/sys/kernel/hostname)
 #Telegram API
@@ -23,19 +51,44 @@ Separator="———————————————————————
 
 
 Change_IP(){
+  check_sys
 	clear
 	echo -e " ${WARNING} IP:${IP} is blocked by TCP."
 	[[ ! -n "$( cat banip.txt | grep ${IP} )" ]] && echo -e "${IP}" >> banip.txt
-	service network restart
-	dhclient -r -v
-     rm -rf /var/lib/dhclient/dhclient.leases
-     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-     dhclient -v
+	if [ ${release} = 'centos' ]; then
+			change_centos_ip
+		else
+			change_debian_ip
+		fi
 	last_times=$(cat /tmp/times.log)
 	now_times=$[${last_times}+1]
 	echo "${now_times}" > /tmp/times.log
 	IP=$(curl -s https://api.ip.sb/ip)
 	echo -e " ${Tip} No.${now_times} Now IP: ${IP}"
+}
+
+change_centos_ip(){
+	Get_Dist_Version
+	if [ $Version == "7" ]; then
+    	service network restart
+    	dhclient -r -v
+     rm -rf /var/lib/dhclient/dhclient.leases
+     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+     dhclient -v
+	else
+   		rm -rf /etc/udev/rules.d/70-persistent-net.rules   	
+     dhclient -r -v eth0
+     rm -rf /var/lib/dhclient/*
+     dhclient -v eth0
+	fi
+}
+
+change_debian_ip(){
+   	service network restart
+   	dhclient -r -v
+     rm -rf /var/lib/dhclient/dhclient.leases
+     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+     dhclient -v
 }
 
 Send_TG_Message(){
