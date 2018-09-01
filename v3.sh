@@ -81,7 +81,7 @@ install_pm2(){
 		yum -y install xz
     	        yum -y install wget
         else
-		pt -y install xz
+	apt -y install xz
 	        apt -y install wget
 	fi
 	    #编译Node.js
@@ -145,11 +145,11 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=320
+        max_memory_limit=512
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit=300
+        max_memory_limit=320
     fi
 
     for ssr_name in "${ssr_names[@]}"
