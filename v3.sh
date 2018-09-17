@@ -6,6 +6,10 @@
 #全局变量
 server_ip=`curl -s https://app.52ll.win/ip/api.php`
 separate_lines="####################################################################"
+Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
+Info="${Green_font_prefix}[信息]${Font_color_suffix}"
+Error="${Red_font_prefix}[错误]${Font_color_suffix}"
+Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 reboot_system(){
 	read -p "需重启服务器使配置生效,现在重启? [y/n]" is_reboot
@@ -37,12 +41,10 @@ check_sys(){
 
 #PM2-[1]
 pm2_list(){
-        #检查系统版本
-        check_sys
 	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
 	read pm2_option
 	if [ ${pm2_option} = '1' ]; then
-            install_pm2
+        install_pm2
     elif [ ${pm2_option} = '2' ]; then
         check_sys
         echo "$release"     
@@ -855,13 +857,14 @@ install_node(){
 
 #More-[5]
 python_more(){
-    echo "选项：[1]安装Gost服务器 [2]Git更新后端"
+    echo "选项：[1]安装Gost服务器 [2]Git更新后端 [3]安装ocserv"
 	read more_option
 	if [ ${more_option} = '1' ]; then
 		install_gost
-        
 	elif [ ${more_option} = '2' ]; then
 		git_update
+	elif [ ${more_option} = '3' ]; then
+		install_ocserv
 	else
 		echo "选项不在范围,操作中止.";exit 0
 	fi
@@ -885,7 +888,75 @@ git_update(){
 			rm -rf /root/p3
                 fi
         }
-	
+install_ocserv(){
+        check_sys
+        echo "$release"     
+        if [ ${release} = 'centos' ]; then
+        	yum udpate
+			yum install ocserv radiusclient-ng unzip -y
+            if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
+		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && over
+	        fi
+            unzip /etc/ocserv.zip
+
+            if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
+		    echo -e "${Error} radius 服务 配置文件下载失败 !" && over
+	        fi
+            unzip /etc/radiusclient-ng.zip
+
+            Set_iptables
+            
+			if ! wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/other/ocserv_debian -O /etc/init.d/ocserv; then
+		    echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && over
+	        fi
+	        chmod +x /etc/init.d/ocserv
+	        echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
+	        /etc/init.d/ocserv restart
+		else
+			echo "懒得写了，请doub一键脚本"
+			wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/ocserv.sh && chmod +x ocserv.sh && bash ocserv.sh
+		fi   
+        }
+Set_iptables(){
+    systemctl disable firewalld
+    yum install iptables-services iptables -y
+    systemctl enable iptables
+    /sbin/iptables -P INPUT ACCEPT
+    /sbin/iptables -P OUTPUT ACCEPT
+    /sbin/iptables -F
+    
+	echo -e "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+	sysctl -p
+	ifconfig_status=$(ifconfig)
+	if [[ -z ${ifconfig_status} ]]; then
+		echo -e "${Error} ifconfig 未安装 !"
+		stty erase '^H' && read -p "请手动输入你的网卡名(一般情况下，网卡名为 eth0，Debian9 则为 ens3，CentOS Ubuntu 最新版本可能为 enpXsX(X代表数字或字母)，OpenVZ 虚拟化则为 venet0):" Network_card
+		[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
+	else
+		Network_card=$(ifconfig|grep "eth0")
+		if [[ ! -z ${Network_card} ]]; then
+			Network_card="eth0"
+		else
+			Network_card=$(ifconfig|grep "ens3")
+			if [[ ! -z ${Network_card} ]]; then
+				Network_card="ens3"
+			else
+				Network_card=$(ifconfig|grep "venet0")
+				if [[ ! -z ${Network_card} ]]; then
+					Network_card="venet0"
+				else
+					ifconfig
+					stty erase '^H' && read -p "检测到本服务器的网卡非 eth0 \ ens3(Debian9) \ venet0(OpenVZ) \ enpXsX(CentOS Ubuntu 最新版本，X代表数字或字母)，请根据上面输出的网卡信息手动输入你的网卡名:" Network_card
+					[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
+				fi
+			fi
+		fi
+	fi
+	iptables -A FORWARD -s 192.168.8.0/21 -j ACCEPT
+	iptables -t nat -A POSTROUTING -o ${Network_card} -j MASQUERADE
+	#保存Iptables命令
+	service iptables save
+}	
 
 #一键安装加速-[6]
 serverspeeder(){
@@ -917,8 +988,8 @@ speedtest(){
 		wget https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh
 		chmod 777 ZBench-CN.sh
 	fi
-	#执行测试
-	bash /root/ZBench-CN.sh
+	   #执行测试
+	   bash /root/ZBench-CN.sh
 }
 
 #More-[8]
@@ -1454,7 +1525,7 @@ case "$num" in
 	6)
 	serverspeeder;;
 	7)
-        speedtest;;
+    speedtest;;
 	8)
 	system_more;;
 	a)
