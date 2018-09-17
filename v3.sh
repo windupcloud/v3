@@ -39,7 +39,6 @@ check_sys(){
 pm2_list(){
         #检查系统版本
         check_sys
-	
 	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
 	read pm2_option
 	if [ ${pm2_option} = '1' ]; then
@@ -374,13 +373,13 @@ supervisor_list(){
 	echo "选项：[1]安装supervisor [2]卸载supervisor [3]强制重启supervisor"
 	read super_option
 	if [ ${super_option} = '1' ]; then
-        install_supervisor_for_each
-    elif [ ${super_option} = '2' ]; then
-    	remove_supervisor_for_each
+           install_supervisor_for_each
+        elif [ ${super_option} = '2' ]; then
+    	   remove_supervisor_for_each
 	elif [ ${super_option} = '3' ]; then
-    	    kill_supervisor
+    	   kill_supervisor
 	else
-		echo "选项不在范围,操作中止.";exit 0
+           echo "选项不在范围,操作中止.";exit 0
 	fi
 }
 
@@ -448,7 +447,7 @@ install_centos_supervisor(){
             systemctl enable supervisord
             systemctl is-enabled supervisord
 	else
-		echo "已经安装supervisor";exit 0
+	    echo "已经安装supervisor";exit 0
     fi        
 }
 
@@ -457,40 +456,38 @@ remove_debian_supervisor(){
 	if [ ! -f /usr/bin/supervisord ]; then
 		echo "已经卸载supervisor";exit 0
 	else
-	    if [ ! -f /usr/bin/killall ]; then
-		    echo "检查到您未安装psmisc,脚本将先进行安装"
-		    
-	            apt-get install psmisc
-        else
-		    echo "现在开始卸载supervisor"
-	        
-                killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        apt-get remove --purge supervisor 
-            rm -rf "/etc/supervisord.conf"
-            rm -rf "/usr/bin/srs"
-        fi
+	   if [ ! -f /usr/bin/killall ]; then
+	      echo "检查到您未安装psmisc,脚本将先进行安装"
+	      apt-get install psmisc
+           else
+	      echo "现在开始卸载supervisor"
+              killall supervisord
+	      killall supervisord
+	      killall supervisord
+	      killall supervisord
+	      apt-get remove --purge supervisor -y
+              rm -rf "/etc/supervisord.conf"
+              rm -rf "/usr/bin/srs"
+           fi
 	fi
 }
 
 remove_centos_supervisor(){
 	#判断/usr/bin/supervisord文件是否存在
 	if [ ! -f /usr/bin/supervisord ]; then
-		echo "已经卸载supervisor";exit 0
+	    echo "已经卸载supervisor";exit 0
 	else
 	    if [ ! -f /usr/bin/killall ]; then
-		    echo "检查到您未安装psmisc,脚本将先进行安装"
-		    yum -y update
-	        yum -y install psmisc
+	    echo "检查到您未安装psmisc,脚本将先进行安装"
+            yum -y update
+	    yum -y install psmisc
         fi
-	 echo "现在开始卸载supervisor"
-                killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        killall supervisord
-	        yum -y remove supervisor
+	    echo "现在开始卸载supervisor"
+            killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    killall supervisord
+	    yum -y remove supervisor
             rm -rf "/etc/supervisord.conf"
             rm -rf "/usr/bin/srs"
 	fi
@@ -774,8 +771,14 @@ install_node(){
 		check_sys
 		if [[ ${release} = "centos" ]]; then
 			install_centos_ssr
+			remove_supervisor_for_each
+			install_pm2
+			use_centos_pm2
 		else
 			install_ubuntu_ssr
+			remove_supervisor_for_each
+			install_pm2
+			use_debian_pm2
 		fi
 	}
 
