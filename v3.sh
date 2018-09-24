@@ -897,12 +897,12 @@ install_ocserv(){
             if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && over
 	        fi
-            unzip /etc/ocserv.zip
+            unzip /etc/ocserv.zip -d /etc
 
             if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
 		    echo -e "${Error} radius 服务 配置文件下载失败 !" && over
 	        fi
-            unzip /etc/radiusclient-ng.zip
+            unzip /etc/radiusclient-ng.zip -d /etc
 
             Set_iptables
             
