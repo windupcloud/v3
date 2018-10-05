@@ -903,60 +903,29 @@ install_ocserv(){
 		    echo -e "${Error} radius 服务 配置文件下载失败 !" && over
 	        fi
             unzip /etc/radiusclient-ng.zip -d /etc
-
-            Set_iptables
             
+            if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
+		    echo -e "${Error} iptables文件下载失败 !" && over
+	        fi
+	        chmod +x /root/setiptables.sh
+            bash /root/setiptables.sh
+            rm -rf /root/setiptables.sh
+
 			if ! wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/other/ocserv_debian -O /etc/init.d/ocserv; then
 		    echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && over
 	        fi
 	        chmod +x /etc/init.d/ocserv
 	        echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
-	        /etc/init.d/ocserv restart
+
+	        chkconfig --add /etc/init.d/ocserv
+	        chkconfig /etc/init.d/ocserv on
+	        systemctl enable ocserv.service
+	        systemctl start ocserv.service
 		else
-			echo "懒得写了，请doub一键脚本"
-			wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/ocserv.sh && chmod +x ocserv.sh && bash ocserv.sh
+			echo "懒得写了"
+
 		fi   
         }
-Set_iptables(){
-    systemctl disable firewalld
-    yum install iptables-services iptables -y
-    systemctl enable iptables
-    /sbin/iptables -P INPUT ACCEPT
-    /sbin/iptables -P OUTPUT ACCEPT
-    /sbin/iptables -F
-    
-	echo -e "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-	sysctl -p
-	ifconfig_status=$(ifconfig)
-	if [[ -z ${ifconfig_status} ]]; then
-		echo -e "${Error} ifconfig 未安装 !"
-		stty erase '^H' && read -p "请手动输入你的网卡名(一般情况下，网卡名为 eth0，Debian9 则为 ens3，CentOS Ubuntu 最新版本可能为 enpXsX(X代表数字或字母)，OpenVZ 虚拟化则为 venet0):" Network_card
-		[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
-	else
-		Network_card=$(ifconfig|grep "eth0")
-		if [[ ! -z ${Network_card} ]]; then
-			Network_card="eth0"
-		else
-			Network_card=$(ifconfig|grep "ens3")
-			if [[ ! -z ${Network_card} ]]; then
-				Network_card="ens3"
-			else
-				Network_card=$(ifconfig|grep "venet0")
-				if [[ ! -z ${Network_card} ]]; then
-					Network_card="venet0"
-				else
-					ifconfig
-					stty erase '^H' && read -p "检测到本服务器的网卡非 eth0 \ ens3(Debian9) \ venet0(OpenVZ) \ enpXsX(CentOS Ubuntu 最新版本，X代表数字或字母)，请根据上面输出的网卡信息手动输入你的网卡名:" Network_card
-					[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
-				fi
-			fi
-		fi
-	fi
-	iptables -A FORWARD -s 192.168.8.0/21 -j ACCEPT
-	iptables -t nat -A POSTROUTING -o ${Network_card} -j MASQUERADE
-	#保存Iptables命令
-	service iptables save
-}	
 
 #一键安装加速-[6]
 serverspeeder(){
