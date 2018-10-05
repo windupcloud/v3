@@ -892,8 +892,9 @@ install_ocserv(){
         check_sys
         echo "$release"     
         if [ ${release} = 'centos' ]; then
-        	yum udpate
+        	yum update
 			yum install ocserv radiusclient-ng unzip -y
+
             if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && over
 	        fi
@@ -917,10 +918,12 @@ install_ocserv(){
 	        chmod +x /etc/init.d/ocserv
 	        echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
 
-	        chkconfig --add /etc/init.d/ocserv
-	        chkconfig /etc/init.d/ocserv on
+            /etc/rc.d/init.d/ocserv stop
+	        chkconfig --add /etc/rc.d/init.d/ocserv
+	        chkconfig /etc/rc.d/init.d/ocserv on
 	        systemctl enable ocserv.service
-	        systemctl start ocserv.service
+	        systemctl restart ocserv.service
+	        systemctl status ocserv.service
 		else
 			echo "懒得写了"
 
