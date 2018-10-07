@@ -84,11 +84,11 @@ change_centos_ip(){
 }
 
 change_debian_ip(){
-   	service network restart
+   	service networking restart
    	dhclient -r -v
-     rm -rf /var/lib/dhcp/*
-     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-     dhclient -v
+    rm -rf /var/lib/dhcp/*    
+    dhclient -v
+    service networking restart
 }
 
 Send_TG_Message(){
