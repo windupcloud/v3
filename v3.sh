@@ -91,16 +91,11 @@ install_pm2(){
     	    #设置权限
     	    chmod 777 /root/node-v9.11.2-linux-x64/bin/node
     	    chmod 777 /root/node-v9.11.2-linux-x64/bin/npm
-	 if [ ! -f /usr/bin/node ]; then
     	    #创建软连接
-    	    ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
-    else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
 	        ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
     	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
-	 fi
 	        #升级Node
 	        npm i -g npm
             npm install -g npm
