@@ -155,7 +155,7 @@ use_centos_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log
     done
 
 
@@ -170,12 +170,12 @@ use_centos_pm2(){
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
 	    for ssr_name in "${ssr_names[@]}"
 	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
 	    chmod 777 /usr/bin/ssrr
 	    
         #创建pm2日志清理
-            rm -rf "/var/spool/cron/root"
+    rm -rf "/var/spool/cron/root"
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
@@ -263,7 +263,7 @@ use_debian_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log
     done
         sleep 2s
         #创建快捷方式
@@ -279,7 +279,7 @@ use_debian_pm2(){
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
 	    for ssr_name in "${ssr_names[@]}"
 	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
 	    chmod 777 /usr/bin/ssrr
         #创建pm2日志清理
@@ -304,10 +304,10 @@ use_debian_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
-            echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
+	        echo '* */6 * * * ssrr' >> /var/spool/cron/root
+            #echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
-	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
+	        echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
         #清理缓存
             echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
             echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
