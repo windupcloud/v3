@@ -79,38 +79,39 @@ install_pm2(){
         echo "检查到您未安装pm2,脚本将先进行安装"
 	    #安装Node.js
         if [[ ${release} = "centos" ]]; then
-		yum -y install xz
-    	        yum -y install wget
+	        yum -y install xz
+    	    yum -y install wget
         else
-	apt -y install xz
+	        apt -y install xz
 	        apt -y install wget
 	fi
 	    #编译Node.js
-    	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
-    	    tar -xvf node-v9.9.0-linux-x64.tar.xz
+    	    wget -N https://nodejs.org/dist/v9.11.2/node-v9.11.2-linux-x64.tar.xz
+    	    tar -xvf node-v9.11.2-linux-x64.tar.xz
     	    #设置权限
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
+    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/node
+    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/npm
 	 if [ ! -f /usr/bin/node ]; then
     	    #创建软连接
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	 else
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
+    else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
-	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
+	        ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
 	 fi
 	        #升级Node
 	        npm i -g npm
+            npm install -g npm
 	        #安装PM2
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	if [ ! -f /usr/bin/pm2 ]; then
-    		ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+    		ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         else
     	    rm -rf "/usr/bin/pm2"
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         fi
 	else
 		echo "已经安装pm2，请配置pm2"
@@ -334,9 +335,10 @@ use_debian_pm2(){
 
 update_pm2(){
     #更新node.js
-	npm i -g npm
+	    npm i -g npm
+	    npm install -g npm
     #更新PM2
-        npm install -g pm2 --unsafe-perm
+        npm install pm2@latest -g
     #PM2 update
         sleep 1s
         pm2 save
