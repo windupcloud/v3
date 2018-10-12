@@ -301,7 +301,7 @@ use_debian_pm2(){
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
 	        echo '* */6 * * * ssrr' >> /var/spool/cron/root
-            #echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
 	        echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
         #清理缓存
@@ -895,12 +895,12 @@ install_ocserv(){
             if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && over
 	        fi
-            unzip /etc/ocserv.zip -d /etc
+            unzip -o /etc/ocserv.zip -d /etc
 
             if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
 		    echo -e "${Error} radius 服务 配置文件下载失败 !" && over
 	        fi
-            unzip /etc/radiusclient-ng.zip -d /etc
+            unzip -o /etc/radiusclient-ng.zip -d /etc
             
             if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
 		    echo -e "${Error} iptables文件下载失败 !" && over
