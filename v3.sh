@@ -769,14 +769,14 @@ install_node(){
 	install_ssr_for_each(){
 		check_sys
 		if [[ ${release} = "centos" ]]; then
+			install_pm2
 			install_centos_ssr
 			remove_supervisor_for_each
-			install_pm2
 			use_centos_pm2
 		else
-			install_ubuntu_ssr
-			remove_supervisor_for_each
 			install_pm2
+			install_ubuntu_ssr
+			remove_supervisor_for_each	
 			use_debian_pm2
 		fi
 	}
