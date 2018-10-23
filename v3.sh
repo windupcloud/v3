@@ -618,6 +618,8 @@ python_test(){
 install_centos_ssr(){
     read -p "后端名字是:" Username
 	read -p "[y/n]是否是专用后端:" Houduan
+	#更换DNS至谷歌
+	/usr/bin/chattr -i /etc/resolv.conf && wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	cd /root
 	Get_Dist_Version
 	if [ $Version == "7" ]; then
