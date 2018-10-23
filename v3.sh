@@ -160,61 +160,63 @@ use_centos_pm2(){
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
 	        echo "pm2 restart all" >> /usr/bin/srs
-	    chmod 777 /usr/bin/srs
+	        chmod +x /usr/bin/srs
 	    
-	    rm -rf "/usr/bin/ssrr"
-	    echo "#!/bin/bash" >> /usr/bin/ssrr
-	    for ssr_name in "${ssr_names[@]}"
-	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
+	        rm -rf "/usr/bin/ssrr"
+	        echo "#!/bin/bash" >> /usr/bin/ssrr
+	        for ssr_name in "${ssr_names[@]}"
+	        do
+	            echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
-	    chmod 777 /usr/bin/ssrr
+	        chmod +x /usr/bin/ssrr
 	    
         #创建pm2日志清理
-    rm -rf "/var/spool/cron/root"
-    if [ ! -f /root/ddns.sh ] ; then
-            echo "未检测到ddns.sh"
-    else
-	    echo "添加DDNS定时启动"
-            sleep 2s
-            echo '###DDNS' >> /var/spool/cron/root
-            echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
-    fi
-    if [ ! -f /root/Application/telegram-socks/server.js ] ; then
-            echo "未检测到socks5"
-    else
-	    echo "添加socks5定时启动"
-            sleep 2s
-            echo '###Socks5' >> /var/spool/cron/root
-            echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
-    fi
-    if [ ! -f /usr/local/gost/gostproxy ] ; then
-            echo "未检测到gost"
-    else
-	    echo "添加gost定时启动"
-            sleep 2s
-            echo '###Gost' >> /var/spool/cron/root
-            echo '0 3 * * * gost start' >> /var/spool/cron/root
-    fi
-        #PM2定时重启
-            echo '#DaliyJob' >> /var/spool/cron/root
-	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
-            echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
-	    echo '2 3 * * * ssrr' >> /var/spool/cron/root
-            echo '0 3 * * * pm2 update' >> /var/spool/cron/root
-	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
-        #清理缓存
-            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-	    
-            /sbin/service crond restart
-        #查看cron进程
-            crontab -l
-            sleep 2s
-        #创建开机自启动
-	        pm2 save
-	        pm2 startup
+            cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
+            rm -rf "/var/spool/cron/root"
+            if [ ! -f /root/ddns.sh ] ; then
+                echo "未检测到ddns.sh"
+            else
+	            echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS' >> /var/spool/cron/root
+                    echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
+            fi
+            if [ ! -f /root/Application/telegram-socks/server.js ] ; then
+                echo "未检测到socks5"
+            else
+	            echo "添加socks5定时启动"
+                    sleep 2s
+                    echo '###Socks5' >> /var/spool/cron/root
+                    echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
+            fi
+            if [ ! -f /usr/local/gost/gostproxy ] ; then
+                echo "未检测到gost"
+            else
+	            echo "添加gost定时启动"
+                    sleep 2s
+                    echo '###Gost' >> /var/spool/cron/root
+                    echo '0 3 * * * gost start' >> /var/spool/cron/root
+            fi
+                #PM2定时重启
+                    echo '#DaliyJob' >> /var/spool/cron/root
+	                echo '* */6 * * * ssrr' >> /var/spool/cron/root
+                    echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
+	                echo '2 3 * * * ssrr' >> /var/spool/cron/root
+                    echo '0 3 * * * pm2 update' >> /var/spool/cron/root
+	                echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
+                #清理缓存
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+	            #重启cron并备份
+                    /sbin/service crond restart
+                    cp /var/spool/cron/root /var/spool/cron/v3root.bak
+                #查看cron进程
+                    crontab -l
+                    sleep 2s
+                #创建开机自启动
+	                pm2 save
+	                pm2 startup
 	    #完成提示
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
@@ -279,7 +281,7 @@ use_debian_pm2(){
             done
 	    chmod 777 /usr/bin/ssrr
         #创建pm2日志清理
-            rm -rf "/var/spool/cron/crontabs/root"
+        rm -rf "/var/spool/cron/crontabs/root"
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
@@ -351,9 +353,9 @@ remove_pm2(){
 		    sleep 1s
 		    #卸载Node.js
 		    rm -rf "/usr/bin/node"
-	            rm -rf "/usr/bin/npm"
-	            rm -rf "/root/.npm"
-                    #卸载PM2
+	        rm -rf "/usr/bin/npm"
+	        rm -rf "/root/.npm"
+            #卸载PM2
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
 		    rm -rf /root/node*
@@ -455,19 +457,19 @@ remove_debian_supervisor(){
 	if [ ! -f /usr/bin/supervisord ]; then
 		echo "已经卸载supervisor";exit 0
 	else
-	   if [ ! -f /usr/bin/killall ]; then
-	      echo "检查到您未安装psmisc,脚本将先进行安装"
-	      apt-get install psmisc
-           else
-	      echo "现在开始卸载supervisor"
-              killall supervisord
-	      killall supervisord
-	      killall supervisord
-	      killall supervisord
-	      apt-get remove --purge supervisor -y
-              rm -rf "/etc/supervisord.conf"
-              rm -rf "/usr/bin/srs"
-           fi
+	    if [ ! -f /usr/bin/killall ]; then
+	        echo "检查到您未安装psmisc,脚本将先进行安装"
+	        apt-get install psmisc
+        else
+	        echo "现在开始卸载supervisor"
+            killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        apt-get remove --purge supervisor -y
+            rm -rf "/etc/supervisord.conf"
+            rm -rf "/usr/bin/srs"
+        fi
 	fi
 }
 
@@ -499,13 +501,13 @@ kill_supervisor(){
 	if [ ! -f /usr/bin/killall ]; then
 	    echo "检查到您未安装psmisc,脚本将先进行安装..."
 	if [[ ${release} = "centos" ]]; then
-	     yum -y update
-	     yum -y install psmisc
+	    yum -y update
+	    yum -y install psmisc
 	else
-	     apt-get -y update
-             apt-get -y install psmisc
+	    apt-get -y update
+        apt-get -y install psmisc
 	fi
-            killall supervisord
+        killall supervisord
 	    killall supervisord
 	    killall supervisord
 	    killall supervisord
@@ -627,7 +629,7 @@ install_centos_ssr(){
 	fi
 	rm -rf *.rpm
 	yum -y update --exclude=kernel*	
-	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables
+	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables iptables-services
 	yum -y groupinstall "Development Tools" 
 	#第一次yum安装 supervisor pip
 	yum -y install supervisor python-pip
@@ -654,21 +656,26 @@ install_centos_ssr(){
     easy_install supervisor
     supervisord
 	fi
-	pip install --upgrade pip
-	Libtest
-	wget -N —no-check-certificate $libAddr
-	tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
-	./configure && make -j2 && make install
-	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-	ldconfig
+	python -m pip install --upgrade pip
+    wget -N --no-check-certificate https://softs.loan/Bash/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+
+	#旧编译
+	##Libtest
+	##wget -N —no-check-certificate $libAddr
+	##tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
+	##./configure && make -j2 && make install
+	##echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+	##ldconfig
+
 	if [ ${Houduan} = 'y' ]; then
-	        git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
 		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
+	pip install -I requests==2.9
 	python_test
 	pip install -r requirements.txt -i $pyAddr	
 	#第二次检测是否安装成功
@@ -710,13 +717,14 @@ install_ubuntu_ssr(){
 	#clone shadowsocks
 	cd /root
 	if [ ${Houduan} = 'y' ]; then
-	        git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
 		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
+	pip install -I requests==2.9
 	python_test
 	pip install -r requirements.txt -i $pyAddr	
 	#第二次检测是否安装成功
@@ -804,7 +812,7 @@ install_node(){
 	read -p "前端地址是:" Userdomain
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
-        install_ssr_for_each
+    install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks-${Username}
 	#备份
@@ -826,8 +834,8 @@ install_node(){
 	iptables -F
 	iptables -F
 	iptables -X
-	iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
+	#iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
+	#iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 	iptables-save >/etc/sysconfig/iptables
 	iptables-save >/etc/sysconfig/iptables
 	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
@@ -1044,7 +1052,7 @@ ddns(){
 		#运行
 		bash /root/ddns.sh
 	     
-             elif [ ${ddns} = '2' ]; then
+        elif [ ${ddns} = '2' ]; then
 		#清屏
 		clear
 		#输出当前配置
@@ -1057,19 +1065,20 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
 			if [ ! -f /root/ddns.sh.bak ]; then
+				rm -rf /root/cloud* && rm -rf /root/ip*
 				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
 			else
 			#还原
-				rm -rf /root/ddns.sh
+				rm -rf /root/ddns.sh && rm -rf /root/cloud* && rm -rf /root/ip*
 				cp /root/ddns.sh.bak /root/ddns.sh
 			fi
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
                 #运行
+                rm -rf /root/cloud* && rm -rf /root/ip*
                 bash /root/ddns.sh
-		
-                elif [ ${ddns} = '3' ]; then
+        elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
 		if [ ! -f /root/ddns.sh ]; then
  		    echo "检查到您未安装ddns"
