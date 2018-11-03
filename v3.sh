@@ -79,38 +79,34 @@ install_pm2(){
         echo "检查到您未安装pm2,脚本将先进行安装"
 	    #安装Node.js
         if [[ ${release} = "centos" ]]; then
-		yum -y install xz
-    	        yum -y install wget
+	        yum -y install xz
+    	    yum -y install wget
         else
-	apt -y install xz
+	        apt -y install xz
 	        apt -y install wget
 	fi
 	    #编译Node.js
-    	    wget -N https://nodejs.org/dist/v9.9.0/node-v9.9.0-linux-x64.tar.xz
-    	    tar -xvf node-v9.9.0-linux-x64.tar.xz
+    	    wget -N https://nodejs.org/dist/v9.11.2/node-v9.11.2-linux-x64.tar.xz
+    	    tar -xvf node-v9.11.2-linux-x64.tar.xz
     	    #设置权限
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/node
-    	    chmod 777 /root/node-v9.9.0-linux-x64/bin/npm
-	 if [ ! -f /usr/bin/node ]; then
+    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/node
+    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/npm
     	    #创建软连接
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-    	 else
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
-	    ln -s /root/node-v9.9.0-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/npm /usr/bin/npm
-	 fi
+	        ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
 	        #升级Node
 	        npm i -g npm
+            npm install -g npm
 	        #安装PM2
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	if [ ! -f /usr/bin/pm2 ]; then
-    		ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+    		ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         else
     	    rm -rf "/usr/bin/pm2"
-    	    ln -s /root/node-v9.9.0-linux-x64/bin/pm2 /usr/bin/pm2
+    	    ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         fi
 	else
 		echo "已经安装pm2，请配置pm2"
@@ -155,7 +151,7 @@ use_centos_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log
     done
 
 
@@ -164,61 +160,63 @@ use_centos_pm2(){
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
 	        echo "pm2 restart all" >> /usr/bin/srs
-	    chmod 777 /usr/bin/srs
+	        chmod +x /usr/bin/srs
 	    
-	    rm -rf "/usr/bin/ssrr"
-	    echo "#!/bin/bash" >> /usr/bin/ssrr
-	    for ssr_name in "${ssr_names[@]}"
-	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+	        rm -rf "/usr/bin/ssrr"
+	        echo "#!/bin/bash" >> /usr/bin/ssrr
+	        for ssr_name in "${ssr_names[@]}"
+	        do
+	            echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
-	    chmod 777 /usr/bin/ssrr
+	        chmod +x /usr/bin/ssrr
 	    
         #创建pm2日志清理
+            cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
             rm -rf "/var/spool/cron/root"
-    if [ ! -f /root/ddns.sh ] ; then
-            echo "未检测到ddns.sh"
-    else
-	    echo "添加DDNS定时启动"
-            sleep 2s
-            echo '###DDNS' >> /var/spool/cron/root
-            echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
-    fi
-    if [ ! -f /root/Application/telegram-socks/server.js ] ; then
-            echo "未检测到socks5"
-    else
-	    echo "添加socks5定时启动"
-            sleep 2s
-            echo '###Socks5' >> /var/spool/cron/root
-            echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
-    fi
-    if [ ! -f /usr/local/gost/gostproxy ] ; then
-            echo "未检测到gost"
-    else
-	    echo "添加gost定时启动"
-            sleep 2s
-            echo '###Gost' >> /var/spool/cron/root
-            echo '0 3 * * * gost start' >> /var/spool/cron/root
-    fi
-        #PM2定时重启
-            echo '#DaliyJob' >> /var/spool/cron/root
-	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
-            echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
-	    echo '2 3 * * * ssrr' >> /var/spool/cron/root
-            echo '0 3 * * * pm2 update' >> /var/spool/cron/root
-	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
-        #清理缓存
-            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
-	    
-            /sbin/service crond restart
-        #查看cron进程
-            crontab -l
-            sleep 2s
-        #创建开机自启动
-	        pm2 save
-	        pm2 startup
+            if [ ! -f /root/ddns.sh ] ; then
+                echo "未检测到ddns.sh"
+            else
+	            echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS' >> /var/spool/cron/root
+                    echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
+            fi
+            if [ ! -f /root/Application/telegram-socks/server.js ] ; then
+                echo "未检测到socks5"
+            else
+	            echo "添加socks5定时启动"
+                    sleep 2s
+                    echo '###Socks5' >> /var/spool/cron/root
+                    echo '* */1 * * * systemctl restart telegram' >> /var/spool/cron/root
+            fi
+            if [ ! -f /usr/local/gost/gostproxy ] ; then
+                echo "未检测到gost"
+            else
+	            echo "添加gost定时启动"
+                    sleep 2s
+                    echo '###Gost' >> /var/spool/cron/root
+                    echo '0 3 * * * gost start' >> /var/spool/cron/root
+            fi
+                #PM2定时重启
+                    echo '#DaliyJob' >> /var/spool/cron/root
+	                echo '* */6 * * * ssrr' >> /var/spool/cron/root
+                    echo '*/30 * * * * pm2 flush' >> /var/spool/cron/root
+	                echo '2 3 * * * ssrr' >> /var/spool/cron/root
+                    echo '0 3 * * * pm2 update' >> /var/spool/cron/root
+	                echo '20 3 * * * killall sftp-server' >> /var/spool/cron/root
+                #清理缓存
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches' >> /var/spool/cron/root
+	            #重启cron并备份
+                    /sbin/service crond restart
+                    cp /var/spool/cron/root /var/spool/cron/v3root.bak
+                #查看cron进程
+                    crontab -l
+                    sleep 2s
+                #创建开机自启动
+	                pm2 save
+	                pm2 startup
 	    #完成提示
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
@@ -263,7 +261,7 @@ use_debian_pm2(){
 
     for ssr_name in "${ssr_names[@]}"
     do
-        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M
+        pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log
     done
         sleep 2s
         #创建快捷方式
@@ -279,11 +277,11 @@ use_debian_pm2(){
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
 	    for ssr_name in "${ssr_names[@]}"
 	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M" >> /usr/bin/ssrr
+	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
 	    chmod 777 /usr/bin/ssrr
         #创建pm2日志清理
-            rm -rf "/var/spool/cron/crontabs/root"
+        rm -rf "/var/spool/cron/crontabs/root"
     if [ ! -f /root/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
@@ -304,10 +302,10 @@ use_debian_pm2(){
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-	    echo '* */6 * * * ssrr' >> /var/spool/cron/root
+	        echo '* */6 * * * ssrr' >> /var/spool/cron/root
             echo '* */1 * * * pm2 flush' >> /var/spool/cron/crontabs/root
             echo '0 3 * * * pm2 update' >> /var/spool/cron/crontabs/root
-	    echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
+	        echo '20 3 * * * killall sftp-server' >> /var/spool/cron/crontabs/root
         #清理缓存
             echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
             echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches' >> /var/spool/cron/crontabs/root
@@ -334,9 +332,10 @@ use_debian_pm2(){
 
 update_pm2(){
     #更新node.js
-	npm i -g npm
+	    npm i -g npm
+	    npm install -g npm
     #更新PM2
-        npm install -g pm2 --unsafe-perm
+        npm install pm2@latest -g
     #PM2 update
         sleep 1s
         pm2 save
@@ -354,9 +353,9 @@ remove_pm2(){
 		    sleep 1s
 		    #卸载Node.js
 		    rm -rf "/usr/bin/node"
-	            rm -rf "/usr/bin/npm"
-	            rm -rf "/root/.npm"
-                    #卸载PM2
+	        rm -rf "/usr/bin/npm"
+	        rm -rf "/root/.npm"
+            #卸载PM2
 		    rm -rf "/usr/bin/pm2"
 		    rm -rf "/root/.pm2"
 		    rm -rf /root/node*
@@ -458,19 +457,19 @@ remove_debian_supervisor(){
 	if [ ! -f /usr/bin/supervisord ]; then
 		echo "已经卸载supervisor";exit 0
 	else
-	   if [ ! -f /usr/bin/killall ]; then
-	      echo "检查到您未安装psmisc,脚本将先进行安装"
-	      apt-get install psmisc
-           else
-	      echo "现在开始卸载supervisor"
-              killall supervisord
-	      killall supervisord
-	      killall supervisord
-	      killall supervisord
-	      apt-get remove --purge supervisor -y
-              rm -rf "/etc/supervisord.conf"
-              rm -rf "/usr/bin/srs"
-           fi
+	    if [ ! -f /usr/bin/killall ]; then
+	        echo "检查到您未安装psmisc,脚本将先进行安装"
+	        apt-get install psmisc
+        else
+	        echo "现在开始卸载supervisor"
+            killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        apt-get remove --purge supervisor -y
+            rm -rf "/etc/supervisord.conf"
+            rm -rf "/usr/bin/srs"
+        fi
 	fi
 }
 
@@ -502,13 +501,13 @@ kill_supervisor(){
 	if [ ! -f /usr/bin/killall ]; then
 	    echo "检查到您未安装psmisc,脚本将先进行安装..."
 	if [[ ${release} = "centos" ]]; then
-	     yum -y update
-	     yum -y install psmisc
+	    yum -y update
+	    yum -y install psmisc
 	else
-	     apt-get -y update
-             apt-get -y install psmisc
+	    apt-get -y update
+        apt-get -y install psmisc
 	fi
-            killall supervisord
+        killall supervisord
 	    killall supervisord
 	    killall supervisord
 	    killall supervisord
@@ -619,6 +618,8 @@ python_test(){
 install_centos_ssr(){
     read -p "后端名字是:" Username
 	read -p "[y/n]是否是专用后端:" Houduan
+	#更换DNS至谷歌
+	/usr/bin/chattr -i /etc/resolv.conf && wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	cd /root
 	Get_Dist_Version
 	if [ $Version == "7" ]; then
@@ -630,7 +631,7 @@ install_centos_ssr(){
 	fi
 	rm -rf *.rpm
 	yum -y update --exclude=kernel*	
-	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables
+	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables iptables-services
 	yum -y groupinstall "Development Tools" 
 	#第一次yum安装 supervisor pip
 	yum -y install supervisor python-pip
@@ -657,21 +658,26 @@ install_centos_ssr(){
     easy_install supervisor
     supervisord
 	fi
-	pip install --upgrade pip
-	Libtest
-	wget -N —no-check-certificate $libAddr
-	tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
-	./configure && make -j2 && make install
-	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-	ldconfig
+	python -m pip install --upgrade pip
+    wget -N --no-check-certificate https://softs.loan/Bash/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+
+	#旧编译
+	##Libtest
+	##wget -N —no-check-certificate $libAddr
+	##tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
+	##./configure && make -j2 && make install
+	##echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+	##ldconfig
+
 	if [ ${Houduan} = 'y' ]; then
-	        git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
 		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
+	pip install -I requests==2.9
 	python_test
 	pip install -r requirements.txt -i $pyAddr	
 	#第二次检测是否安装成功
@@ -713,13 +719,14 @@ install_ubuntu_ssr(){
 	#clone shadowsocks
 	cd /root
 	if [ ${Houduan} = 'y' ]; then
-	        git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	elif [ ${Houduan} = 'n' ]; then
 		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
+	pip install -I requests==2.9
 	python_test
 	pip install -r requirements.txt -i $pyAddr	
 	#第二次检测是否安装成功
@@ -772,14 +779,14 @@ install_node(){
 	install_ssr_for_each(){
 		check_sys
 		if [[ ${release} = "centos" ]]; then
+			install_pm2
 			install_centos_ssr
 			remove_supervisor_for_each
-			install_pm2
 			use_centos_pm2
 		else
-			install_ubuntu_ssr
-			remove_supervisor_for_each
 			install_pm2
+			install_ubuntu_ssr
+			remove_supervisor_for_each	
 			use_debian_pm2
 		fi
 	}
@@ -807,7 +814,7 @@ install_node(){
 	read -p "前端地址是:" Userdomain
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
-        install_ssr_for_each
+    install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks-${Username}
 	#备份
@@ -829,8 +836,8 @@ install_node(){
 	iptables -F
 	iptables -F
 	iptables -X
-	iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
+	#iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
+	#iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 	iptables-save >/etc/sysconfig/iptables
 	iptables-save >/etc/sysconfig/iptables
 	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
@@ -892,71 +899,43 @@ install_ocserv(){
         check_sys
         echo "$release"     
         if [ ${release} = 'centos' ]; then
-        	yum udpate
-			yum install ocserv radiusclient-ng unzip -y
-            if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
-		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && over
-	        fi
-            unzip /etc/ocserv.zip -d /etc
+        	yum update -y
+	yum install ocserv radiusclient-ng unzip -y
 
-            if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
-		    echo -e "${Error} radius 服务 配置文件下载失败 !" && over
+                if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
+		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && exit
 	        fi
-            unzip /etc/radiusclient-ng.zip -d /etc
+            unzip -o /etc/ocserv.zip -d /etc
 
-            Set_iptables
+                if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
+		    echo -e "${Error} radius 服务 配置文件下载失败 !" && exiy
+	        fi
+                unzip -o /etc/radiusclient-ng.zip -d /etc
             
-			if ! wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/other/ocserv_debian -O /etc/init.d/ocserv; then
-		    echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && over
+                if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
+                echo -e "${Error} iptables文件下载失败 !" && exit
+	        fi
+	        chmod +x /root/setiptables.sh
+                bash /root/setiptables.sh
+                rm -rf /root/setiptables.sh
+
+                if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/ocserv_debian -O /etc/init.d/ocserv; then
+		    echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
 	        fi
 	        chmod +x /etc/init.d/ocserv
 	        echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
-	        /etc/init.d/ocserv restart
+
+                 /etc/rc.d/init.d/ocserv stop
+	        chkconfig --add /etc/rc.d/init.d/ocserv
+	        chkconfig /etc/rc.d/init.d/ocserv on
+	        systemctl enable ocserv.service
+	        systemctl restart ocserv.service
+	        systemctl status ocserv.service
 		else
-			echo "懒得写了，请doub一键脚本"
-			wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/ocserv.sh && chmod +x ocserv.sh && bash ocserv.sh
+			echo "懒得写了"
+
 		fi   
         }
-Set_iptables(){
-    systemctl disable firewalld
-    yum install iptables-services iptables -y
-    systemctl enable iptables
-    /sbin/iptables -P INPUT ACCEPT
-    /sbin/iptables -P OUTPUT ACCEPT
-    /sbin/iptables -F
-    
-	echo -e "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-	sysctl -p
-	ifconfig_status=$(ifconfig)
-	if [[ -z ${ifconfig_status} ]]; then
-		echo -e "${Error} ifconfig 未安装 !"
-		stty erase '^H' && read -p "请手动输入你的网卡名(一般情况下，网卡名为 eth0，Debian9 则为 ens3，CentOS Ubuntu 最新版本可能为 enpXsX(X代表数字或字母)，OpenVZ 虚拟化则为 venet0):" Network_card
-		[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
-	else
-		Network_card=$(ifconfig|grep "eth0")
-		if [[ ! -z ${Network_card} ]]; then
-			Network_card="eth0"
-		else
-			Network_card=$(ifconfig|grep "ens3")
-			if [[ ! -z ${Network_card} ]]; then
-				Network_card="ens3"
-			else
-				Network_card=$(ifconfig|grep "venet0")
-				if [[ ! -z ${Network_card} ]]; then
-					Network_card="venet0"
-				else
-					ifconfig
-					stty erase '^H' && read -p "检测到本服务器的网卡非 eth0 \ ens3(Debian9) \ venet0(OpenVZ) \ enpXsX(CentOS Ubuntu 最新版本，X代表数字或字母)，请根据上面输出的网卡信息手动输入你的网卡名:" Network_card
-					[[ -z "${Network_card}" ]] && echo "取消..." && exit 1
-				fi
-			fi
-		fi
-	fi
-	iptables -A FORWARD -s 192.168.8.0/21 -j ACCEPT
-	iptables -t nat -A POSTROUTING -o ${Network_card} -j MASQUERADE
-	#保存Iptables命令
-	service iptables save
-}	
 
 #一键安装加速-[6]
 serverspeeder(){
@@ -1075,7 +1054,7 @@ ddns(){
 		#运行
 		bash /root/ddns.sh
 	     
-             elif [ ${ddns} = '2' ]; then
+        elif [ ${ddns} = '2' ]; then
 		#清屏
 		clear
 		#输出当前配置
@@ -1088,19 +1067,20 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
 			if [ ! -f /root/ddns.sh.bak ]; then
+				rm -rf /root/cloud* && rm -rf /root/ip*
 				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
 			else
 			#还原
-				rm -rf /root/ddns.sh
+				rm -rf /root/ddns.sh && rm -rf /root/cloud* && rm -rf /root/ip*
 				cp /root/ddns.sh.bak /root/ddns.sh
 			fi
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
                 #运行
+                rm -rf /root/cloud* && rm -rf /root/ip*
                 bash /root/ddns.sh
-		
-                elif [ ${ddns} = '3' ]; then
+        elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
 		if [ ! -f /root/ddns.sh ]; then
  		    echo "检查到您未安装ddns"

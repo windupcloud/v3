@@ -84,11 +84,11 @@ change_centos_ip(){
 }
 
 change_debian_ip(){
-   	service network restart
+   	service networking restart
    	dhclient -r -v
-     rm -rf /var/lib/dhclient/dhclient.leases
-     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-     dhclient -v
+    rm -rf /var/lib/dhcp/*    
+    dhclient -v
+    service networking restart
 }
 
 Send_TG_Message(){
@@ -96,7 +96,7 @@ Send_TG_Message(){
 		echo -e " ${Tip} No changes."
 		break
 	else
-		Message="HostName: ***${HostName}*** Date:\[ $(date +"%Y-%m-%d %X") ] Now IP:  ***${New_IP}***"
+		Message="HostName: ***${HostName}*** Date:\[ $(date +"%Y-%m-%d %X") ] Now IP: `${New_IP}`"
 		curl -g "https://api.telegram.org/bot${bot_api_key}/sendMessage?text=${Message}&chat_id=${chat_id}&parse_mode=Markdown"
 		echo "${New_IP}" > nowip.txt
 		clear
