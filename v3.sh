@@ -81,6 +81,7 @@ install_pm2(){
         if [[ ${release} = "centos" ]]; then
 	        yum -y install xz
     	    yum -y install wget
+    	    wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         else
 	        apt -y install xz
 	        apt -y install wget
@@ -659,7 +660,8 @@ install_centos_ssr(){
     supervisord
 	fi
 	python -m pip install --upgrade pip
-    wget -N --no-check-certificate https://softs.loan/Bash/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+    wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+	rm -rf libsodium.sh
 
 	#旧编译
 	##Libtest
@@ -713,8 +715,9 @@ install_ubuntu_ssr(){
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
 	#编译安装libsodium
-	wget -N --no-check-certificate https://softs.loan/Bash/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
- 
+    wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+    
+    rm -rf libsodium.sh
 	pip install cymysql -i https://pypi.org/simple/
 	#clone shadowsocks
 	cd /root
@@ -846,18 +849,18 @@ install_node(){
 	#创建快捷重启命令
 	rm -rf /usr/bin/srs
 	echo "#!/bin/bash" >> /usr/bin/srs
-	echo "supervisorctl restart ssr" >> /usr/bin/srs
+	echo "pm2 restart all" >> /usr/bin/srs
 	chmod 777 /usr/bin/srs
 	#最后配置
 	#/usr/bin/supervisord -c /etc/supervisord.conf
-	supervisorctl restart ssr
+	pm2 restart ssr
 	#完成提示
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
 ########################################
-# 启动SSR：supervisorctl start ssr     #
-# 停止SSR：supervisorctl stop ssr      #
-# 重启SSR：supervisorctl restart ssr   #
+# 启动SSR：pm2 start ssr     #
+# 停止SSR：pm2 stop ssr      #
+# 重启SSR：pm2 restart ssr   #
 # 或：srs                              #
 ########################################"
 }
