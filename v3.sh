@@ -222,9 +222,9 @@ use_centos_pm2(){
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
 ########################################
-# 启动SSR：pm2 start ssr               #
-# 停止SSR：pm2 stop ssr                #
-# 重启SSR：pm2 restart ssr             #
+# 启动SSR：pm2 start ssr                         #
+# 停止SSR：pm2 stop ssr                          #
+# 重启SSR：pm2 restart ssr                       #
 # 或：srs                              #
 ########################################"
 }
@@ -681,7 +681,7 @@ install_centos_ssr(){
 	#第一次安装
 	pip install -I requests==2.9
 	python_test
-	pip install -r requirements.txt -i $pyAddr	
+	pip install -r requirements.txt
 	#第二次检测是否安装成功
 	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
 		pip install -r requirements.txt #用自带的源试试再装一遍
