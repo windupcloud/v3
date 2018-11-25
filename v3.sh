@@ -222,9 +222,9 @@ use_centos_pm2(){
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
 ########################################
-# 启动SSR：pm2 start ssr                         #
-# 停止SSR：pm2 stop ssr                          #
-# 重启SSR：pm2 restart ssr                       #
+# 启动SSR：pm2 start ssr               #
+# 停止SSR：pm2 stop ssr                #
+# 重启SSR：pm2 restart ssr             #
 # 或：srs                              #
 ########################################"
 }
