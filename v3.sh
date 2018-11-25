@@ -903,7 +903,7 @@ install_ocserv(){
         echo "$release"     
         if [ ${release} = 'centos' ]; then
         	yum update -y
-	yum install ocserv radiusclient-ng unzip -y
+	        yum install ocserv radiusclient-ng unzip -y
 
                 if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && exit
@@ -918,7 +918,7 @@ install_ocserv(){
                 if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
                 echo -e "${Error} iptables文件下载失败 !" && exit
 	        fi
-	        chmod +x /root/setiptables.sh
+	            chmod +x /root/setiptables.sh
                 bash /root/setiptables.sh
                 rm -rf /root/setiptables.sh
 
@@ -1268,7 +1268,7 @@ nali_test(){
 
 besttrace_test(){
 	echo "请输入目标IP：";read purpose_ip
-	cd /root/besttrace
+	cd /root/besttrace4linux
 	./besttrace -q 1 ${purpose_ip}
 }
 
@@ -1299,9 +1299,9 @@ detect_backhaul_routing(){
 		if [ ! -f /root/besttrace/besttrace ]; then
 			echo "检查到您未安装,脚本将先进行安装..."
 			yum update -y
-			yum install traceroute -y
-			wget -N --no-check-certificate "http://sspanel-1252089354.coshk.myqcloud.com/besttrace.tar.gz"
-			tar -xzf besttrace.tar.gz && cd besttrace && chmod +x *
+			yum install traceroute unzip -y
+			wget -N --no-check-certificate "https://cdn.ipip.net/17mon/besttrace4linux.zip"
+			unzip besttrace4linux.zip && cd besttrace4linux && chmod +x *
 			clear;besttrace_test
 		else
 			besttrace_test
