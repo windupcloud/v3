@@ -1268,7 +1268,7 @@ nali_test(){
 
 besttrace_test(){
 	echo "请输入目标IP：";read purpose_ip
-	cd /root/besttrace4linux
+	cd /root/besttrace
 	./besttrace -q 1 ${purpose_ip}
 }
 
@@ -1301,7 +1301,7 @@ detect_backhaul_routing(){
 			yum update -y
 			yum install traceroute unzip -y
 			wget -N --no-check-certificate "https://cdn.ipip.net/17mon/besttrace4linux.zip"
-			unzip besttrace4linux.zip && cd besttrace4linux && chmod +x *
+			unzip besttrace4linux.zip -d besttrace && cd besttrace && chmod +x *
 			clear;besttrace_test
 		else
 			besttrace_test
