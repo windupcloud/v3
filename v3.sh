@@ -90,8 +90,8 @@ install_pm2(){
     	    wget -N https://nodejs.org/dist/v9.11.2/node-v9.11.2-linux-x64.tar.xz
     	    tar -xvf node-v9.11.2-linux-x64.tar.xz
     	    #设置权限
-    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/node
-    	    chmod 777 /root/node-v9.11.2-linux-x64/bin/npm
+    	    chmod +x /root/node-v9.11.2-linux-x64/bin/node
+    	    chmod +x /root/node-v9.11.2-linux-x64/bin/npm
     	    #创建软连接
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
@@ -109,6 +109,7 @@ install_pm2(){
     	    rm -rf "/usr/bin/pm2"
     	    ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         fi
+            rm -rf /root/*.tar.xz
 	else
 		echo "已经安装pm2，请配置pm2"
 	fi
@@ -174,13 +175,13 @@ use_centos_pm2(){
         #创建pm2日志清理
             cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
             rm -rf "/var/spool/cron/root"
-            if [ ! -f /root/ddns.sh ] ; then
+            if [ ! -f /root/ddns/ddns.sh ] ; then
                 echo "未检测到ddns.sh"
             else
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/root
+                    echo '* */1 * * * bash /root/ddns/ddns.sh' >> /var/spool/cron/root
             fi
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
                 echo "未检测到socks5"
@@ -272,7 +273,7 @@ use_debian_pm2(){
             do
 	        echo "pm2 restart all" >> /usr/bin/srs
             done
-	    chmod 777 /usr/bin/srs
+	    chmod +x /usr/bin/srs
 	    
 	    rm -rf "/usr/bin/ssrr"
 	    echo "#!/bin/bash" >> /usr/bin/ssrr
@@ -280,16 +281,16 @@ use_debian_pm2(){
 	    do
 	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
-	    chmod 777 /usr/bin/ssrr
+	    chmod +x /usr/bin/ssrr
         #创建pm2日志清理
         rm -rf "/var/spool/cron/crontabs/root"
-    if [ ! -f /root/ddns.sh ] ; then
+    if [ ! -f /root/ddns/ddns.sh ] ; then
             echo "未检测到ddns.sh"
     else
 	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
-            echo '* */1 * * * bash /root/ddns.sh' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * bash /root/ddns/ddns.sh' >> /var/spool/cron/crontabs/root
     fi
     
     if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -436,7 +437,7 @@ install_centos_supervisor(){
         #创建快捷重启命令
             echo "#!/bin/bash" » /usr/bin/srs
             echo "supervisorctl restart ssr" » /usr/bin/srs
-            chmod 777 /usr/bin/srs
+            chmod +x /usr/bin/srs
         #最后配置
         #/usr/bin/supervisord -c /etc/supervisord.conf
             srs
@@ -852,7 +853,7 @@ install_node(){
 	rm -rf /usr/bin/srs
 	echo "#!/bin/bash" >> /usr/bin/srs
 	echo "pm2 restart all" >> /usr/bin/srs
-	chmod 777 /usr/bin/srs
+	chmod +x /usr/bin/srs
 	#最后配置
 	#/usr/bin/supervisord -c /etc/supervisord.conf
 	pm2 restart ssr
@@ -970,7 +971,7 @@ speedtest(){
 	#检查文件ZBench-CN.sh是否存在,若不存在,则下载该文件
 	if [ ! -f /root/ZBench-CN.sh ]; then
 		wget https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh
-		chmod 777 ZBench-CN.sh
+		chmod +x ZBench-CN.sh
 	fi
 	   #执行测试
 	   bash /root/ZBench-CN.sh
@@ -981,14 +982,14 @@ system_more(){
     echo "选项：[1]添加SWAP [2]更改SSH端口 [3]DDNS动态脚本"
 	read more_option
         if [ ${more_option} = '1' ]; then
-                swap
-	elif [ ${more_option} = '2' ]; then
-		install_ssh_port
-	elif [ ${more_option} = '3' ]; then
-	    ddns
-	else
+            swap
+	    elif [ ${more_option} = '2' ]; then
+		    install_ssh_port
+	    elif [ ${more_option} = '3' ]; then
+	        ddns
+	    else
 		    echo "选项不在范围,操作中止.";exit 0
-	fi
+	    fi
 }
 
 swap(){
@@ -1035,19 +1036,20 @@ install_ssh_port(){
 	#检查文件sshport.sh是否存在,若不存在,则下载该文件
 	if [ ! -f /root/sshport.sh ]; then
 		wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
-	    chmod 777 sshport.sh
+	    chmod +x sshport.sh
 	fi
 	    bash sshport.sh
+        service restart sshd
 }
 
 ddns(){
     echo "选项：[1]安装 [2]配置 [3]运行"
 	read ddns
 	if [ ${ddns} = '1' ]; then
-	    if [ ! -f /root/ddns.sh ]; then
+	    if [ ! -f /root/ddns/ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
-	    	wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
-	    	chmod 777 ddns.sh
+	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" /root/ddns/ddns.sh
+	    	chmod +x /root/ddns/ddns.sh
 	    fi
 	    #清屏
 		clear
@@ -1055,9 +1057,9 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
+		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /root/ddns/ddns.sh
 		#运行
-		bash /root/ddns.sh
+		bash /root/ddns/ddns.sh
 	     
         elif [ ${ddns} = '2' ]; then
 		#清屏
@@ -1065,39 +1067,39 @@ ddns(){
 		#输出当前配置
 		echo "当前DDNS配置如下:"
 		echo "------------------------------------"
-		sed -n '6p' /root/ddns.sh
-		sed -n '7p' /root/ddns.sh
+		sed -n '6p' /root/ddns/ddns.sh
+		sed -n '7p' /root/ddns/ddns.sh
 		echo "------------------------------------"
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
-			if [ ! -f /root/ddns.sh.bak ]; then
-				rm -rf /root/cloud* && rm -rf /root/ip*
+			if [ ! -f /root/ddns/ddns.sh.bak ]; then
+				rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
 				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
 			else
 			#还原
-				rm -rf /root/ddns.sh && rm -rf /root/cloud* && rm -rf /root/ip*
-				cp /root/ddns.sh.bak /root/ddns.sh
+				rm -rf /root/ddns/ddns.sh && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+				cp /root/ddns/ddns.sh.bak /root/ddns/ddns.sh
 			fi
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns.sh
+		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns/ddns.sh
                 #运行
-                rm -rf /root/cloud* && rm -rf /root/ip*
-                bash /root/ddns.sh
+                rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+                bash /root/ddns/ddns.sh
         elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /root/ddns.sh ]; then
+		if [ ! -f /root/ddns/ddns.sh ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
 		    echo "------------------------------------"
-		    sed -n '36p' /root/ddns.sh
-		    sed -n '39p' /root/ddns.sh
+		    sed -n '36p' /root/ddns/ddns.sh
+		    sed -n '39p' /root/ddns/ddns.sh
 		    echo "------------------------------------"
 		fi
 		    #运行
-		    bash /root/ddns.sh
+		    bash /root/ddns/ddns.sh
 	else
 		echo "选项不在范围.";exit 0
 	fi
@@ -1304,7 +1306,9 @@ detect_backhaul_routing(){
 			yum install traceroute unzip -y
 			wget -N --no-check-certificate "https://cdn.ipip.net/17mon/besttrace4linux.zip"
 			unzip besttrace4linux.zip -d besttrace && cd besttrace && chmod +x *
-			clear;besttrace_test
+			clear;
+            rm -rf /root/*.zip
+            besttrace_test
 		else
 			besttrace_test
 		fi
@@ -1326,8 +1330,8 @@ detect_backhaul_routing(){
 superspeed(){
 	#检查文件superspeed.sh是否存在,若不存在,则下载该文件
 	if [ ! -f /root/superspeed.sh ]; then
-		wget --no-check-certificate https://raw.githubusercontent.com/wn789/Superspeed/master/superspeed.sh
-		chmod +x superspeed.sh
+		wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/superspeed.sh" /root/superspeed.sh
+		chmod +x /root/superspeed.sh
 	fi
 	#执行测试
     ./superspeed.sh
@@ -1452,10 +1456,10 @@ install_fail2ban(){
 
 install_shell(){
 	if [ ! -f /usr/bin/v3 ]; then
-		cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
+		cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
 	else
 		rm -rf /usr/bin/v3
-		cp /root/v3.sh /usr/bin/v3;chmod 777 /usr/bin/v3
+		cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
 		clear;echo "Tips:您可通过命令[v3]快速启动本脚本!"
 	fi
 }
