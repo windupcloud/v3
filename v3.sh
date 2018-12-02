@@ -1048,6 +1048,7 @@ ddns(){
 	if [ ${ddns} = '1' ]; then
 	    if [ ! -f /root/ddns/ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
+	    	mkdir /roor/ddns
 	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" /root/ddns/ddns.sh
 	    	chmod +x /root/ddns/ddns.sh
 	    fi
