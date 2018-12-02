@@ -1539,7 +1539,7 @@ case "$num" in
 	echo "已退出.";exit 0;;
 	*)
 	echo "选项不在范围内,安装终止."
-	exit
+	exit 0
 	;;
 esac
 
@@ -1548,7 +1548,7 @@ echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:";read continue_
 if [ ${continue_or_stop} = 'y' ]; then
 	bash /root/v3.sh
 else
-    exit	
+    exit 0
 fi
 
 #END 2018年08月03日
