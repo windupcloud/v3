@@ -175,13 +175,13 @@ use_centos_pm2(){
         #创建pm2日志清理
             cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
             rm -rf "/var/spool/cron/root"
-            if [ ! -f /usr/local/bin/cf-ddns.sh ] ; then
+            if [ ! -f /root/ddns/cf-ddns.sh ] ; then
                 echo "未检测到cf-ddns.sh"
             else
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* */1 * * * bash /usr/local/bin/cf-ddns.sh' >> /var/spool/cron/root
+                    echo '* */1 * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/root
             fi
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
                 echo "未检测到socks5"
@@ -284,13 +284,13 @@ use_debian_pm2(){
 	    chmod +x /usr/bin/ssrr
         #创建pm2日志清理
         rm -rf "/var/spool/cron/crontabs/root"
-    if [ ! -f /usr/local/bin/cf-ddns.sh ] ; then
+    if [ ! -f /root/ddns/cf-ddns.sh ] ; then
             echo "未检测到cf-ddns.sh"
     else
 	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
-            echo '* */1 * * * bash /usr/local/bin/cf-ddns.sh' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/crontabs/root
     fi
     
     if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -1045,10 +1045,10 @@ ddns(){
     echo "选项：[1]安装 [2]配置 [3]运行"
 	read ddns
 	if [ ${ddns} = '1' ]; then
-	    if [ ! -f /usr/local/bin/cf-ddns.sh ]; then
+	    if [ ! -f /root/ddns/cf-ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
-	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /usr/local/bin
-	    	chmod +x /usr/local/bin/cf-ddns.sh
+	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
+	    	chmod +x /root/ddns/cf-ddns.sh
 	    fi
 	    #清屏
 		clear
@@ -1056,9 +1056,9 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /usr/local/bin/cf-ddns.sh
+		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /root/ddns/cf-ddns.sh
 		#运行
-		bash /usr/local/bin/cf-ddns.sh
+		bash /root/ddns/cf-ddns.sh
 	     
         elif [ ${ddns} = '2' ]; then
 		#清屏
@@ -1066,39 +1066,39 @@ ddns(){
 		#输出当前配置
 		echo "当前DDNS配置如下:"
 		echo "------------------------------------"
-		sed -n '6p' /usr/local/bin/cf-ddns.sh
-		sed -n '7p' /usr/local/bin/cf-ddns.sh
+		sed -n '6p' /root/ddns/cf-ddns.sh
+		sed -n '7p' /root/ddns/cf-ddns.sh
 		echo "------------------------------------"
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
-			if [ ! -f /usr/local/bin/cf-ddns.sh.bak ]; then
-				rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
-				wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /usr/local/bin
+			if [ ! -f /root/ddns/cf-ddns.sh.bak ]; then
+				rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+				wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
 			else
 			#还原
-				rm -rf /usr/local/bin/cf-ddns.sh && rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
-				cp /usr/local/bin/cf-ddns.sh.bak /usr/local/bin/cf-ddns.sh
+				rm -rf /root/ddns/cf-ddns.sh && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+				cp /root/ddns/cf-ddns.sh.bak /root/ddns/cf-ddns.sh
 			fi
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /usr/local/bin/cf-ddns.sh
+		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns/cf-ddns.sh
                 #运行
-                rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
-                bash /usr/local/bin/cf-ddns.sh
+                rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+                bash /root/ddns/cf-ddns.sh
         elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /usr/local/bin/cf-ddns.sh ]; then
+		if [ ! -f /root/ddns/cf-ddns.sh ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
 		    echo "------------------------------------"
-		    sed -n '36p' /usr/local/bin/cf-ddns.sh
-		    sed -n '39p' /usr/local/bin/cf-ddns.sh
+		    sed -n '36p' /root/ddns/cf-ddns.sh
+		    sed -n '39p' /root/ddns/cf-ddns.sh
 		    echo "------------------------------------"
 		fi
 		    #运行
-		    bash /usr/local/bin/cf-ddns.sh
+		    bash /root/ddns/cf-ddns.sh
 	else
 		echo "选项不在范围.";exit 0
 	fi
