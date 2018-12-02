@@ -8,9 +8,9 @@ record_name="aaa.yahaha.pro"
 
 # MAYBE CHANGE THESE
 ip=$(curl -s http://ipv4.icanhazip.com)
-ip_file="ip.txt"
-id_file="cloudflare.ids"
-log_file="cloudflare.log"
+ip_file="/usr/local/bin/ip.txt"
+id_file="/usr/local/bin/cloudflare.ids"
+log_file="/usr/local/bin/cloudflare.log"
 
 # LOGGER
 log() {
