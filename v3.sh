@@ -1048,8 +1048,8 @@ ddns(){
 	if [ ${ddns} = '1' ]; then
 	    if [ ! -f /root/ddns/ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
-	    	mkdir /roor/ddns
-	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" /root/ddns/ddns.sh
+	    	mkdir -m 777 /root/ddns
+	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" -P /root/ddns
 	    	chmod +x /root/ddns/ddns.sh
 	    fi
 	    #清屏
@@ -1076,7 +1076,7 @@ ddns(){
 			#检查
 			if [ ! -f /root/ddns/ddns.sh.bak ]; then
 				rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-				wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/ddns.sh
+				wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" -P /root/ddns
 			else
 			#还原
 				rm -rf /root/ddns/ddns.sh && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
