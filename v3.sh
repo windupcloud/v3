@@ -175,13 +175,13 @@ use_centos_pm2(){
         #创建pm2日志清理
             cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
             rm -rf "/var/spool/cron/root"
-            if [ ! -f /root/ddns/ddns.sh ] ; then
-                echo "未检测到ddns.sh"
+            if [ ! -f /usr/local/bin/cf-ddns.sh ] ; then
+                echo "未检测到cf-ddns.sh"
             else
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* */1 * * * bash /root/ddns/ddns.sh' >> /var/spool/cron/root
+                    echo '* */1 * * * bash /usr/local/bin/cf-ddns.sh' >> /var/spool/cron/root
             fi
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
                 echo "未检测到socks5"
@@ -284,13 +284,13 @@ use_debian_pm2(){
 	    chmod +x /usr/bin/ssrr
         #创建pm2日志清理
         rm -rf "/var/spool/cron/crontabs/root"
-    if [ ! -f /root/ddns/ddns.sh ] ; then
-            echo "未检测到ddns.sh"
+    if [ ! -f /usr/local/bin/cf-ddns.sh ] ; then
+            echo "未检测到cf-ddns.sh"
     else
 	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
-            echo '* */1 * * * bash /root/ddns/ddns.sh' >> /var/spool/cron/crontabs/root
+            echo '* */1 * * * bash /usr/local/bin/cf-ddns.sh' >> /var/spool/cron/crontabs/root
     fi
     
     if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -926,17 +926,16 @@ install_ocserv(){
                 rm -rf /root/setiptables.sh
 
                 if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/ocserv_debian -O /etc/init.d/ocserv; then
-		    echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
+		        echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
 	        fi
-	        chmod +x /etc/init.d/ocserv
-	        echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
-
-                 /etc/rc.d/init.d/ocserv stop
-	        chkconfig --add /etc/rc.d/init.d/ocserv
-	        chkconfig /etc/rc.d/init.d/ocserv on
-	        systemctl enable ocserv.service
-	        systemctl restart ocserv.service
-	        systemctl status ocserv.service
+	            chmod +x /etc/init.d/ocserv
+	            echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
+                /etc/rc.d/init.d/ocserv stop
+	            chkconfig --add /etc/rc.d/init.d/ocserv
+	            chkconfig /etc/rc.d/init.d/ocserv on
+	            systemctl enable ocserv.service
+	            systemctl restart ocserv.service
+	            systemctl status ocserv.service
 		else
 			echo "懒得写了"
 
@@ -1038,7 +1037,7 @@ install_ssh_port(){
 		wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
 	    chmod +x sshport.sh
 	fi
-	    bash sshport.sh
+	    ./sshport.sh
         service restart sshd
 }
 
@@ -1046,11 +1045,10 @@ ddns(){
     echo "选项：[1]安装 [2]配置 [3]运行"
 	read ddns
 	if [ ${ddns} = '1' ]; then
-	    if [ ! -f /root/ddns/ddns.sh ]; then
+	    if [ ! -f /usr/local/bin/cf-ddns.sh ]; then
 	    	echo "DDNS未配置，开始下载";
-	    	mkdir -m 777 /root/ddns
-	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" -P /root/ddns
-	    	chmod +x /root/ddns/ddns.sh
+	    	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /usr/local/bin
+	    	chmod +x /usr/local/bin/cf-ddns.sh
 	    fi
 	    #清屏
 		clear
@@ -1058,9 +1056,9 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /root/ddns/ddns.sh
+		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /usr/local/bin/cf-ddns.sh
 		#运行
-		bash /root/ddns/ddns.sh
+		bash /usr/local/bin/cf-ddns.sh
 	     
         elif [ ${ddns} = '2' ]; then
 		#清屏
@@ -1068,39 +1066,39 @@ ddns(){
 		#输出当前配置
 		echo "当前DDNS配置如下:"
 		echo "------------------------------------"
-		sed -n '6p' /root/ddns/ddns.sh
-		sed -n '7p' /root/ddns/ddns.sh
+		sed -n '6p' /usr/local/bin/cf-ddns.sh
+		sed -n '7p' /usr/local/bin/cf-ddns.sh
 		echo "------------------------------------"
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
-			if [ ! -f /root/ddns/ddns.sh.bak ]; then
-				rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-				wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/ddns.sh" -P /root/ddns
+			if [ ! -f /usr/local/bin/cf-ddns.sh.bak ]; then
+				rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
+				wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /usr/local/bin
 			else
 			#还原
-				rm -rf /root/ddns/ddns.sh && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-				cp /root/ddns/ddns.sh.bak /root/ddns/ddns.sh
+				rm -rf /usr/local/bin/cf-ddns.sh && rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
+				cp /usr/local/bin/cf-ddns.sh.bak /usr/local/bin/cf-ddns.sh
 			fi
 		#修改
 		CFRECORD_NAME=${CFRECORD_NAME}
-		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/ddns/ddns.sh
+		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /usr/local/bin/cf-ddns.sh
                 #运行
-                rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-                bash /root/ddns/ddns.sh
+                rm -rf /usr/local/bin/cloud* && rm -rf /usr/local/bin/ip*
+                bash /usr/local/bin/cf-ddns.sh
         elif [ ${ddns} = '3' ]; then
 		#判断/var/swapfile1文件是否存在
-		if [ ! -f /root/ddns/ddns.sh ]; then
+		if [ ! -f /usr/local/bin/cf-ddns.sh ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
 		    echo "------------------------------------"
-		    sed -n '36p' /root/ddns/ddns.sh
-		    sed -n '39p' /root/ddns/ddns.sh
+		    sed -n '36p' /usr/local/bin/cf-ddns.sh
+		    sed -n '39p' /usr/local/bin/cf-ddns.sh
 		    echo "------------------------------------"
 		fi
 		    #运行
-		    bash /root/ddns/ddns.sh
+		    bash /usr/local/bin/cf-ddns.sh
 	else
 		echo "选项不在范围.";exit 0
 	fi
@@ -1549,6 +1547,8 @@ esac
 echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:";read continue_or_stop
 if [ ${continue_or_stop} = 'y' ]; then
 	bash /root/v3.sh
+else
+    exit	
 fi
 
 #END 2018年08月03日
