@@ -623,14 +623,16 @@ install_centos_ssr(){
 	/usr/bin/chattr -i /etc/resolv.conf && wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	cd /root
 	Get_Dist_Version
-	if [ $Version == "7" ]; then
-		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
-		rpm -ivh epel-release-latest-7.noarch.rpm	
-	else
-		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-		rpm -ivh epel-release-latest-6.noarch.rpm
-	fi
-	rm -rf *.rpm
+
+	#if [ $Version == "7" ]; then
+	#	wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
+	#	rpm -ivh epel-release-latest-7.noarch.rpm	
+	#else
+	#	wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+	#	rpm -ivh epel-release-latest-6.noarch.rpm
+	#fi
+	#rm -rf *.rpm
+	
 	yum -y update --exclude=kernel*	
 	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables iptables-services
 	yum -y groupinstall "Development Tools" 
