@@ -690,13 +690,25 @@ python_test(){
 }
 
 install_centos_ssr(){
-    read -p "后端名字是:" Username
-	read -p "[y/n]是否是专用后端:" Houduan
-	#更换DNS至谷歌
+    read -p "后端名字是:"
+    read -e -p "(默认: yahaha):" Username
+	[[ -z ${Username} ]] && Username="yahaha"
+
+	read -p "[y/n]是否是合租后端:"
+	read -e -p "(默认: n):" yn
+	[[ -z ${yn} ]] && yn="n"
+	if [[ ${yn} == [Nn] ]]; then
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	else
+        git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
+	fi
+
+	#更换DNS至8888/1001
 	/usr/bin/chattr -i /etc/resolv.conf && wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	cd /root
 	Get_Dist_Version
 
+    #取消更换内核
 	#if [ $Version == "7" ]; then
 	#	wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
 	#	rpm -ivh epel-release-latest-7.noarch.rpm	
@@ -746,11 +758,6 @@ install_centos_ssr(){
 	##echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	##ldconfig
 
-	if [ ${Houduan} = 'y' ]; then
-	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
-	elif [ ${Houduan} = 'n' ]; then
-		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
-	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
@@ -784,9 +791,19 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
-	read -p "后端名字是:" Username
-    read -p "[y/n]是否是专用后端:" Houduan
-	
+    read -p "后端名字是:"
+    read -e -p "(默认: yahaha):" Username
+	[[ -z ${Username} ]] && Username="yahaha"
+
+	read -p "[y/n]是否是合租后端:"
+	read -e -p "(默认: n):" yn
+	[[ -z ${yn} ]] && yn="n"
+	if [[ ${yn} == [Nn] ]]; then
+	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	else
+        git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
+	fi
+
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
 	#编译安装libsodium
@@ -794,13 +811,10 @@ install_ubuntu_ssr(){
     
     rm -rf libsodium.sh
 	pip install cymysql -i https://pypi.org/simple/
+	
 	#clone shadowsocks
+	
 	cd /root
-	if [ ${Houduan} = 'y' ]; then
-	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
-	elif [ ${Houduan} = 'n' ]; then
-		git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
-	fi
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
 	#第一次安装
