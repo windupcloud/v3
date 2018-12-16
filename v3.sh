@@ -1460,10 +1460,10 @@ install_fail2ban(){
 
 install_shell(){
 	if [ ! -f /usr/bin/v3 ]; then
-		cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
+		cp /root/v3.sh /usr/bin/v3 && chmod +x /usr/bin/v3
 	else
 		rm -rf /usr/bin/v3
-		cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
+		cp /root/v3.sh /usr/bin/v3 && chmod +x /usr/bin/v3
 		clear;echo "Tips:您可通过命令[v3]快速启动本脚本!"
 	fi
 }
@@ -1482,8 +1482,10 @@ get_server_ip_info(){
 install_shell
 get_server_ip_info
 
-#输出安装选项
-echo "####################################################################
+#开始菜单
+start_menu(){
+	clear
+echo && echo -e "####################################################################
 # 版本：V.2.3.4 2018-05-20                                         #
 ####################################################################
 # [1] PM2管理后端                                                  #
@@ -1532,28 +1534,34 @@ case "$num" in
 	e)
 	configure_firewall;;
 	f)
-	yum install-y net-tools;netstat -lnp;;
+	yum install -y net-tools;netstat -lnp;;
 	g)
 	replacement_of_installation_source;;
 	x)
-	rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
+	rm -rf /usr/bin/v3 && cp /root/v3.sh /usr/bin/v3 && chmod +x /usr/bin/v3
 	v3;;
 	y)
 	update_the_shell;;
 	z)
 	echo "已退出.";exit 0;;
 	*)
-	echo "选项不在范围内,安装终止."
-	exit 0
+	clear
+	echo -e "${Error}:请输入正确指令"
+	sleep 2s
+	start_menu
 	;;
 esac
+}
 
 #继续还是中止
-echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:";read continue_or_stop
-if [ ${continue_or_stop} = 'y' ]; then
-	bash /root/v3.sh
-else
-    exit 0
-fi
-
-#END 2018年08月03日
+echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
+	read -e -p "(默认: n):" yn
+	[[ -z ${yn} ]] && yn="n"
+	if [[ ${yn} == [Nn] ]]; then
+	echo "已取消..." && exit 1
+	else
+		claer
+		sleep 2s
+		start_menu
+	fi
+#END 2018年12月16日
