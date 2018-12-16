@@ -1561,7 +1561,7 @@ echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
 	if [[ ${yn} == [Nn] ]]; then
 	echo "已取消..." && exit 1
 	else
-		claer
+		clear
 		sleep 2s
 		start_menu
 	fi
