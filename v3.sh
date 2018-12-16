@@ -11,6 +11,78 @@ Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
+
+#开始菜单
+start_menu(){
+clear
+echo && echo -e "####################################################################
+# 版本：V.2.3.5 2018-12-16                                         #
+####################################################################
+# [1] PM2管理后端                                                  #
+# [2] Supervisor管理后端                                           #
+# [3] 修改ssr节点配置                                              #
+# [4] 安装ssr节点（肥羊）                                          #
+# [5] 后端更多选项                                                 #
+# [6] 一键安装加速                                                 #
+# [7] 一键服务器测速                                               #
+# [8] 更多功能                                                     #
+####################################################################
+# [a]卸载各类云盾 [b]查看回程路由 [c]简易测速 [d]检测BBR安装状态   #
+# [e]配置防火墙 [f]列出开放端口 [g]更换默认源                      #
+####################################################################
+# [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
+# 此服务器IP信息：${server_ip_info}
+####################################################################"
+
+stty erase '^H' && read -p "请选择安装项[1-8]/[a-g]:" num
+clear
+case "$num" in
+	1)
+	pm2_list;;
+	2)
+	supervisor_list;;
+	3)
+	modify_node_info;;
+	4)
+	install_node;;
+	5)
+	python_more;;
+	6)
+	serverspeeder;;
+	7)
+    speedtest;;
+	8)
+	system_more;;
+	a)
+	uninstall_ali_cloud_shield;;
+	b)
+    detect_backhaul_routing;;
+	c)
+	superspeed;;
+	d)
+	check_bbr_installation;;
+	e)
+	configure_firewall;;
+	f)
+	yum install -y net-tools;netstat -lnp;;
+	g)
+	replacement_of_installation_source;;
+	x)
+	rm -rf /usr/bin/v3 && cp /root/v3.sh /usr/bin/v3 && chmod +x /usr/bin/v3
+	v3;;
+	y)
+	update_the_shell;;
+	z)
+	echo "已退出.";exit 0;;
+	*)
+	clear
+	echo -e "${Error}:请输入正确指令"
+	sleep 2s
+	start_menu
+	;;
+esac
+}
+
 reboot_system(){
 	read -p "需重启服务器使配置生效,现在重启? [y/n]" is_reboot
 	if [ ${is_reboot} = 'y' ]; then
@@ -1482,77 +1554,6 @@ get_server_ip_info(){
 install_shell
 get_server_ip_info
 start_menu
-
-#开始菜单
-start_menu(){
-clear
-echo && echo -e "####################################################################
-# 版本：V.2.3.5 2018-12-16                                         #
-####################################################################
-# [1] PM2管理后端                                                  #
-# [2] Supervisor管理后端                                           #
-# [3] 修改ssr节点配置                                              #
-# [4] 安装ssr节点（肥羊）                                          #
-# [5] 后端更多选项                                                 #
-# [6] 一键安装加速                                                 #
-# [7] 一键服务器测速                                               #
-# [8] 更多功能                                                     #
-####################################################################
-# [a]卸载各类云盾 [b]查看回程路由 [c]简易测速 [d]检测BBR安装状态   #
-# [e]配置防火墙 [f]列出开放端口 [g]更换默认源                      #
-####################################################################
-# [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
-# 此服务器IP信息：${server_ip_info}
-####################################################################"
-
-stty erase '^H' && read -p "请选择安装项[1-8]/[a-g]:" num
-clear
-case "$num" in
-	1)
-	pm2_list;;
-	2)
-	supervisor_list;;
-	3)
-	modify_node_info;;
-	4)
-	install_node;;
-	5)
-	python_more;;
-	6)
-	serverspeeder;;
-	7)
-    speedtest;;
-	8)
-	system_more;;
-	a)
-	uninstall_ali_cloud_shield;;
-	b)
-    detect_backhaul_routing;;
-	c)
-	superspeed;;
-	d)
-	check_bbr_installation;;
-	e)
-	configure_firewall;;
-	f)
-	yum install -y net-tools;netstat -lnp;;
-	g)
-	replacement_of_installation_source;;
-	x)
-	rm -rf /usr/bin/v3 && cp /root/v3.sh /usr/bin/v3 && chmod +x /usr/bin/v3
-	v3;;
-	y)
-	update_the_shell;;
-	z)
-	echo "已退出.";exit 0;;
-	*)
-	clear
-	echo -e "${Error}:请输入正确指令"
-	sleep 2s
-	start_menu
-	;;
-esac
-}
 
 #继续还是中止
 echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
