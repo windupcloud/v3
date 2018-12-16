@@ -181,7 +181,7 @@ use_centos_pm2(){
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* */1 * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/root
+                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/root
             fi
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
                 echo "未检测到socks5"
@@ -290,7 +290,7 @@ use_debian_pm2(){
 	    echo "添加DDNS定时启动"
             sleep 2s
             echo '###DDNS' >> /var/spool/cron/crontabs/root
-            echo '* */1 * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/crontabs/root
+            echo '*/10 * * * * bash /root/ddns/cf-ddns.sh' >> /var/spool/cron/crontabs/root
     fi
     
     if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -861,9 +861,9 @@ install_node(){
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
 ########################################
-# 启动SSR：pm2 start ssr     #
-# 停止SSR：pm2 stop ssr      #
-# 重启SSR：pm2 restart ssr   #
+# 启动SSR：pm2 start ssr               #
+# 停止SSR：pm2 stop ssr                #
+# 重启SSR：pm2 restart ssr             #
 # 或：srs                              #
 ########################################"
 }
@@ -956,12 +956,17 @@ serverspeeder(){
 		./tcp.sh
 	elif [ ${serverspeeder_option} = '2' ]; then
 		#检查文件tcp.sh是否存在,若不存在,则下载该文件
-	    if [ ! -f /root/tcp.sh ]; then
-	       wget -N --no-check-certificate "https://raw.githubusercontent.com/nanqinlang/tcp_nanqinlang-test/master/tcp_nanqinlang-test.sh"
-               chmod +x tcp_nanqinlang-test.sh
-	    fi
-		#执行
-        ./tcp_nanqinlang-test.sh
+		check_sys
+		echo "$release"
+		if [ ${release} = 'centos' ]; then
+			wget -N --no-check-certificate "https://github.com/tcp-nanqinlang/lkl-rinetd/releases/download/1.1.0/tcp_nanqinlang-rinetd-centos.sh"
+            chmod +x tcp_nanqinlang-rinetd-centos.sh
+            ./tcp_nanqinlang-rinetd-centos.sh
+		else
+			wget -N --no-check-certificate "https://github.com/tcp-nanqinlang/lkl-rinetd/releases/download/1.1.0/tcp_nanqinlang-rinetd-debianorubuntu.sh"
+            chmod +x tcp_nanqinlang-rinetd-debianorubuntu.sh
+            ./tcp_nanqinlang-rinetd-debianorubuntu.sh
+		fi
 	fi
 }
 
