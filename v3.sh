@@ -80,7 +80,10 @@ case "$num" in
 	sleep 2s
 	start_menu
 	;;
+esac
+}
 
+keep_loop(){
 #继续还是中止
 echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
 	read -e -p "(默认: n):" yn
@@ -92,7 +95,6 @@ echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
 		sleep 2s
 		start_menu
 	fi
-esac
 }
 
 reboot_system(){
@@ -150,7 +152,7 @@ pm2_list(){
             remove_pm2
         fi
 	else
-		    echo "选项不在范围,操作中止.";exit 0
+	echo "选项不在范围,操作中止.";exit 0
 	fi
 }
 
@@ -1576,5 +1578,5 @@ get_server_ip_info(){
 install_shell
 get_server_ip_info
 start_menu
-
+keep_loop
 #END 2018年12月16日
