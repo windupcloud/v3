@@ -80,6 +80,18 @@ case "$num" in
 	sleep 2s
 	start_menu
 	;;
+
+#继续还是中止
+echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
+	read -e -p "(默认: n):" yn
+	[[ -z ${yn} ]] && yn="n"
+	if [[ ${yn} == [Nn] ]]; then
+	echo "已取消..." && exit 1
+	else
+		clear
+		sleep 2s
+		start_menu
+	fi
 esac
 }
 
@@ -690,12 +702,10 @@ python_test(){
 }
 
 install_centos_ssr(){
-    read -p "后端名字是:"
-    read -e -p "(默认: yahaha):" Username
+    read -e -p "后端名字是:(默认: yahaha):" Username
 	[[ -z ${Username} ]] && Username="yahaha"
 
-	read -p "[y/n]是否是合租后端:"
-	read -e -p "(默认: n):" yn
+	read -e -p "[y/n]是否是合租后端(默认: n):" yn
 	[[ -z ${yn} ]] && yn="n"
 	if [[ ${yn} == [Nn] ]]; then
 	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
@@ -791,12 +801,10 @@ install_centos_ssr(){
 }
 
 install_ubuntu_ssr(){
-    read -p "后端名字是:"
-    read -e -p "(默认: yahaha):" Username
+    read -e -p "后端名字是:(默认: yahaha):" Username
 	[[ -z ${Username} ]] && Username="yahaha"
-
-	read -p "[y/n]是否是合租后端:"
-	read -e -p "(默认: n):" yn
+	
+	read -e -p "[y/n]是否是合租后端(默认: n):" yn
 	[[ -z ${yn} ]] && yn="n"
 	if [[ ${yn} == [Nn] ]]; then
 	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
@@ -906,7 +914,7 @@ install_node(){
 	read -p "前端地址是:" Userdomain
 	read -p "节点ID是:" UserNODE_ID
 	read -p "MuKey是:" Usermukey
-    install_ssr_for_each
+        install_ssr_for_each
 	#配置节点信息
 	cd /root/shadowsocks-${Username}
 	#备份
@@ -1569,15 +1577,4 @@ install_shell
 get_server_ip_info
 start_menu
 
-#继续还是中止
-echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
-	read -e -p "(默认: n):" yn
-	[[ -z ${yn} ]] && yn="n"
-	if [[ ${yn} == [Nn] ]]; then
-	echo "已取消..." && exit 1
-	else
-		clear
-		sleep 2s
-		start_menu
-	fi
 #END 2018年12月16日
