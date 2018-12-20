@@ -1577,6 +1577,11 @@ get_server_ip_info(){
 #安装本脚本,获取服务器IP信息
 install_shell
 get_server_ip_info
+
+while
+do
 start_menu
 keep_loop
+done
+
 #END 2018年12月16日
