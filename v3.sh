@@ -1578,7 +1578,8 @@ get_server_ip_info(){
 install_shell
 get_server_ip_info
 
-while
+i=1
+while((i <= 100))
 do
 start_menu
 keep_loop
