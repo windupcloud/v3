@@ -710,9 +710,9 @@ install_centos_ssr(){
 	read -e -p "[y/n]是否是合租后端(默认: n):" yn
 	[[ -z ${yn} ]] && yn="n"
 	if [[ ${yn} == [Nn] ]]; then
-	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://gitee.com/superbox/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	else
-        git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
+        git clone "https://gitee.com/superbox/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 
 	#更换DNS至8888/1001
@@ -809,9 +809,9 @@ install_ubuntu_ssr(){
 	read -e -p "[y/n]是否是合租后端(默认: n):" yn
 	[[ -z ${yn} ]] && yn="n"
 	if [[ ${yn} == [Nn] ]]; then
-	    git clone "https://github.com/Super-box/p3-Superbox.git" "/root/shadowsocks-${Username}"
+	    git clone "https://gitee.com/superbox/p3-Superbox.git" "/root/shadowsocks-${Username}"
 	else
-        git clone "https://github.com/Super-box/p3-hezu.git" "/root/shadowsocks-${Username}"
+        git clone "https://gitee.com/superbox/p3-hezu.git" "/root/shadowsocks-${Username}"
 	fi
 
 	apt-get -y update
@@ -1577,11 +1577,11 @@ get_server_ip_info(){
 #安装本脚本,获取服务器IP信息
 install_shell
 get_server_ip_info
+start_menu
 
 i=1
 while((i <= 100))
 do
-start_menu
 keep_loop
 done
 
