@@ -283,7 +283,7 @@ use_centos_pm2(){
 	            echo "添加socks5定时启动"
                     sleep 2s
                     echo '###Socks5' >> /var/spool/cron/root
-                    echo '* */1 * * * systemctl restart telegram >> /dev/null/cron_log.txt' >> /var/spool/cron/root
+                    echo '* */1 * * * systemctl restart telegram >/dev/null 2>&1' >> /var/spool/cron/root
             fi
             if [ ! -f /usr/local/gost/gostproxy ] ; then
                 echo "未检测到gost"
@@ -291,19 +291,19 @@ use_centos_pm2(){
 	            echo "添加gost定时启动"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/root
-                    echo '0 3 * * * gost start >> /dev/null/cron_log.txt' >> /var/spool/cron/root
+                    echo '0 3 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/root
             fi
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/root
-	                echo '* */6 * * * ssrr >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-                    echo '*/30 * * * * pm2 flush >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-	                echo '2 3 * * * ssrr >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-                    echo '0 3 * * * pm2 update >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-	                echo '20 3 * * * killall sftp-server >> /dev/null/cron_log.txt' >> /var/spool/cron/root
+	                echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '*/30 * * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/root
+	                echo '2 3 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/root
+	                echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/root
                 #清理缓存
-                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/root
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
 	            #重启cron并备份
                     /sbin/service crond restart
                     cp /var/spool/cron/root /var/spool/cron/v3root.bak
@@ -403,18 +403,18 @@ use_debian_pm2(){
 	    echo "添加gost定时启动"
             sleep 2s
             echo '###Gost' >> /var/spool/cron/crontabs/root
-            echo '0 1 * * * gost start >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
+            echo '0 1 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
     fi
         #PM2定时重启
             echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-	    echo '* */6 * * * ssrr >> /dev/null/cron_log.txt' >> /var/spool/cron/root
-            echo '* */1 * * * pm2 flush >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
-            echo '0 3 * * * pm2 update >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
-	    echo '20 3 * * * killall sftp-server >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
+	    echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
+            echo '* */1 * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+	    echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
         #清理缓存
-            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
-            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
-            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null/cron_log.txt' >> /var/spool/cron/crontabs/root
+            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
         #cron重启
             service cron restart
             service cron reload
