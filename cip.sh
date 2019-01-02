@@ -72,14 +72,14 @@ change_centos_ip(){
 	if [ $Version == "7" ]; then
     	service network restart
     	dhclient -r -v
-     rm -rf /var/lib/dhclient/dhclient.leases
-     ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
-     dhclient -v
+        rm -rf /var/lib/dhclient/dhclient.leases
+        ps aux |grep dhclient |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+        dhclient -v
 	else
    		rm -rf /etc/udev/rules.d/70-persistent-net.rules   	
-     dhclient -r -v eth0
-     rm -rf /var/lib/dhclient/*
-     dhclient -v eth0
+        dhclient -r -v eth0
+        rm -rf /var/lib/dhclient/*
+        dhclient -v eth0
 	fi
 }
 
@@ -110,9 +110,9 @@ while true
 		[[ -n "$( cat banip.txt | grep ${IP} )" ]] && q=1 
 		if [[ "$q" -ne "1" ]] ; then
 			[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
-			Test1=$(curl -s https://cn-sh-01.torch.flexible.njs.app/${IP}/${ssh_port} | grep false)
-			Test2=$(curl -s https://torch-ali-indexyz.doge.me/${IP}/${ssh_port} | grep false)
-			Test3=$(curl -s https://cn-cq-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
+			Test1=$(curl -s https://cn-shenzhen-aliyun-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
+			Test2=$(curl -s https://cn-double-nimaqu-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
+			Test3=$(curl -s https://cn-chengdu-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
 			Result=$( echo -e "${Test1}\n${Test2}\n${Test3}" | grep "false" | wc -l )
 			[[ "${Result}" -gt 2 ]] && q=1
 			[[ "${Result}" -le 2 ]] && q=2

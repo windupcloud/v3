@@ -259,8 +259,11 @@ use_centos_pm2(){
 	        chmod +x /usr/bin/ssrr
 	    
         #创建pm2日志清理
+            if [ ! -f /var/spool/cron/root ] ; then
             cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
             rm -rf "/var/spool/cron/root"
+            fi
+            
             if [ ! -f /root/ddns/cf-ddns.sh ] ; then
                 echo "未检测到cf-ddns.sh"
             else
@@ -269,26 +272,39 @@ use_centos_pm2(){
                     echo '###DDNS' >> /var/spool/cron/root
                     echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
             fi
-	    if [ ! -f /root/ddns/cf-ddns.sh ] ; then
-                    echo "未检测到HZ-ddns.sh"
+
+            if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
+                    echo "未检测到合租-ddns.sh"
             else
-	            echo "添加DDNS-HZ定时启动"
+                echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root 
+                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
             fi
+
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
                     echo "未检测到socks5"
             else
-	            echo "添加socks5定时启动"
+	            echo "添加socks5定时重启"
                     sleep 2s
                     echo '###Socks5' >> /var/spool/cron/root
                     echo '* */1 * * * systemctl restart telegram >/dev/null 2>&1' >> /var/spool/cron/root
             fi
+
+            if [ ! -f /etc/ocserv/ocserv.conf ] ; then
+                echo "未检测到ocserv"
+            else
+	            echo "添加ocserv定时重启并更新证书"
+                    sleep 2s
+                    echo '###Ocserv' >> /var/spool/cron/root
+                    echo '0 3 * * * systemctl restart ocserv.service >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >/dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
             if [ ! -f /usr/local/gost/gostproxy ] ; then
                 echo "未检测到gost"
             else
-	            echo "添加gost定时启动"
+                echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/root
                     echo '0 3 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/root
@@ -348,11 +364,11 @@ use_debian_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=320
+        max_memory_limit=512
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit=300
+        max_memory_limit=320
     fi
 
     for ssr_name in "${ssr_names[@]}"
@@ -363,68 +379,90 @@ use_debian_pm2(){
         #创建快捷方式
             rm -rf "/usr/bin/srs"
             echo "#!/bin/bash" >> /usr/bin/srs
+            echo "pm2 restart all" >> /usr/bin/srs
+            chmod +x /usr/bin/srs
+        
+            rm -rf "/usr/bin/ssrr"
+            echo "#!/bin/bash" >> /usr/bin/ssrr
             for ssr_name in "${ssr_names[@]}"
             do
-	        echo "pm2 restart all" >> /usr/bin/srs
+                echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
             done
-	    chmod +x /usr/bin/srs
-	    
-	    rm -rf "/usr/bin/ssrr"
-	    echo "#!/bin/bash" >> /usr/bin/ssrr
-	    for ssr_name in "${ssr_names[@]}"
-	    do
-	        echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null/out-${ssr_name}.log -e /dev/null/error-${ssr_name}.log" >> /usr/bin/ssrr
-            done
-	    chmod +x /usr/bin/ssrr
+            chmod +x /usr/bin/ssrr
+        
         #创建pm2日志清理
-        rm -rf "/var/spool/cron/crontabs/root"
-    if [ ! -f /root/ddns/cf-ddns.sh ] ; then
-            echo "未检测到cf-ddns.sh"
-    else
-	    echo "添加DDNS定时启动"
-            sleep 2s
-            echo '###DDNS' >> /var/spool/cron/crontabs/root
-            echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
-    fi
-    
-    if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
-            echo "未检测到合租-ddns.sh"
-    else
-	    echo "添加DDNS定时启动"
-            sleep 2s
-            echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-            echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
-    fi
-    
-    if [ ! -f /usr/local/gost/gostproxy ] ; then
-            echo "未检测到gost"
-    else
-    	#Gost定时重启
-	    echo "添加gost定时启动"
-            sleep 2s
-            echo '###Gost' >> /var/spool/cron/crontabs/root
-            echo '0 1 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-    fi
-        #PM2定时重启
-            echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-	    echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
-            echo '* */1 * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-            echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-	    echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-        #清理缓存
-            echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-            echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-            echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-        #cron重启
-            service cron restart
-            service cron reload
-        #查看cron进程
-            crontab -l
-            sleep 2s
-        #创建开机自启动
-	        pm2 save
-	        pm2 startup
-	    #完成提示
+            if [ ! -f /var/spool/cron/crontabs/root ] ; then
+            cp "/var/spool/cron/crontabs/root" "/var/spool/cron/crontabs/root.bak"
+            rm -rf "/var/spool/cron/crontabs/root"
+            fi
+            
+            if [ ! -f /root/ddns/cf-ddns.sh ] ; then
+                echo "未检测到cf-ddns.sh"
+            else
+                echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS' >> /var/spool/cron/crontabs/root
+                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+
+            if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
+                    echo "未检测到合租-ddns.sh"
+            else
+                echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
+                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+
+            if [ ! -f /root/Application/telegram-socks/server.js ] ; then
+                    echo "未检测到socks5"
+            else
+                echo "添加socks5定时重启"
+                    sleep 2s
+                    echo '###Socks5' >> /var/spool/cron/crontabs/root
+                    echo '* */1 * * * systemctl restart telegram >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+
+            if [ ! -f /etc/ocserv/ocserv.conf ] ; then
+                echo "未检测到ocserv"
+            else
+                echo "添加ocserv定时重启并更新证书"
+                    sleep 2s
+                    echo '###Ocserv' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * systemctl restart ocserv.service >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+
+            if [ ! -f /usr/local/gost/gostproxy ] ; then
+                echo "未检测到gost"
+            else
+                echo "添加gost定时重启"
+                    sleep 2s
+                    echo '###Gost' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+                #PM2定时重启
+                    echo '#DaliyJob' >> /var/spool/cron/crontabs/root
+                    echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '*/30 * * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '2 3 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                #清理缓存
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                #重启cron并备份
+                    service cron restart
+                    service cron reload
+                    cp /var/spool/cron/crontabs/root /var/spool/cron/crontabs/v3root.bak
+                #查看cron进程
+                    crontab -l
+                    sleep 2s
+                #创建开机自启动
+                    pm2 save
+                    pm2 startup
+        #完成提示
 	clear;echo "########################################
 # SS NODE 已安装完成                   #
 ########################################
@@ -1024,7 +1062,7 @@ install_ocserv(){
                 if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && exit
 	        fi
-            unzip -o /etc/ocserv.zip -d /etc
+                unzip -o /etc/ocserv.zip -d /etc
 
                 if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
 		    echo -e "${Error} radius 服务 配置文件下载失败 !" && exiy
@@ -1041,6 +1079,11 @@ install_ocserv(){
                 if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/ocserv_debian -O /etc/init.d/ocserv; then
 		        echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
 	        fi
+
+                if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/init.d/ocserv; then
+                echo -e "${Error} ocserv 服务 SSL更新脚本下载失败 !" && exit
+            fi
+            
 	            chmod +x /etc/init.d/ocserv
 	            echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
                 /etc/rc.d/init.d/ocserv stop
@@ -1049,6 +1092,8 @@ install_ocserv(){
 	            systemctl enable ocserv.service
 	            systemctl restart ocserv.service
 	            systemctl status ocserv.service
+                rm -rf /etc/ocserv.zip
+                rm -rf /etc/radiusclient-ng.zip
 		else
 			echo "懒得写了"
 
