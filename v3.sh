@@ -263,12 +263,14 @@ use_centos_pm2(){
 	    
         #创建pm2日志清理
             if [ ! -f /var/spool/cron/root ] ; then
-            cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
-            rm -rf "/var/spool/cron/root"
+	        echo "未设置定时任务"
+	    else
+                cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
+                rm -rf "/var/spool/cron/root"
             fi
             
             if [ ! -f /root/ddns/cf-ddns.sh ] ; then
-                echo "未检测到cf-ddns.sh"
+                echo "未检测到DDNS"
             else
 	            echo "添加DDNS定时启动"
                     sleep 2s
@@ -277,7 +279,7 @@ use_centos_pm2(){
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
-                    echo "未检测到合租-ddns.sh"
+                    echo "未检测到合租DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
@@ -299,7 +301,7 @@ use_centos_pm2(){
             else
 	            echo "添加ocserv定时重启并更新证书"
                     sleep 2s
-                    echo '###Ocserv' >> /var/spool/cron/root
+                    echo '###ocserv' >> /var/spool/cron/root
                     echo '0 3 * * * systemctl restart ocserv.service >/dev/null 2>&1' >> /var/spool/cron/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >/dev/null 2>&1' >> /var/spool/cron/root
             fi
@@ -395,12 +397,14 @@ use_debian_pm2(){
         
         #创建pm2日志清理
             if [ ! -f /var/spool/cron/crontabs/root ] ; then
-            cp "/var/spool/cron/crontabs/root" "/var/spool/cron/crontabs/root.bak"
-            rm -rf "/var/spool/cron/crontabs/root"
+	        echo "未部署定时任务"
+		else
+                cp "/var/spool/cron/crontabs/root" "/var/spool/cron/crontabs/root.bak"
+                rm -rf "/var/spool/cron/crontabs/root"
             fi
             
             if [ ! -f /root/ddns/cf-ddns.sh ] ; then
-                echo "未检测到cf-ddns.sh"
+                echo "未检测到DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
@@ -409,7 +413,7 @@ use_debian_pm2(){
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
-                    echo "未检测到合租-ddns.sh"
+                    echo "未检测到合租DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
