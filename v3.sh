@@ -167,10 +167,13 @@ install_pm2(){
         if [[ ${release} = "centos" ]]; then
 	        yum -y install xz
     	    yum -y install wget
+    	    yum -y install git
     	    wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         else
 	        apt -y install xz
 	        apt -y install wget
+	        apt -y install git
+	        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	fi
 	    #编译Node.js
     	    wget -N https://nodejs.org/dist/v9.11.2/node-v9.11.2-linux-x64.tar.xz
