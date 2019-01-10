@@ -861,7 +861,8 @@ install_centos_ssr(){
 	fi	
 	systemctl stop firewalld.service
 	systemctl disable firewalld.service
-	cp apiconfig.py userapiconfig.py	
+	cp apiconfig.py userapiconfig.py
+	cp config.json user-config.json
 }
 
 install_ubuntu_ssr(){
@@ -917,6 +918,7 @@ install_ubuntu_ssr(){
 	chmod +x *.sh
 	# 配置程序
 	cp apiconfig.py userapiconfig.py
+	cp config.json user-config.json
 }
 
 
