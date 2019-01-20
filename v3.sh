@@ -1066,6 +1066,7 @@ install_ocserv(){
         echo "$release"     
         if [ ${release} = 'centos' ]; then
         	yum update -y
+            yum install epel-release -y
 	        yum install ocserv radiusclient-ng unzip -y
 
                 if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
