@@ -281,7 +281,7 @@ use_centos_pm2(){
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
                     echo "未检测到合租DDNS"
             else
-                echo "添加DDNS定时启动"
+                echo "添加DDNS-HZ定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
                     echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
@@ -415,7 +415,7 @@ use_debian_pm2(){
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
                     echo "未检测到合租DDNS"
             else
-                echo "添加DDNS定时启动"
+                echo "添加DDNS-HZ定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
                     echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
@@ -456,9 +456,9 @@ use_debian_pm2(){
                     echo '0 3 * * * pm2 update >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #清理缓存
-                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '5 3 * * * cat /dev/null > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '10 3 * * * cat /dev/null > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '15 3 * * * cat /dev/null > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #重启cron并备份
                     service cron restart
                     service cron reload
