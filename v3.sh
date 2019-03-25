@@ -275,7 +275,7 @@ use_centos_pm2(){
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -284,7 +284,7 @@ use_centos_pm2(){
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
@@ -293,7 +293,7 @@ use_centos_pm2(){
 	            echo "添加socks5定时重启"
                     sleep 2s
                     echo '###Socks5' >> /var/spool/cron/root
-                    echo '* */1 * * * systemctl restart telegram >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* */1 * * * systemctl restart telegram >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /etc/ocserv/ocserv.conf ] ; then
@@ -302,8 +302,8 @@ use_centos_pm2(){
 	            echo "添加ocserv定时重启并更新证书"
                     sleep 2s
                     echo '###ocserv' >> /var/spool/cron/root
-                    echo '0 3 * * * systemctl restart ocserv.service >/dev/null 2>&1' >> /var/spool/cron/root
-                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -312,19 +312,19 @@ use_centos_pm2(){
                 echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/root
-                    echo '0 3 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * gost start >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/root
-	                echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
-                    echo '*/30 * * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/root
-	                echo '2 3 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/root
-                    echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/root
-	                echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/root
+	                echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '*/30 * * * * pm2 flush >> /dev/null 2>&1' >> /var/spool/cron/root
+	                echo '2 3 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * pm2 update >> /dev/null 2>&1' >> /var/spool/cron/root
+	                echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/root
                 #清理缓存
-                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
-                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
-                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/root
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
 	            #重启cron并备份
                     /sbin/service crond restart
                     cp /var/spool/cron/root /var/spool/cron/v3root.bak
@@ -409,7 +409,7 @@ use_debian_pm2(){
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -418,7 +418,7 @@ use_debian_pm2(){
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
@@ -427,7 +427,7 @@ use_debian_pm2(){
                 echo "添加socks5定时重启"
                     sleep 2s
                     echo '###Socks5' >> /var/spool/cron/crontabs/root
-                    echo '* */1 * * * systemctl restart telegram >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* */1 * * * systemctl restart telegram >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /etc/ocserv/ocserv.conf ] ; then
@@ -436,8 +436,8 @@ use_debian_pm2(){
                 echo "添加ocserv定时重启并更新证书"
                     sleep 2s
                     echo '###Ocserv' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * systemctl restart ocserv.service >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /usr/local/gost/gostproxy ] ; then
@@ -446,19 +446,19 @@ use_debian_pm2(){
                 echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * gost start >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * gost start >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/crontabs/root
-                    echo '* */6 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '*/30 * * * * pm2 flush >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '2 3 * * * ssrr >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * pm2 update >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '20 3 * * * killall sftp-server >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '*/30 * * * * pm2 flush >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '2 3 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * pm2 update >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #清理缓存
-                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >/dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #重启cron并备份
                     service cron restart
                     service cron reload

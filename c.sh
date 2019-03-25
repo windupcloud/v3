@@ -91,45 +91,4 @@ change_debian_ip(){
     service networking restart
 }
 
-Send_TG_Message(){
-	if [[ -n "$( cat nowip.txt | grep "${New_IP}" )" ]] ; then
-		echo -e " ${Tip} No changes."
-		break
-	else
-		#Message="HostName: ***${HostName}*** Date:\[ $(date +"%Y-%m-%d %X") ] Now IP: `${New_IP}`"
-		#curl -g "https://api.telegram.org/bot${bot_api_key}/sendMessage?text=${Message}&chat_id=${chat_id}&parse_mode=Markdown"
-		echo "${New_IP}" > nowip.txt
-		clear
-	fi
-}
-
-while true
-	do	
-	if !ping -c 3 tw.yahoo.com > /dev/null 2>&1 ; then
-	    Change_IP
-	    Send_TG_Message
-    else
-		IP=$(curl -s https://api.ip.sb/ip)
-		q=2
-		[[ -n "$( cat banip.txt | grep ${IP} )" ]] && q=1 
-
-		if [[ "$q" -ne "1" ]] ; then
-			[ -z "`grep ^Port /etc/ssh/sshd_config`" ] && ssh_port=22 || ssh_port=`grep ^Port /etc/ssh/sshd_config | awk '{print $2}'`
-			Test1=$(curl -s https://cn-shenzhen-aliyun-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
-			Test2=$(curl -s https://cn-shenzhen-aliyun-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
-			Test3=$(curl -s https://cn-chengdu-tcping.torch.njs.app/${IP}/${ssh_port} | grep false)
-			Result=$( echo -e "${Test1}\n${Test2}\n${Test3}" | grep "false" | wc -l )
-			[[ "${Result}" -gt 2 ]] && q=1
-			[[ "${Result}" -le 2 ]] && q=2
-		fi
-		[[ "$q" -eq "1" ]] && Change_IP
-		if [[ "$q" -eq "2" ]] ; then
-			IP=$(curl -s https://api.ip.sb/ip)
-			bash /root/ddns.sh
-			echo -e " ${Tip} Now IP: ${IP}"
-			New_IP=$(curl -s https://api.ip.sb/ip)
-			Send_TG_Message
-			sleep 30s
-		fi
-	fi
-	done
+Change_IP
