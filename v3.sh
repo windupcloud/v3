@@ -263,8 +263,8 @@ use_centos_pm2(){
 	    
         #创建pm2日志清理
             if [ ! -f /var/spool/cron/root ] ; then
-	        echo "未设置定时任务"
-	    else
+	            echo "未设置定时任务"
+	        else
                 cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
                 rm -rf "/var/spool/cron/root"
             fi
@@ -275,7 +275,7 @@ use_centos_pm2(){
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -284,7 +284,7 @@ use_centos_pm2(){
                 echo "添加DDNS-HZ定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
@@ -409,7 +409,7 @@ use_debian_pm2(){
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -418,7 +418,7 @@ use_debian_pm2(){
                 echo "添加DDNS-HZ定时启动"
                     sleep 2s
                     echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
-                    echo '*/10 * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/Application/telegram-socks/server.js ] ; then
