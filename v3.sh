@@ -1030,7 +1030,7 @@ install_node(){
 
 #More-[5]
 python_more(){
-    echo "选项：[1]安装Gost服务器 [2]Git更新后端 [3]安装ocserv"
+    echo "选项：[1]安装Gost服务器 [2]Git更新后端 [3]安装ocserv [4]安装python3"
 	read more_option
 	if [ ${more_option} = '1' ]; then
 		install_gost
@@ -1038,6 +1038,8 @@ python_more(){
 		git_update
 	elif [ ${more_option} = '3' ]; then
 		install_ocserv
+	elif [ ${more_option} = '4' ]; then
+		install_python3
 	else
 		echo "选项不在范围,操作中止.";exit 0
 	fi
@@ -1046,19 +1048,18 @@ python_more(){
 install_gost(){
            #检查文件gost.sh是否存在,若不存在,则下载该文件
 		if [ ! -f /root/gost.sh ]; then
-		   wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
+		    wget -N --no-check-certificate https://code.aliyun.com/supppig/gost/raw/master/gost.sh
             chmod +x gost.sh
             fi
             bash gost.sh
 	    }
-
 git_update(){
                 if [ ! -f /root/shadowsocks/userapiconfig.py ]; then
 		        echo "Tan90°"
                 else
 	         	git clone -b manyuser https://github.com/Super-box/p3.git          
-                        \cp -r -f /root/p3/* /root/shadowsocks
-			rm -rf /root/p3
+                \cp -r -f /root/p3/* /root/shadowsocks
+			    rm -rf /root/p3
                 fi
         }
 install_ocserv(){
@@ -1108,6 +1109,23 @@ install_ocserv(){
 			echo "懒得写了"
 
 		fi   
+        }
+install_python3(){
+        check_sys
+        echo "$release"     
+        if [ ${release} = 'centos' ]; then
+        	sudo yum update -y
+            sudo yum install epel-release -y
+            sudo yum install https://centos7.iuscommunity.org/ius-release.rpm -y
+            sudo yum install python36u python36u-pip -y
+            sudo mv /bin/pip /bin/pip-backup
+            sudo mv /bin/python /bin/python-backup
+            sudo ln -s /bin/pip3.6 /bin/pip
+            sudo ln -s /bin/python3.6 /bin/python
+            sudo pip install -r /root/shadowsocks-yahaha/requirements.txt
+ 		else
+			echo "懒得写了"
+		fi              
         }
 
 #一键安装加速-[6]
