@@ -946,11 +946,13 @@ install_node(){
 		check_sys
 		if [[ ${release} = "centos" ]]; then
 			install_pm2
+			install_python3
 			install_centos_ssr
 			remove_supervisor_for_each
 			use_centos_pm2
 		else
 			install_pm2
+			install_python3
 			install_ubuntu_ssr
 			remove_supervisor_for_each	
 			use_debian_pm2
@@ -1124,7 +1126,21 @@ install_python3(){
             sudo ln -s /bin/python3.6 /bin/python
             sudo pip install -r /root/shadowsocks-yahaha/requirements.txt
  		else
-			echo "懒得写了"
+			apt-get autoremove python3.5 python3.5-dev -yq
+			sudo apt-get install dirmngr sudo gcc -y
+			echo "deb http://mirrors.163.com/ubuntu/ bionic main" >> /etc/apt/sources.list
+			sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+			echo 'APT::Default-Release "stable";' | sudo tee -a /etc/apt/apt.conf.d/00local 	
+            sudo apt-get update
+            sudo apt-get -t bionic install python3.6 python3.6-dev python3-distutils python3-pip -y
+            wget -N https://bootstrap.pypa.io/get-pip.py
+            python3 get-pip.py
+            rm -rf get-pip.py
+            mv /bin/pip /bin/pip-backup
+            mv /usr/bin/python /usr/bin/python-backup
+            ln -s /usr/bin/python3.6 /usr/bin/python
+            ln -s /usr/local/bin/pip3.6 /bin/pip
+            pip install -r /root/shadowsocks-yahaha/requirements.txt
 		fi              
         }
 
