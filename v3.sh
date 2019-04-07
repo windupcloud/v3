@@ -1125,6 +1125,8 @@ install_python3(){
             sudo ln -s /bin/pip3.6 /bin/pip
             sudo ln -s /bin/python3.6 /bin/python
             sudo pip install -r /root/shadowsocks-yahaha/requirements.txt
+            sed -i '1c #!/usr/bin/python2.7' /usr/bin/yum
+            sed -i '1c #!/usr/bin/python2.7' /usr/libexec/urlgrabber-ext-down
  		else
 			apt-get autoremove python3.5 python3.5-dev -yq
 			sudo apt-get install dirmngr sudo gcc -y
