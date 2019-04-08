@@ -168,7 +168,7 @@ install_pm2(){
 	        yum -y install xz
     	    yum -y install wget
     	    yum -y install git
-    	    yum install -y ntpdate ntp
+            yum install -y ntpdate ntp
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
@@ -957,13 +957,13 @@ install_node(){
 		check_sys
 		if [[ ${release} = "centos" ]]; then
 			install_pm2
-			install_python3
+			###install_python3
 			install_centos_ssr
 			remove_supervisor_for_each
 			use_centos_pm2
 		else
 			install_pm2
-			install_python3
+			###install_python3
 			install_ubuntu_ssr
 			remove_supervisor_for_each	
 			use_debian_pm2
@@ -1123,6 +1123,7 @@ install_ocserv(){
 
 		fi   
         }
+
 install_python3(){
         check_sys
         echo "$release"     
