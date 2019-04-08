@@ -168,12 +168,21 @@ install_pm2(){
 	        yum -y install xz
     	    yum -y install wget
     	    yum -y install git
+    	    yum install -y ntpdate ntp
+            ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+            ln -sf /usr/share/zoneinfo/CST /etc/localtime
+            /usr/sbin/ntpdate pool.ntp.org
             timedatectl set-timezone Asia/Shanghai
     	    wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         else
 	        apt -y install xz
 	        apt -y install wget
 	        apt -y install git
+	        apt install -y ntpdate ntp
+	        ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+            ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+            ln -sf /usr/share/zoneinfo/CST /etc/localtime
+            /usr/sbin/ntpdate pool.ntp.org
             timedatectl set-timezone Asia/Shanghai
 	        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
 	fi
@@ -186,8 +195,8 @@ install_pm2(){
     	    #创建软连接
 	        rm -rf "/usr/bin/node"
 	        rm -rf "/usr/bin/npm"
-	        ln -s /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
-    	    ln -s /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
+	        ln -sf /root/node-v9.11.2-linux-x64/bin/node /usr/bin/node
+    	    ln -sf /root/node-v9.11.2-linux-x64/bin/npm /usr/bin/npm
 	        #升级Node
 	        npm i -g npm
             npm install -g npm
@@ -195,10 +204,10 @@ install_pm2(){
     	    npm install -g pm2 --unsafe-perm
     	    #创建软连接x2
     	if [ ! -f /usr/bin/pm2 ]; then
-    		ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
+    		ln -sf /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         else
     	    rm -rf "/usr/bin/pm2"
-    	    ln -s /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
+    	    ln -sf /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         fi
             rm -rf /root/*.tar.xz
 	else
@@ -1124,8 +1133,8 @@ install_python3(){
             sudo yum install python36u python36u-pip -y
             sudo mv /bin/pip /bin/pip-backup
             sudo mv /bin/python /bin/python-backup
-            sudo ln -s /bin/pip3.6 /bin/pip
-            sudo ln -s /bin/python3.6 /bin/python
+            sudo ln -sf /bin/pip3.6 /bin/pip
+            sudo ln -sf /bin/python3.6 /bin/python
             sudo pip install -r /root/shadowsocks-yahaha/requirements.txt
             sed -i '1c #!/usr/bin/python2.7' /usr/bin/yum
             sed -i '1c #!/usr/bin/python2.7' /usr/libexec/urlgrabber-ext-down
@@ -1142,8 +1151,8 @@ install_python3(){
             rm -rf get-pip.py
             mv /bin/pip /bin/pip-backup
             mv /usr/bin/python /usr/bin/python-backup
-            ln -s /usr/bin/python3.6 /usr/bin/python
-            ln -s /usr/local/bin/pip3.6 /bin/pip
+            ln -sf /usr/bin/python3.6 /usr/bin/python
+            ln -sf /usr/local/bin/pip3.6 /bin/pip
             pip install -r /root/shadowsocks-yahaha/requirements.txt
 		fi              
         }
