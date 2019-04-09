@@ -1563,7 +1563,7 @@ install_shell
 get_server_ip_info
 
 action=$1
-if [[ "${action}" == "update-pm2" ]]; then
+if [[ "${action}" == "pm2-update" ]]; then
     update_pm2
 else
 start_menu
