@@ -11,7 +11,6 @@ Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
-
 #开始菜单
 start_menu(){
 clear
@@ -330,7 +329,7 @@ use_centos_pm2(){
 	                echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '*/30 * * * * pm2 flush >> /dev/null 2>&1' >> /var/spool/cron/root
 	                echo '2 3 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
-                    echo '0 3 * * * pm2 update >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * v3 pm2-update >> /dev/null 2>&1' >> /var/spool/cron/root
 	                echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/root
                 #清理缓存
                     echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
@@ -464,7 +463,7 @@ use_debian_pm2(){
                     echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '*/30 * * * * pm2 flush >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '2 3 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * pm2 update >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * v3 pm2-update >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #清理缓存
                     echo '5 3 * * * echo "" > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
@@ -1562,7 +1561,13 @@ get_server_ip_info(){
 #安装本脚本,获取服务器IP信息
 install_shell
 get_server_ip_info
+
+action=$1
+if [[ "${action}" == "update-pm2" ]]; then
+    update_pm2
+else
 start_menu
+fi
 
 i=1
 while((i <= 100))
