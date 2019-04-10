@@ -324,6 +324,16 @@ use_centos_pm2(){
                     echo '###Gost' >> /var/spool/cron/root
                     echo '0 3 * * * gost start >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
+
+            if [ ! -f /usr/bin/docker ] ; then
+                echo "未检测到docker"
+            else
+                echo "添加docker定时重启"
+                    sleep 2s
+                    echo '###Docker' >> /var/spool/cron/root
+                    echo '0 3 * * * systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/root
 	                echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
@@ -458,6 +468,16 @@ use_debian_pm2(){
                     echo '###Gost' >> /var/spool/cron/crontabs/root
                     echo '0 3 * * * gost start >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
+
+            if [ ! -f /usr/bin/docker ] ; then
+                echo "未检测到docker"
+            else
+                echo "添加docker定时重启"
+                    sleep 2s
+                    echo '###Docker' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+            fi
+            
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/crontabs/root
                     echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
