@@ -293,7 +293,7 @@ use_centos_pm2(){
             else
                 echo "添加DDNS-HZ定时启动"
                     sleep 2s
-                    echo '###DDNS-HZ' >> /var/spool/cron/crontabs/root
+                    echo '###DDNS-HZ' >> /var/spool/cron/root
                     echo '* * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
