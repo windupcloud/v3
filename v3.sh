@@ -1155,6 +1155,7 @@ install_python3(){
             sudo mv /bin/python /bin/python-backup
             sudo ln -sf /bin/pip3.6 /bin/pip
             sudo ln -sf /bin/python3.6 /bin/python
+            python -m pip install --upgrade pip
             if ! wget --no-check-certificate https://raw.githubusercontent.com/fanvinga/dockerfiles/master/ssrmu/requirements.txt -O /root/requirements.txt; then
                 echo -e "${Error} 依赖列表下载失败 !" && exit
             fi
