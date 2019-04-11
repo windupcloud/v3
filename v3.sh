@@ -1119,11 +1119,11 @@ install_ocserv(){
                 bash /root/setiptables.sh
                 rm -rf /root/setiptables.sh
 
-                if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/ocserv_debian -O /etc/init.d/ocserv; then
+            if ! wget --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/service/ocserv_debian -O /etc/init.d/ocserv; then
 		        echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
 	        fi
 
-                if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/init.d/ocserv; then
+            if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/init.d/ocserv; then
                 echo -e "${Error} ocserv 服务 SSL更新脚本下载失败 !" && exit
             fi
             
@@ -1155,25 +1155,34 @@ install_python3(){
             sudo mv /bin/python /bin/python-backup
             sudo ln -sf /bin/pip3.6 /bin/pip
             sudo ln -sf /bin/python3.6 /bin/python
-            sudo pip install -r /root/shadowsocks-yahaha/requirements.txt
+            if ! wget --no-check-certificate https://raw.githubusercontent.com/fanvinga/dockerfiles/master/ssrmu/requirements.txt -O /root/requirements.txt; then
+                echo -e "${Error} 依赖列表下载失败 !" && exit
+            fi
+            sudo pip install -r /root/requirements.txt
+            sudo rm -rf /root/requirements.txt
             sed -i '1c #!/usr/bin/python2.7' /usr/bin/yum
             sed -i '1c #!/usr/bin/python2.7' /usr/libexec/urlgrabber-ext-down
  		else
-			apt-get autoremove python3.5 python3.5-dev -yq
+ 			apt install sudo -y
+			sudo apt-get autoremove python3.5 python3.5-dev -yq
 			sudo apt-get install dirmngr sudo gcc -y
 			echo "deb http://mirrors.163.com/ubuntu/ bionic main" >> /etc/apt/sources.list
 			sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
 			echo 'APT::Default-Release "stable";' | sudo tee -a /etc/apt/apt.conf.d/00local 	
             sudo apt-get update
             sudo apt-get -t bionic install python3.6 python3.6-dev python3-distutils python3-pip -y
-            wget -N https://bootstrap.pypa.io/get-pip.py
-            python3 get-pip.py
-            rm -rf get-pip.py
-            mv /bin/pip /bin/pip-backup
-            mv /usr/bin/python /usr/bin/python-backup
-            ln -sf /usr/bin/python3.6 /usr/bin/python
-            ln -sf /usr/local/bin/pip3.6 /bin/pip
-            pip install -r /root/shadowsocks-yahaha/requirements.txt
+            sudo wget -N https://bootstrap.pypa.io/get-pip.py
+            sudo python3 get-pip.py
+            sudo rm -rf get-pip.py
+            sudo mv /bin/pip /bin/pip-backup
+            sudo mv /usr/bin/python /usr/bin/python-backup
+            sudo ln -sf /usr/bin/python3.6 /usr/bin/python
+            sudo ln -sf /usr/local/bin/pip3.6 /bin/pip
+            if ! wget --no-check-certificate https://raw.githubusercontent.com/fanvinga/dockerfiles/master/ssrmu/requirements.txt -O /root/requirements.txt; then
+                echo -e "${Error} 依赖列表下载失败 !" && exit
+            fi
+            sudo pip install -r /root/requirements.txt
+            sudo rm -rf /root/requirements.txt
 		fi              
         }
 
