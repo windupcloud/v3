@@ -1163,15 +1163,15 @@ install_python3(){
             sudo rm -rf /root/requirements.txt
             sed -i '1c #!/usr/bin/python2.7' /usr/bin/yum
             sed -i '1c #!/usr/bin/python2.7' /usr/libexec/urlgrabber-ext-down
- 		else
- 			apt install sudo -y
+        else if [ ${release} = 'ubuntu' ]; then
+        	apt install sudo -y
 			sudo apt-get autoremove python3.5 python3.5-dev -yq
 			sudo apt-get install dirmngr sudo gcc -y
-			echo "deb http://mirrors.163.com/ubuntu/ bionic main" >> /etc/apt/sources.list
-			sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-			echo 'APT::Default-Release "stable";' | sudo tee -a /etc/apt/apt.conf.d/00local 	
+			#echo "deb http://mirrors.163.com/ubuntu/ bionic main" >> /etc/apt/sources.list
+			#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+			#echo 'APT::Default-Release "cosmic-updates";' | sudo tee -a /etc/apt/apt.conf.d/00local
             sudo apt-get update
-            sudo apt-get -t bionic install python3.6 python3.6-dev python3-distutils python3-pip -y
+            sudo apt-get install python3.6 python3.6-dev python3-distutils python3-pip -y
             sudo wget -N https://bootstrap.pypa.io/get-pip.py
             sudo python3 get-pip.py
             sudo rm -rf get-pip.py
@@ -1184,6 +1184,29 @@ install_python3(){
             fi
             sudo pip install -r /root/requirements.txt
             sudo rm -rf /root/requirements.txt
+ 		else if [ ${release} = 'debian' ]; then
+            apt install sudo -y
+			sudo apt-get autoremove python3.5 python3.5-dev -yq
+			sudo apt-get install dirmngr sudo gcc -y
+			#echo "deb http://mirrors.163.com/ubuntu/ bionic main" >> /etc/apt/sources.list
+			#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+			#echo 'APT::Default-Release "cosmic-updates";' | sudo tee -a /etc/apt/apt.conf.d/00local
+            sudo apt-get update
+            sudo apt-get install python3.6 python3.6-dev python3-distutils python3-pip -y
+            sudo wget -N https://bootstrap.pypa.io/get-pip.py
+            sudo python3 get-pip.py
+            sudo rm -rf get-pip.py
+            sudo mv /bin/pip /bin/pip-backup
+            sudo mv /usr/bin/python /usr/bin/python-backup
+            sudo ln -sf /usr/bin/python3.6 /usr/bin/python
+            sudo ln -sf /usr/local/bin/pip3.6 /bin/pip
+            if ! wget --no-check-certificate https://raw.githubusercontent.com/fanvinga/dockerfiles/master/ssrmu/requirements.txt -O /root/requirements.txt; then
+                echo -e "${Error} 依赖列表下载失败 !" && exit
+            fi
+            sudo pip install -r /root/requirements.txt
+            sudo rm -rf /root/requirements.txt
+        else
+            echo "您的系统暂不支持"
 		fi              
         }
 
