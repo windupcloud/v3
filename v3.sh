@@ -1163,7 +1163,7 @@ install_python3(){
             sudo rm -rf /root/requirements.txt
             sed -i '1c #!/usr/bin/python2.7' /usr/bin/yum
             sed -i '1c #!/usr/bin/python2.7' /usr/libexec/urlgrabber-ext-down
-        else if [ ${release} = 'ubuntu' ]; then
+        elif [ ${release} = 'ubuntu' ]; then
         	apt install sudo -y
 			sudo apt-get autoremove python3.5 python3.5-dev -yq
 			sudo apt-get install dirmngr sudo gcc -y
@@ -1184,7 +1184,7 @@ install_python3(){
             fi
             sudo pip install -r /root/requirements.txt
             sudo rm -rf /root/requirements.txt
- 		else if [ ${release} = 'debian' ]; then
+ 		elif [ ${release} = 'debian' ]; then
             apt install sudo -y
 			sudo apt-get autoremove python3.5 python3.5-dev -yq
 			sudo apt-get install dirmngr sudo gcc -y
