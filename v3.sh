@@ -23,7 +23,7 @@ echo && echo -e "###############################################################
 # [4] 安装ssr节点（肥羊）                                          #
 # [5] 后端更多选项                                                 #
 # [6] 一键安装加速                                                 #
-# [7] 一键服务器测速                                               #
+# [7] 一键服务器测试                                               #
 # [8] 更多功能                                                     #
 ####################################################################
 # [a]卸载各类云盾 [b]查看回程路由 [c]简易测速 [d]检测BBR安装状态   #
@@ -1240,13 +1240,37 @@ serverspeeder(){
 
 #一键全面测速-[7]
 speedtest(){
-	#检查文件ZBench-CN.sh是否存在,若不存在,则下载该文件
-	if [ ! -f /root/ZBench-CN.sh ]; then
-		wget https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh
-		chmod +x ZBench-CN.sh
-	fi
-	   #执行测试
-	   bash /root/ZBench-CN.sh
+    check_sys
+    echo "选项：[1]全面测试 [2]测试CPU [3]内存测试"
+    read speedtest
+        if [ ${speedtest} = '1' ]; then
+        #检查文件ZBench-CN.sh是否存在,若不存在,则下载该文件
+            if [ ! -f /root/ZBench-CN.sh ]; then
+                wget https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh
+                chmod +x ZBench-CN.sh
+            fi
+       #执行测试
+       bash /root/ZBench-CN.sh
+        elif [ ${speedtest} = '2' ]; then
+            curl -fsSL https://ilemonrain.com/download/shell/LemonBench.sh | bash -s sbcfast
+        elif [ ${speedtest} = '3' ]; then
+            if [ ${release} = 'centos' ]; then
+                yum install wget -y
+                yum groupinstall "Development Tools" -y
+                wget https://raw.githubusercontent.com/FunctionClub/Memtester/master/memtester.cpp
+                gcc -l stdc++ memtester.cpp
+                ./a.out
+            else
+                #Ubuntu / Debian
+                apt-get update
+                apt-get install wget build-essential -y
+                wget https://raw.githubusercontent.com/FunctionClub/Memtester/master/memtester.cpp
+                gcc -l stdc++ memtester.cpp
+                ./a.out
+            fi
+        else
+            echo "选项不在范围,操作中止.";exit 0
+        fi
 }
 
 #More-[8]
