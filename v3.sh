@@ -342,9 +342,9 @@ use_centos_pm2(){
                     echo '0 3 * * * v3 pm2-update >> /dev/null 2>&1' >> /var/spool/cron/root
 	                echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/root
                 #清理缓存
-                    echo '5 3 * * * sync && echo 1 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
-                    echo '10 3 * * * sync && echo 2 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
-                    echo '15 3 * * * sync && echo 3 > /proc/sys/vm/drop_caches >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '5 3 * * * cat /dev/null > /var/mail/root >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '10 3 * * * cat /dev/null > /var/log/cron >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '15 3 * * * cat /dev/null > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/root
 	            #重启cron并备份
                     /sbin/service crond restart
                     cp /var/spool/cron/root /var/spool/cron/v3root.bak
@@ -1555,7 +1555,7 @@ replacement_of_installation_source(){
 configure_firewall(){
 	echo "请选择操作： [1]关闭firewall"
 	read firewall_operation
-	
+
 	if [ ${firewall_operation} = '1' ]; then
 		echo "停止firewall..."
 		systemctl stop firewalld.service
