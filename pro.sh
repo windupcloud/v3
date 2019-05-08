@@ -41,7 +41,7 @@ echo 'deb-src http://mirrors.163.com/debian/ testing main non-free contrib' >> /
 echo 'deb-src http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
 echo 'deb http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
 echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
-apt-get update
+apt-get update -y
 #安装桌面环境必须环境
 apt-get install xorg xserver-xorg lxde -y
 #再换源
@@ -49,6 +49,8 @@ bash /root/superupdate.sh
 rm -rf /root/superupdate.sh
 ###安装网络管理软件
 apt install wicd wicd-cli wicd-gtk -y
+###安装中文字体
+sudo apt-get install fonts-droid ttf-wqy-zenhei ttf-wqy-microhei fonts-arphic-ukai fonts-arphic-uming
 ###安装谷歌浏览器
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub
 sudo apt-key add - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
