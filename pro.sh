@@ -16,17 +16,18 @@ start_install(){
 clear
 ###安装必备
 apt-get install -y wget && apt-get install -y ca-certificates
+#换源
+    if ! wget -N --no-check-certificate https://git.io/superupdate.sh -O /root/superupdate.sh; then
+       echo -e "${Error} superupdate.sh 文件下载失败 !" && exit
+	fi
+bash /root/superupdate.sh
+###必备脚本
     if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/Optimize.sh -O /root/Optimize.sh; then
        echo -e "${Error} Optimize.sh 文件下载失败 !" && exit
 	fi
 chmod +x /root/Optimize.sh
 bash /root/Optimize.sh
 rm -rf /root/Optimize.sh
-###换源
-    if ! wget -N --no-check-certificate https://git.io/superupdate.sh -O /root/superupdate.sh; then
-       echo -e "${Error} superupdate.sh 文件下载失败 !" && exit
-	fi
-bash /root/superupdate.sh
 ###安装桌面环境
 apt install sudo net-tools screen htop unzip vim -y
 apt install aptitude -y
