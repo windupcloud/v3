@@ -67,3 +67,6 @@ rm -rf /root/teamviewer.deb
 ###重启
 reboot
 }
+
+###脚本开始
+start_install
