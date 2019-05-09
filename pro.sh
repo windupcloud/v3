@@ -59,6 +59,8 @@ sudo apt-get update
 sudo apt-get -y install google-chrome-stable
 #下面是beta版 
 #sudo apt-get -y install google-chrome-beta
+###替换快捷方式
+sed -e '108c/Exec=/usr/bin/google-chrome-stable --no-sandbox %U' /root/.local/share/applications/google-chrome.desktop
 ###安装Taeamviewer
     if ! wget -N --no-check-certificate https://download.teamviewer.com/download/linux/teamviewer-host_amd64.deb -O /root/teamviewer.deb; then
        echo -e "${Error} teamviewer 文件下载失败 !" && exit
