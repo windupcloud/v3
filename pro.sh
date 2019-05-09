@@ -50,10 +50,10 @@ rm -rf /root/superupdate.sh
 ###安装网络管理软件
 apt install wicd wicd-cli wicd-gtk -y
 ###安装中文字体
-sudo apt-get install fonts-droid ttf-wqy-zenhei ttf-wqy-microhei fonts-arphic-ukai fonts-arphic-uming
+sudo apt-get install ttf-wqy-zenhei -y
 ###安装谷歌浏览器
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub
-sudo apt-key add - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 sudo apt-get update
 #下面是稳定版
 sudo apt-get -y install google-chrome-stable
