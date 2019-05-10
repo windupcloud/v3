@@ -31,7 +31,7 @@ rm -rf /root/Optimize.sh
 ###安装桌面环境
 apt install sudo net-tools screen htop unzip vim -y
 apt install aptitude -y
-aptitude install --without-recommends lxde
+aptitude install --without-recommends lxde -y
 #加测试源
 echo '###163测试源' >> /etc/apt/sources.list
 echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
@@ -60,7 +60,7 @@ sudo apt-get -y install google-chrome-stable
 #下面是beta版 
 #sudo apt-get -y install google-chrome-beta
 ###替换快捷方式
-sed -e '108c/Exec=/usr/bin/google-chrome-stable --no-sandbox %U' /root/.local/share/applications/google-chrome.desktop
+sed -i '108s#.*#Exec=/usr/bin/google-chrome-stable --no-sandbox %U#'  /usr/share/applications/google-chrome.desktop
 ###安装Taeamviewer
     if ! wget -N --no-check-certificate https://download.teamviewer.com/download/linux/teamviewer-host_amd64.deb -O /root/teamviewer.deb; then
        echo -e "${Error} teamviewer 文件下载失败 !" && exit
