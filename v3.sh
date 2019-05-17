@@ -486,9 +486,10 @@ use_debian_pm2(){
                     echo '0 3 * * * v3 pm2-update >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #清理缓存
-                    echo '5 3 * * * echo "" > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '10 3 * * * echo "" > /var/adm/sylog >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-                    echo '15 3 * * * echo "" > /var/log/maillog >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '5 3 * * * cat /dev/null > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '6 3 * * * cat /dev/null > /var/log/spooler >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '7 3 * * * cat /dev/null > /var/log/messages >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '8 3 * * * cat /dev/null > /var/mail/root >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                 #重启cron并备份
                     service cron restart
                     service cron reload
