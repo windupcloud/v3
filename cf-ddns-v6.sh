@@ -12,17 +12,17 @@ record_name="aaa.yahaha.pro"
 
 ######################  修改配置信息 ####################### 
 # 域名类型，IPv4 为 A，IPv6 则是 AAAA
-record_type="A"
+record_type="AAAA"
 # IPv6 检测服务
-#ip=$(curl -s https://ipv6.vircloud.net)
+ip=$(curl -s https://ipv6.vircloud.net)
 # IPv4 检测服务
-ip=$(curl -s https://ipv4.vircloud.net)
+#ip=$(curl -s https://ipv4.vircloud.net)
 # 变动前的公网 IP 保存位置
-ip_file="/root/ddns/ip.txt"
+ip_file="/root/ddns-v6/ip.txt"
 # 域名识别信息保存位置
-id_file="/root/ddns/cloudflare.ids"
+id_file="/root/ddns-v6/cloudflare.ids"
 # 监测日志保存位置
-log_file="/root/ddns/cloudflare.log"
+log_file="/root/ddns-v6/cloudflare.log"
 
 ######################  监测日志格式 ######################## 
 log() {
