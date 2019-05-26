@@ -1361,12 +1361,16 @@ ddns(){
         elif [ ${ddns} = '2' ]; then
 		#清屏
 		clear
-		#输出当前配置
-		echo "当前DDNS配置如下:"
-		echo "------------------------------------"
-		sed -n '6p' /root/ddns/cf-ddns.sh
-		sed -n '7p' /root/ddns/cf-ddns.sh
-		echo "------------------------------------"
+        #判断DDNS文件是否存在
+        if [ ! -f /root/ddns/cf-ddns.sh ]; then
+            echo "检查到您未安装ddns"
+        else
+            echo "当前DDNS配置如下:"
+            echo "------------------------------------"
+            sed -n '9p' /root/ddns/cf-ddns.sh
+            sed -n '11p' /root/ddns/cf-ddns.sh
+            echo "------------------------------------"
+        fi
 		#获取新配置信息
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 			#检查
@@ -1385,14 +1389,14 @@ ddns(){
                 rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
                 bash /root/ddns/cf-ddns.sh
         elif [ ${ddns} = '3' ]; then
-		#判断/var/swapfile1文件是否存在
+		#判断DDNS文件是否存在
 		if [ ! -f /root/ddns/cf-ddns.sh ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
 		    echo "------------------------------------"
-		    sed -n '36p' /root/ddns/cf-ddns.sh
-		    sed -n '39p' /root/ddns/cf-ddns.sh
+		    sed -n '9p' /root/ddns/cf-ddns.sh
+		    sed -n '11p' /root/ddns/cf-ddns.sh
 		    echo "------------------------------------"
 		fi
 		    #运行

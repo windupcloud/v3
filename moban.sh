@@ -5,7 +5,7 @@
 
 #全局变量
 server_ip=`curl -s https://app.52ll.win/ip/api.php`
-separate_lines="####################################################################"
+separate_lines="##"
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
@@ -42,7 +42,7 @@ start_install(){
 
             #安装必备软件
             yum -y install epel-release
-	        yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo
+	        yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo htop
             yum install -y ntpdate ntp
 
             #关闭防火墙
@@ -59,11 +59,18 @@ start_install(){
             yum -y install cloud-init cloud-utils cloud-initramfs-growroot
             wget -N https://github.com/Super-box/v3/raw/master/C7-cloud.cfg -O /etc/cloud/cloud.cfg
             wget -N https://github.com/Super-box/v3/raw/master/ifcfg-eth0 -P /etc/sysconfig/network-scripts
+            cloud-init clean
             
             #创建用户
             userdel -r afo
             useradd -G wheel -s /bin/bash afo
-            echo 113389.com | passwd -stdin afo
+            echo afo:113389.com | chpasswd
+
+            #afohang=$(cat /etc/shadow | grep -n 'afo' | cut -d ":" -f 1)
+            #pwd=afo:$6$QbWPaAF0$UQpQoWBlYlQKlI7SQ8bV6lhb17QbHZ1Rv2g5.LfzVU61HyjEK0bWlrQaaWl4DjIcHiYONoc3945BniIMcTDU80:18042:0:99999:7:::
+            #sed -i "${afohang}c${pwd}" /etc/shadow
+            #
+            #echo 113389.com && passwd -stdin afo
 
             #清空历史记录
             yum clean all
@@ -90,7 +97,10 @@ start_install(){
             rm -f /var/log/ovirt-guest-agent/ovirt-guest-agent.log
             rm -f /var/log/tuned/tuned.log
             rm -f /etc/udev/rules/70-persistent-*-rules
-            #sys-unconfig
+            #删除自己
+            rm -rf /root/moban.sh
+            #关机
+            sys-unconfig
 
         else
             #安装 wget 和 ca-certificates 并换源
@@ -98,7 +108,18 @@ start_install(){
         	wget -qO- git.io/superupdate.sh | bash
 
             #安装必备软件
-	        apt -y install sudo xz git screen net-tools nload vim gcc gcc-c++ make
+            apt-get install build-essential -y
+	        apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
+
+            #安装一下Docker-ce
+	        sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
+	        curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+	        sudo add-apt-repository \
+            "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
+            $(lsb_release -cs) \
+            stable"
+            sudo apt-get update -y
+            sudo apt-get install docker-ce -y
 
 	        #更改时区为上海
 	        apt install -y ntpdate ntp
@@ -107,6 +128,11 @@ start_install(){
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
             timedatectl set-timezone Asia/Shanghai
+
+            #创建用户
+            userdel -r afo
+            useradd -G sudo -s /bin/bash afo
+            echo afo:113389.com | chpasswd
 
             #加测试源
             echo '###163测试源' >> /etc/apt/sources.list
@@ -122,12 +148,34 @@ start_install(){
             #安装 cloud=init 及其套件
             apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
             wget -N https://github.com/Super-box/v3/raw/master/D9-cloud.cfg -O /etc/cloud/cloud.cfg
+            cloud-init clean
 
             #再换源
             wget -qO- git.io/superupdate.sh | bash
-            
+
+            #清空历史记录
+            apt clean all
+            > /etc/machine-id
+            rm -f /root/anaconda-ks.cfg
+            rm -f /root/.bash_history
+            unset HISTFILE
+            > /var/log/auth.log
+            > /var/log/daemon.log
+            > /var/log/dpkg.log
+            > /var/log/kern.log
+            > /var/log/syslog
+            > /var/log/alternatives.log
+            > /var/log/apt/history.log
+            > /var/log/apt/term.log
+            rm -rf /var/mail/*
+            rm -f /etc/udev/rules/70-persistent-*-rules
+            rm -f /var/lib/dhcp/dh*.leases*
+            #删除自己
+            rm -rf /root/moban.sh
+            #关机
+            poweroff
 	fi
 }
 
-###脚本开始
+脚本开始
 start_install
