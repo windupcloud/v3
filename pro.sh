@@ -75,3 +75,11 @@ reboot
 
 ###脚本开始
 start_install
+
+#网卡稳定 针对 [enp0s31f6]
+#apt -y install ethtool
+#/sbin/ethtool -K 主网卡名 tx off rx off
+#
+#post-up /sbin/ethtool -K 主网卡名 tx off rx off
+#验证 /sbin/ethtool -k enp0s31f6
+#确定rx-checksumming和tx-checksumming都是off：
