@@ -1632,10 +1632,10 @@ install_shell(){
 
 get_server_ip_info(){
 	if [ ! -f /root/.server_ip_info.txt ]; then
-		curl -s myip.ipip.net > /root/.server_ip_info.txt
+		curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
 	else
 		rm -rf /root/.server_ip_info.txt
-		curl -s myip.ipip.net > /root/.server_ip_info.txt
+		curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
 	fi
 	read server_ip_info < /root/.server_ip_info.txt
 }
