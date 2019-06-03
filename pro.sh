@@ -14,6 +14,9 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 start_install(){
 clear
+###去除付费订阅
+mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
+
 ###安装必备
 apt-get install -y wget && apt-get install -y ca-certificates
 #换源
