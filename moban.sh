@@ -4,7 +4,7 @@
 [ $(id -u) != "0" ] && { echo "请切换至root账户执行此脚本."; exit 1; }
 
 #全局变量
-server_ip=`curl -s https://app.52ll.win/ip/api.php`
+server_ip=$(curl -s https://ipv4.vircloud.net)
 separate_lines="##"
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
@@ -42,7 +42,7 @@ start_install(){
 
             #安装必备软件
             yum -y install epel-release
-	        yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo htop
+	      yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo htop
             yum install -y ntpdate ntp
 
             #关闭防火墙
@@ -121,9 +121,9 @@ start_install(){
             sudo apt-get update -y
             sudo apt-get install docker-ce -y
 
-	        #更改时区为上海
-	        apt install -y ntpdate ntp
-	        ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+	      #更改时区为上海
+	      apt install -y ntpdate ntp
+	      ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
@@ -134,6 +134,9 @@ start_install(){
             useradd -G sudo -s /bin/bash afo
             echo afo:113389.com | chpasswd
 
+            #修改cloud-init导致的开机检测问题
+            sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
+            
             #加测试源
             echo '###163测试源' >> /etc/apt/sources.list
             echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
