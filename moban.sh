@@ -13,21 +13,21 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 #检查系统版本
 check_sys(){
-		if [[ -f /etc/redhat-release ]]; then
-			release="centos"
-		elif cat /etc/issue | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-		elif cat /proc/version | grep -q -E -i "debian"; then
-			release="debian"
-		elif cat /proc/version | grep -q -E -i "ubuntu"; then
-			release="ubuntu"
-		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
-			release="centos"
-	        fi
+        if [[ -f /etc/redhat-release ]]; then
+            release="centos"
+        elif cat /etc/issue | grep -q -E -i "debian"; then
+            release="debian"
+        elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+            release="ubuntu"
+        elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+            release="centos"
+        elif cat /proc/version | grep -q -E -i "debian"; then
+            release="debian"
+        elif cat /proc/version | grep -q -E -i "ubuntu"; then
+            release="ubuntu"
+        elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+            release="centos"
+         fi
 }
 
 start_install(){
@@ -35,14 +35,14 @@ start_install(){
     check_sys
         if [[ ${release} = "centos" ]]; then
             #安装 wget 和 ca-certificates 并换源
-        	yum install -y wget && yum install -y ca-certificates
-        	wget -qO- git.io/superupdate.sh | bash
-        	#更新索引并更新系统
-        	yum makecache fast && yum update -y
+            yum install -y wget && yum install -y ca-certificates
+            wget -qO- git.io/superupdate.sh | bash
+            #更新索引并更新系统
+            yum makecache fast && yum update -y
 
             #安装必备软件
             yum -y install epel-release
-	        yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo htop
+            yum -y install xz git vim unzip net-tools ethtool gcc gcc-c++ make cmake automake autoconf python-devel nlaod psmisc screen parted sudo htop
             yum install -y ntpdate ntp
 
             #关闭防火墙
@@ -102,28 +102,28 @@ start_install(){
             #关机
             sys-unconfig
 
-        else if [[ ${release} = "debian" ]]; then
+        elif [[ ${release} = "debian" ]]; then
             #安装 wget 和 ca-certificates 并换源
-        	apt-get install -y wget && apt-get install -y ca-certificates
-        	wget -qO- git.io/superupdate.sh | bash
+            apt-get install -y wget && apt-get install -y ca-certificates
+            wget -qO- git.io/superupdate.sh | bash
 
             #安装必备软件
             apt-get install build-essential -y
-	        apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
+            apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
 
             #安装一下Docker-ce
-	        sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
-	        curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-	        sudo add-apt-repository \
+            sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
+            curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+            sudo add-apt-repository \
             "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
             $(lsb_release -cs) \
             stable"
             sudo apt-get update -y
             sudo apt-get install docker-ce -y
 
-	        #更改时区为上海
-	        apt install -y ntpdate ntp
-	        ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+            #更改时区为上海
+            apt install -y ntpdate ntp
+            ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
@@ -177,29 +177,28 @@ start_install(){
             rm -rf /root/moban.sh
             #关机
             poweroff
-	fi
-        else if [[ ${release} = "ubuntu" ]]; then
+        elif [[ ${release} = "ubuntu" ]]; then
             #安装 wget 和 ca-certificates 并换源
-        	apt-get install -y wget && apt-get install -y ca-certificates
-        	wget -qO- git.io/superupdate.sh | bash
+            apt-get install -y wget && apt-get install -y ca-certificates
+            wget -qO- git.io/superupdate.sh | bash
 
             #安装必备软件
             apt-get install build-essential -y
-	        apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
+            apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
 
             #安装一下Docker-ce
-	        sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
-	        curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-	        sudo add-apt-repository \
+            sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
+            curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+            sudo add-apt-repository \
             "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
             $(lsb_release -cs) \
             stable"
             sudo apt-get update -y
             sudo apt-get install docker-ce -y
 
-	        #更改时区为上海
-	        apt install -y ntpdate ntp
-	        ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+            #更改时区为上海
+            apt install -y ntpdate ntp
+            ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
@@ -209,8 +208,7 @@ start_install(){
             userdel -r afo
             useradd -G sudo -s /bin/bash afo
             echo afo:113389.com | chpasswd
-            
-    fi
+
         else
             echo "Your system is not be supported"
         fi
