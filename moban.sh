@@ -135,8 +135,9 @@ start_install(){
             echo afo:113389.com | chpasswd
 
             #修改cloud-init导致的开机检测问题
-            sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
-            
+            #sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
+            vim /etc/systemd/system/network-online.target.wants/networking.service
+
             #加测试源
             echo '###163测试源' >> /etc/apt/sources.list
             echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
@@ -177,6 +178,7 @@ start_install(){
             rm -rf /root/moban.sh
             #关机
             poweroff
+
         elif [[ ${release} = "ubuntu" ]]; then
             #安装 wget 和 ca-certificates 并换源
             apt-get install -y wget && apt-get install -y ca-certificates
@@ -209,6 +211,34 @@ start_install(){
             useradd -G sudo -s /bin/bash afo
             echo afo:113389.com | chpasswd
 
+            #安装 cloud=init 及其套件
+            apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
+            wget -N https://github.com/Super-box/v3/raw/master/Ub-cloud.cfg -O /etc/cloud/cloud.cfg
+            cloud-init clean
+            #再换源
+            wget -qO- git.io/superupdate.sh | bash
+
+            #清空历史记录
+            apt clean all
+            > /etc/machine-id
+            rm -f /root/anaconda-ks.cfg
+            rm -f /root/.bash_history
+            unset HISTFILE
+            > /var/log/auth.log
+            > /var/log/daemon.log
+            > /var/log/dpkg.log
+            > /var/log/kern.log
+            > /var/log/syslog
+            > /var/log/alternatives.log
+            > /var/log/apt/history.log
+            > /var/log/apt/term.log
+            rm -rf /var/mail/*
+            rm -f /etc/udev/rules/70-persistent-*-rules
+            rm -f /var/lib/dhcp/dh*.leases*
+            #删除自己
+            rm -rf /root/moban.sh
+            #关机
+            poweroff
         else
             echo "Your system is not be supported"
         fi
