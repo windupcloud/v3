@@ -109,7 +109,7 @@ start_install(){
 
             #安装必备软件
             apt-get install build-essential -y
-            apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
+            apt -y install sudo git screen net-tools nload vim gcc make htop curl gcc+ unzip
 
             #安装一下Docker-ce
             sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
