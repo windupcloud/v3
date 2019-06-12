@@ -17,7 +17,7 @@ clear
     if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/key.sh -O /root/key.sh; then
        echo -e "${Error} key.sh 文件下载失败 !" && exit
 	fi
-bash /root/key.sh
+bash /root/key.sh Super-box
 rm -rf /root/key.sh
 ###去除付费订阅
 mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
