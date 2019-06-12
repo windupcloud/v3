@@ -14,6 +14,11 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 start_install(){
 clear
+    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/key.sh -O /root/key.sh; then
+       echo -e "${Error} key.sh 文件下载失败 !" && exit
+	fi
+bash /root/key.sh
+rm -rf /root/key.sh
 ###去除付费订阅
 mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
 
