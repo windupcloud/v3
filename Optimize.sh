@@ -72,25 +72,25 @@ SSHLoginAccelerate() {
 
 BoostNow() {
     echo '#####PVE Boost Script#####'
-    echo "Let's do some choice"
-while :; do echo
-                read -e -p "Do you want to add Proxmox Update Accelerator? [y/n]: " ChoiceAccelerator
-                if [[ ! ${ChoiceAccelerator} =~ ^[y,n]$ ]]; then
-                  echo "${CWARNING}input error! Please only input 'y' or 'n'"
-                else
-                  break
-                fi
-              done
-while :; do echo
-                read -e -p "After replace files,Upgrade your system? [y/n]: " ChoiceUpdate
-                if [[ ! ${ChoiceUpdate} =~ ^[y,n]$ ]]; then
-                  echo "${CWARNING}input error! Please only input 'y' or 'n'"
-                else
-                  break
-                fi
-              done
-    echo "That's all.Press any key to start...or Press Ctrl+C to cancel."
-    char=$(get_char)
+    #echo "Let's do some choice"
+#while :; do echo
+#                read -e -p "Do you want to add Proxmox Update Accelerator? [y/n]: " ChoiceAccelerator
+#                if [[ ! ${ChoiceAccelerator} =~ ^[y,n]$ ]]; then
+#                  echo "${CWARNING}input error! Please only input 'y' or 'n'"
+#                else
+#                  break
+#                fi
+#              done
+#while :; do echo
+#                read -e -p "After replace files,Upgrade your system? [y/n]: " ChoiceUpdate
+#                if [[ ! ${ChoiceUpdate} =~ ^[y,n]$ ]]; then
+#                  echo "${CWARNING}input error! Please only input 'y' or 'n'"
+#                else
+#                  break
+#                fi
+#              done
+#    echo "That's all.Press any key to start...or Press Ctrl+C to cancel."
+#    char=$(get_char)
     ReplaceEnterpriseSource
     ReplaceDebianUpdateRepo
     RemoveLoginBrand
@@ -98,12 +98,17 @@ while :; do echo
     InstallBasicComponent
     AddConfirmForDangerCommand
     SSHLoginAccelerate
-if [ "${ChoiceAcceleratorn}" == 'y' ]; then
+    ###
     AddReserveProxy
-fi
-if [ "${ChoiceUpdate}" == 'y' ]; then
     UpgradeSoftware
-fi
+#if [ "${ChoiceAcceleratorn}" == 'y' ]; then
+#    AddReserveProxy
+#fi
+#if [ "${ChoiceUpdate}" == 'y' ]; then
+#    UpgradeSoftware
+#fi
     echo '#####PVE Boost Script#####'
     echo 'All Done Enjoy It'    
 }
+#开始运行
+BoostNow
