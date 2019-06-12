@@ -19,8 +19,17 @@ clear
 	fi
 bash /root/key.sh Super-box
 rm -rf /root/key.sh
+
+###必备脚本
+    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/Optimize.sh -O /root/Optimize.sh; then
+       echo -e "${Error} Optimize.sh 文件下载失败 !" && exit
+	fi
+chmod +x /root/Optimize.sh
+bash /root/Optimize.sh
+rm -rf /root/Optimize.sh
+
 ###去除付费订阅
-mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
+#mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
 
 ###安装必备
 apt-get install -y wget && apt-get install -y ca-certificates
@@ -29,13 +38,7 @@ apt-get install -y wget && apt-get install -y ca-certificates
        echo -e "${Error} superupdate.sh 文件下载失败 !" && exit
 	fi
 bash /root/superupdate.sh
-###必备脚本
-    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/Optimize.sh -O /root/Optimize.sh; then
-       echo -e "${Error} Optimize.sh 文件下载失败 !" && exit
-	fi
-chmod +x /root/Optimize.sh
-bash /root/Optimize.sh
-rm -rf /root/Optimize.sh
+
 ###安装桌面环境
 apt install sudo net-tools screen htop unzip vim -y
 apt install aptitude -y
