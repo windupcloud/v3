@@ -3,7 +3,7 @@ RemoveLoginBrand() {
     cp /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js.bak
     sed -i "s#data.status !== 'Active'#false#g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
 }
-
+    
 InstallBasicComponent() {
     apt install vim wget curl htop git axel aria2 apt-transport-https ca-certificates curl software-properties-common gnupg2 -y
 }
@@ -109,6 +109,9 @@ BoostNow() {
 #fi
     echo '#####PVE Boost Script#####'
     echo 'All Done Enjoy It'    
+}
+UpgradeSoftware() {
+    apt upgrade -y
 }
 #开始运行
 BoostNow
