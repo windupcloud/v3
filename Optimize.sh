@@ -99,7 +99,7 @@ BoostNow() {
     AddConfirmForDangerCommand
     SSHLoginAccelerate
     ###
-    AddReserveProxy
+    #AddReserveProxy
     UpgradeSoftware
 #if [ "${ChoiceAcceleratorn}" == 'y' ]; then
 #    AddReserveProxy
