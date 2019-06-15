@@ -78,7 +78,11 @@ start_install(){
             rm -f /etc/ssh/ssh_host_*
             rm -rf /root/.ssh/
             rm -f /root/anaconda-ks.cfg
-            rm -f /root/.bash_history
+            rm -rf /root/.bash_history
+            history -cw
+            echo > /var/log/wtmp
+            echo > /var/log/btmp
+            echo > /var/log/lastlog
             unset HISTFILE
             rm -f /var/log/boot.log
             rm -f /var/log/cron
@@ -161,7 +165,11 @@ start_install(){
             apt clean all
             > /etc/machine-id
             rm -f /root/anaconda-ks.cfg
-            rm -f /root/.bash_history
+            rm -rf /root/.bash_history
+            history -cw
+            echo > /var/log/wtmp
+            echo > /var/log/btmp
+            echo > /var/log/lastlog
             unset HISTFILE
             > /var/log/auth.log
             > /var/log/daemon.log
@@ -186,7 +194,7 @@ start_install(){
 
             #安装必备软件
             apt-get install build-essential -y
-            apt -y install sudo git screen net-tools nload vim gcc make htop docker curl gcc+ unzip
+            apt -y install sudo git screen net-tools nload vim gcc make htop curl gcc+ unzip
 
             #安装一下Docker-ce
             sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
@@ -218,11 +226,19 @@ start_install(){
             #再换源
             wget -qO- git.io/superupdate.sh | bash
 
+            #修改cloud-init导致的开机检测问题
+            #sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
+            vim /etc/systemd/system/network-online.target.wants/networking.service
+
             #清空历史记录
             apt clean all
             > /etc/machine-id
             rm -f /root/anaconda-ks.cfg
-            rm -f /root/.bash_history
+            rm -rf /root/.bash_history
+            history -cw
+            echo > /var/log/wtmp
+            echo > /var/log/btmp
+            echo > /var/log/lastlog
             unset HISTFILE
             > /var/log/auth.log
             > /var/log/daemon.log
