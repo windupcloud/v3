@@ -78,7 +78,7 @@ start_install(){
             rm -f /etc/ssh/ssh_host_*
             rm -rf /root/.ssh/
             rm -f /root/anaconda-ks.cfg
-            rm -rf /root/.bash_history
+            echo > /root/.bash_history
             history -cw
             echo > /var/log/wtmp
             echo > /var/log/btmp
@@ -165,7 +165,7 @@ start_install(){
             apt clean all
             > /etc/machine-id
             rm -f /root/anaconda-ks.cfg
-            rm -rf /root/.bash_history
+            echo > /root/.bash_history
             history -cw
             echo > /var/log/wtmp
             echo > /var/log/btmp
@@ -234,7 +234,7 @@ start_install(){
             apt clean all
             > /etc/machine-id
             rm -f /root/anaconda-ks.cfg
-            rm -rf /root/.bash_history
+            echo > /root/.bash_history
             history -cw
             echo > /var/log/wtmp
             echo > /var/log/btmp
