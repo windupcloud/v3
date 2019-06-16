@@ -596,6 +596,7 @@ install_centos_supervisor(){
 	    fi
 	        echo "开始卸载supervisor"
                 yum -y remove supervisor
+                pip2 uninstall supervisor -y
                 rm -rf "/etc/supervisord.conf"
                 rm -rf "/usr/bin/srs"
                 yum -y install supervisor
@@ -662,22 +663,23 @@ remove_centos_supervisor(){
 	    if [ ! -f /usr/bin/killall ]; then
 	    echo "检查到您未安装psmisc,脚本将先进行安装"
             yum -y update
-	    yum -y install psmisc
+	        yum -y install psmisc
         fi
 	    echo "现在开始卸载supervisor"
             killall supervisord
-	    killall supervisord
-	    killall supervisord
-	    killall supervisord
-	    yum -y remove supervisor
+	        killall supervisord
+	        killall supervisord
+	        killall supervisord
+	        yum -y remove supervisor
+            pip2 uninstall supervisor -y
             rm -rf "/etc/supervisord.conf"
             rm -rf "/usr/bin/srs"
 	fi
 }
 
 kill_supervisor(){
-        #检查系统版本
-                check_sys
+    #检查系统版本
+        check_sys
 	#判断/usr/bin/killall文件是否存在
 	if [ ! -f /usr/bin/killall ]; then
 	    echo "检查到您未安装psmisc,脚本将先进行安装..."
