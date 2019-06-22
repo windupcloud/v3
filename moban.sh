@@ -103,8 +103,9 @@ start_install(){
             rm -f /etc/udev/rules/70-persistent-*-rules
             #删除自己
             rm -rf /root/moban.sh
+            echo "Finish (先histroy -cw) 请运行 sys-unconfig 关机"
             #关机
-            sys-unconfig
+            #sys-unconfig
 
         elif [[ ${release} = "debian" ]]; then
             #安装 wget 和 ca-certificates 并换源
@@ -184,8 +185,9 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
+            echo "Finish (先histroy -cw) 请运行 poweroff 关机"
             #关机
-            poweroff
+            #poweroff
 
         elif [[ ${release} = "ubuntu" ]]; then
             #安装 wget 和 ca-certificates 并换源
@@ -253,8 +255,9 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
+            echo "Finish (先histroy -cw) 请运行 poweroff 关机"
             #关机
-            poweroff
+            #poweroff
         else
             echo "Your system is not be supported"
         fi
