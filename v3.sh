@@ -854,8 +854,11 @@ install_centos_ssr(){
     supervisord
 	fi
 	python -m pip install --upgrade pip
-    wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
-	rm -rf libsodium.sh
+    yum install libsodium -y
+    
+	#不再编译，直接yum
+    #wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+	#rm -rf libsodium.sh
 
 	#旧编译
 	##Libtest
