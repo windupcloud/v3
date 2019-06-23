@@ -55,6 +55,7 @@ echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-f
 apt-get update -y
 #安装桌面环境必须环境
 apt-get install xorg xserver-xorg lxde -y
+apt-get install lm-sensors -y
 #再换源
 bash /root/superupdate.sh
 rm -rf /root/superupdate.sh
