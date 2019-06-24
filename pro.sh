@@ -40,8 +40,14 @@ apt-get install -y wget && apt-get install -y ca-certificates
 bash /root/superupdate.sh
 
 ###安装桌面环境
-apt install sudo net-tools screen htop unzip vim -y
 apt install aptitude -y
+
+if [ ! -f "/usr/bin/aptitude" ]; then
+  echo "aptitude install failed!"  && exit
+fi
+
+apt install sudo net-tools screen htop unzip vim -y
+
 aptitude install --without-recommends lxde -y
 #加测试源
 echo '###163测试源' >> /etc/apt/sources.list
