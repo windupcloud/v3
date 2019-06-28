@@ -103,7 +103,7 @@ start_install(){
             rm -f /etc/udev/rules/70-persistent-*-rules
             #删除自己
             rm -rf /root/moban.sh
-            echo "Finish (先histroy -cw) 请运行 sys-unconfig 关机"
+            echo "Finish (先history -cw) 请运行 sys-unconfig 关机"
             #关机
             #sys-unconfig
 
@@ -185,7 +185,7 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
-            echo "Finish (先histroy -cw) 请运行 poweroff 关机"
+            echo "Finish (先history -cw) 请运行 poweroff 关机"
             #关机
             #poweroff
 
@@ -255,7 +255,7 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
-            echo "Finish (先histroy -cw) 请运行 poweroff 关机"
+            echo "Finish (先history -cw) 请运行 poweroff 关机"
             #关机
             #poweroff
         else
