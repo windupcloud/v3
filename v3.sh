@@ -854,19 +854,26 @@ install_centos_ssr(){
     supervisord
 	fi
 	python -m pip install --upgrade pip
-    yum install libsodium -y
+
+
+
+    #yum install libsodium -y
     
 	#不再编译，直接yum
-    #wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
-	#rm -rf libsodium.sh
+        #wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+	    #rm -rf libsodium.sh
 
 	#旧编译
-	##Libtest
-	##wget -N —no-check-certificate $libAddr
-	##tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
-	##./configure && make -j2 && make install
-	##echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-	##ldconfig
+		yum update
+		echo -e "${Info} 安装依赖..."
+		yum -y groupinstall "Development Tools"
+		echo -e "${Info} 下载..."
+		wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-stable.tar.gz
+		echo -e "${Info} 解压..."
+		tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
+		echo -e "${Info} 编译安装..."
+		./configure --disable-maintainer-mode && make -j2 && make install
+		echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
@@ -916,7 +923,17 @@ install_ubuntu_ssr(){
 	apt-get -y update
 	apt-get -y install build-essential wget iptables git supervisor lsof python-pip
 	#编译安装libsodium
-    wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+    #wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+    
+		apt-get update
+		echo -e "${Info} 安装依赖..."
+		apt-get install -y build-essential
+		echo -e "${Info} 下载..."
+		wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-stable.tar.gz
+		echo -e "${Info} 解压..."
+		tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
+		echo -e "${Info} 编译安装..."
+		./configure --disable-maintainer-mode && make -j2 && make install
     
     rm -rf libsodium.sh
 	pip install cymysql -i https://pypi.org/simple/
