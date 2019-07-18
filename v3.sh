@@ -856,24 +856,24 @@ install_centos_ssr(){
 	python -m pip install --upgrade pip
 
 
-
-    #yum install libsodium -y
+    #不再编译，直接yum
+        #yum install libsodium -y
     
-	#不再编译，直接yum
-        #wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
-	    #rm -rf libsodium.sh
+	#用脚本安装
+        wget -N --no-check-certificate https://raw.githubusercontent.com/whunt1/onekeymakelibsodium/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+	    rm -rf libsodium.sh
 
 	#旧编译
-		yum update
-		echo -e "${Info} 安装依赖..."
-		yum -y groupinstall "Development Tools"
-		echo -e "${Info} 下载..."
-		wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-stable.tar.gz
-		echo -e "${Info} 解压..."
-		tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
-		echo -e "${Info} 编译安装..."
-		./configure --disable-maintainer-mode && make -j2 && make install
-		echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+	#	yum update
+	#	echo -e "${Info} 安装依赖..."
+	#	yum -y groupinstall "Development Tools"
+	#	echo -e "${Info} 下载..."
+	#	wget -N https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-stable.tar.gz
+	#	echo -e "${Info} 解压..."
+	#	tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
+	#	echo -e "${Info} 编译安装..."
+	#	./configure --disable-maintainer-mode && make -j2 && make install
+	#	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 
 	cd /root/shadowsocks-${Username}
 	chkconfig supervisord on
