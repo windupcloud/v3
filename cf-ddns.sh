@@ -13,16 +13,30 @@ record_name="aaa.yahaha.pro"
 ######################  修改配置信息 ####################### 
 # 域名类型，IPv4 为 A，IPv6 则是 AAAA
 record_type="A"
+
 # IPv6 检测服务
-#ip=$(curl -s https://ipv6.vircloud.net)
+#ip=$(curl -s http://ipv6.ip.sb)
 # IPv4 检测服务
-ip=$(curl -s https://ipv4.vircloud.net)
+ip="$(curl -s http://ipv4.ip.sb)"
+
 # 变动前的公网 IP 保存位置
 ip_file="/root/ddns/ip.txt"
 # 域名识别信息保存位置
 id_file="/root/ddns/cloudflare.ids"
 # 监测日志保存位置
 log_file="/root/ddns/cloudflare.log"
+
+######################  检测IP获取点状态 ######################## 
+get_node_url() {
+    nodes=(http://ipinfo.io/ip http://icanhazip.com http://ip.qaros.com http://ns1.dnspod.net:6666 http://icanhazip.com http://ifconfig.me);
+    if [ ! -f /bin/curl ];then
+        if [ -f /usr/local/curl/bin/curl ];then
+            ln -sf /usr/local/curl/bin/curl /bin/curl
+        else
+            yum install curl -y
+        fi
+    fi
+}
 
 ######################  监测日志格式 ######################## 
 log() {
@@ -32,7 +46,9 @@ log() {
 }
 log "Check Initiated"
 
+
 ######################  判断 IP 是否变化 #################### 
+
 if [ -f $ip_file ]; then
     old_ip=$(cat $ip_file)
     if [ "$ip" == "$old_ip" ]; then
