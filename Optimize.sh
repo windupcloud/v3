@@ -34,6 +34,7 @@ deb-src https://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
 deb https://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
 deb-src https://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
 EOF
+    apt update -y
 }
 
 AddReserveProxy() {
@@ -118,6 +119,7 @@ BoostNow() {
     echo 'All Done Enjoy It'    
 }
 UpgradeSoftware() {
+	apt update -y
     apt upgrade -y
 }
 #开始运行
