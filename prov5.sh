@@ -34,10 +34,10 @@ rm -rf /root/Optimize.sh
 ###安装必备
 apt-get install -y wget && apt-get install -y ca-certificates
 #换源
-#    if ! wget -N --no-check-certificate https://git.io/superupdate.sh -O /root/superupdate.sh; then
-#       echo -e "${Error} superupdate.sh 文件下载失败 !" && exit
-#	fi
-#bash /root/superupdate.sh
+    if ! wget -N --no-check-certificate https://git.io/superupdate.sh -O /root/superupdate.sh; then
+       echo -e "${Error} superupdate.sh 文件下载失败 !" && exit
+	fi
+bash /root/superupdate.sh
 
 ###安装桌面环境
 apt install aptitude -y
@@ -50,21 +50,21 @@ apt install sudo net-tools screen htop unzip vim -y
 
 aptitude install --without-recommends lxde -y
 #加测试源
-#echo '###163测试源' >> /etc/apt/sources.list
-#echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb-src http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb-src http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
-#echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
-#apt-get update -y
+echo '###163测试源' >> /etc/apt/sources.list
+echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+echo 'deb http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
+echo 'deb-src http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+echo 'deb-src http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
+echo 'deb http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
+echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
+apt-get update -y
 #安装桌面环境必须环境
 apt-get install xorg xserver-xorg lxde -y
 apt-get install lm-sensors -y
 #再换源
-#bash /root/superupdate.sh
-#rm -rf /root/superupdate.sh
+bash /root/superupdate.sh
+rm -rf /root/superupdate.sh
 ###安装网络管理软件
 apt install wicd wicd-cli wicd-gtk -y
 ###安装中文字体

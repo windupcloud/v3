@@ -11,28 +11,21 @@ InstallBasicComponent() {
 ReplaceEnterpriseSource() {
     if [ -f "/etc/apt/sources.list.d/pve-enterprise.list"  ]; then
     mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
-    cat > /etc/apt/sources.list.d/pve-community.list <<EOF
-# PVE pve-no-subscription repository provided by proxmox.com,
-# NOT recommended for production use
-deb http://download.proxmox.com/debian/pve buster pve-no-subscription
-
-# security updates
-deb http://security.debian.org buster/updates main contrib
-EOF
+    echo -e 'deb http://download.proxmox.com/debian/pve stretch pve-no-subscription\n' > /etc/apt/sources.list.d/pve-community.list
     fi
     echo "Source replacement already complete"
 }
 
 ReplaceDebianUpdateRepo() {
     cat > /etc/apt/sources.list <<EOF
-deb https://mirrors.aliyun.com/debian/ buster main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ buster main non-free contrib
-deb https://mirrors.aliyun.com/debian-security buster/updates main
-deb-src https://mirrors.aliyun.com/debian-security buster/updates main
-deb https://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
-deb https://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+deb https://mirrors.aliyun.com/debian/ stretch main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ stretch main non-free contrib
+deb https://mirrors.aliyun.com/debian-security stretch/updates main
+deb-src https://mirrors.aliyun.com/debian-security stretch/updates main
+deb https://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib
+deb https://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib
 EOF
 }
 
