@@ -247,7 +247,7 @@ use_centos_pm2(){
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit=320
+        max_memory_limit=400
     fi
 
     for ssr_name in "${ssr_names[@]}"
@@ -393,7 +393,7 @@ use_debian_pm2(){
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit=320
+        max_memory_limit=400
     fi
 
     for ssr_name in "${ssr_names[@]}"
