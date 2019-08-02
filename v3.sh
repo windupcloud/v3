@@ -243,7 +243,7 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=512
+        max_memory_limit=600
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
@@ -389,7 +389,7 @@ use_debian_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=512
+        max_memory_limit=600
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
