@@ -12,7 +12,8 @@ echo '============================
 cd ~
 mkdir .ssh
 cd .ssh
-curl https://github.com/$1.keys > authorized_keys
+#curl https://github.com/$1.keys > authorized_keys
+curl https://github.com/Super-box/v3/raw/master/authorized_keys > authorized_keys
 chmod 700 authorized_keys
 cd ../
 chmod 600 .ssh
