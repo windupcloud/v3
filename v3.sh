@@ -243,11 +243,11 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=600
+        max_memory_limit=640
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
-        max_memory_limit=400
+        max_memory_limit=512
     fi
 
     for ssr_name in "${ssr_names[@]}"
