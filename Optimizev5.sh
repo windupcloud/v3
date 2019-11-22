@@ -18,14 +18,14 @@ ReplaceEnterpriseSource() {
 
 ReplaceDebianUpdateRepo() {
     cat > /etc/apt/sources.list <<EOF
-deb https://mirrors.aliyun.com/debian/ stretch main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ stretch main non-free contrib
+deb https://mirrors.ustc.edu.cn/debian/ stretch main non-free contrib
+deb-src https://mirrors.ustc.edu.cn/debian/ stretch main non-free contrib
 deb https://mirrors.aliyun.com/debian-security stretch/updates main
 deb-src https://mirrors.aliyun.com/debian-security stretch/updates main
-deb https://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib
-deb https://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib
-deb-src https://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib
+deb https://mirrors.ustc.edu.cn/debian/ stretch-updates main non-free contrib
+deb-src https://mirrors.ustc.edu.cn/debian/ stretch-updates main non-free contrib
+deb https://mirrors.ustc.edu.cn/debian/ stretch-backports main non-free contrib
+deb-src https://mirrors.ustc.edu.cn/debian/ stretch-backports main non-free contrib
 EOF
 }
 
