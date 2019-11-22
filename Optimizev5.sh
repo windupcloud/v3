@@ -27,6 +27,7 @@ deb-src https://mirrors.ustc.edu.cn/debian/ stretch-updates main non-free contri
 deb https://mirrors.ustc.edu.cn/debian/ stretch-backports main non-free contrib
 deb-src https://mirrors.ustc.edu.cn/debian/ stretch-backports main non-free contrib
 EOF
+    apt update -y
 }
 
 AddReserveProxy() {
