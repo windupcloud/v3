@@ -112,7 +112,8 @@ BoostNow() {
     echo 'All Done Enjoy It'    
 }
 UpgradeSoftware() {
-    apt upgrade -y
+    apt update -y
+    #apt upgrade -y
 }
 #开始运行
 BoostNow
