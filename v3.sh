@@ -1208,6 +1208,7 @@ install_ocserv(){
         	yum update -y
             yum install epel-release -y
 	        yum install ocserv radiusclient-ng unzip -y
+            yum -y install dos2unix
 
                 if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
 		    echo -e "${Error} ocserv 服务 配置文件下载失败 !" && exit
@@ -1222,6 +1223,7 @@ install_ocserv(){
                 if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
                 echo -e "${Error} iptables文件下载失败 !" && exit
 	        fi
+                dos2unix /root/setiptables.sh
 	            chmod +x /root/setiptables.sh
                 bash /root/setiptables.sh
                 rm -rf /root/setiptables.sh
@@ -1233,7 +1235,7 @@ install_ocserv(){
             if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/init.d/ocserv; then
                 echo -e "${Error} ocserv 服务 SSL更新脚本下载失败 !" && exit
             fi
-            
+                dos2unix /etc/ocserv/updatessl.sh
 	            chmod +x /etc/init.d/ocserv
 	            echo -e "${Info} ocserv 服务 管理脚本下载完成 !"
                 /etc/rc.d/init.d/ocserv stop
