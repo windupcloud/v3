@@ -126,7 +126,7 @@ check_sys(){
 
 #PM2-[1]
 pm2_list(){
-	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2"
+	echo "选项：[1]安装PM2 [2]配置PM2 [3]更新PM2 [4]卸载PM2 [5]更新cron任务"
 	read pm2_option
 	if [ ${pm2_option} = '1' ]; then
         install_pm2
@@ -150,6 +150,8 @@ pm2_list(){
         else
             remove_pm2
         fi
+    elif [ ${pm2_option} = '5' ]; then
+            update_cron
 	else
 	echo "选项不在范围,操作中止.";exit 0
 	fi
@@ -212,6 +214,88 @@ install_pm2(){
 	else
 		echo "已经安装pm2，请配置pm2"
 	fi
+}
+
+update_cron(){
+            #创建pm2日志清理
+            if [ ! -f /var/spool/cron/root ] ; then
+                echo "未设置定时任务"
+            else
+                cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
+                rm -rf "/var/spool/cron/root"
+            fi
+            
+            if [ ! -f /root/ddns/cf-ddns.sh ] ; then
+                echo "未检测到DDNS"
+            else
+                echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS' >> /var/spool/cron/root
+                    echo '* * * * * bash /root/ddns/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
+                    echo "未检测到合租DDNS"
+            else
+                echo "添加DDNS-HZ定时启动"
+                    sleep 2s
+                    echo '###DDNS-HZ' >> /var/spool/cron/root
+                    echo '* * * * * bash /root/ddns-hz/cf-ddns.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /root/Application/telegram-socks/server.js ] ; then
+                    echo "未检测到socks5"
+            else
+                echo "添加socks5定时重启"
+                    sleep 2s
+                    echo '###Socks5' >> /var/spool/cron/root
+                    echo '* */1 * * * systemctl restart telegram >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /etc/ocserv/ocserv.conf ] ; then
+                echo "未检测到ocserv"
+            else
+                echo "添加ocserv定时重启并更新证书"
+                    sleep 2s
+                    echo '###ocserv' >> /var/spool/cron/root
+                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /usr/local/gost/gostproxy ] ; then
+                echo "未检测到gost"
+            else
+                echo "添加gost定时重启"
+                    sleep 2s
+                    echo '###Gost' >> /var/spool/cron/root
+                    echo '0 3 * * * gost start >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /usr/bin/docker ] ; then
+                echo "未检测到docker"
+            else
+                echo "添加docker定时重启"
+                    sleep 2s
+                    echo '###Docker' >> /var/spool/cron/root
+                    echo '0 3 * * * systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+                #PM2定时重启
+                    echo '#DaliyJob' >> /var/spool/cron/root
+                    echo '* */6 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '*/30 * * * * pm2 flush >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '2 3 * * * ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * v3 pm2-update >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '20 3 * * * killall sftp-server >> /dev/null 2>&1' >> /var/spool/cron/root
+                #清理缓存
+                    echo '5 3 * * * cat /dev/null > /var/spool/mail/root >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '10 3 * * * cat /dev/null > /var/log/cron >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '15 3 * * * cat /dev/null > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/root
+                #重启cron并备份
+                    /sbin/service crond restart
+                    cp /var/spool/cron/root /var/spool/cron/v3root.bak
+                #查看cron进程
+                    crontab -l
 }
 
 use_centos_pm2(){
