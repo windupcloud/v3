@@ -269,7 +269,7 @@ update_cron(){
                 echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/root
-                    echo '0 3 * * * /usr/local/gost restart >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * /usr/local/sbin/gost restart >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /usr/bin/docker ] ; then
@@ -408,7 +408,7 @@ use_centos_pm2(){
                 echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/root
-                    echo '0 3 * * * /usr/local/gost restart >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * /usr/local/sbin/gost restart >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /usr/bin/docker ] ; then
@@ -552,7 +552,7 @@ use_debian_pm2(){
                 echo "添加gost定时重启"
                     sleep 2s
                     echo '###Gost' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * /usr/local/gost restart >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * /usr/local/sbin/gost restart >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /usr/bin/docker ] ; then
