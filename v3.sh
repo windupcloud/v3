@@ -257,7 +257,7 @@ update_cron(){
             else
                 echo "添加ocserv定时重启并更新证书"
                     sleep 2s
-                    echo '###ocserv' >> /var/spool/cron/root
+                    echo '###Ocserv' >> /var/spool/cron/root
                     echo '0 3 * * * service ocserv restart >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '* * * * * service ocserv start >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
@@ -396,7 +396,7 @@ use_centos_pm2(){
             else
 	            echo "添加ocserv定时重启并更新证书"
                     sleep 2s
-                    echo '###ocserv' >> /var/spool/cron/root
+                    echo '###Ocserv' >> /var/spool/cron/root
                     echo '0 3 * * * service ocserv restart >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '* * * * * service ocserv start >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
