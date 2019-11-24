@@ -1232,7 +1232,7 @@ install_ocserv(){
 		        echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
 	        fi
 
-            if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/init.d/ocserv; then
+            if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/ocserv; then
                 echo -e "${Error} ocserv 服务 SSL更新脚本下载失败 !" && exit
             fi
                 dos2unix /etc/ocserv/updatessl.sh
