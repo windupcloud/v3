@@ -258,7 +258,8 @@ update_cron(){
                 echo "添加ocserv定时重启并更新证书"
                     sleep 2s
                     echo '###ocserv' >> /var/spool/cron/root
-                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * service ocserv restart >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * service ocserv start >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
@@ -396,7 +397,8 @@ use_centos_pm2(){
 	            echo "添加ocserv定时重启并更新证书"
                     sleep 2s
                     echo '###ocserv' >> /var/spool/cron/root
-                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '0 3 * * * service ocserv restart >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * service ocserv start >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
@@ -540,7 +542,7 @@ use_debian_pm2(){
                 echo "添加ocserv定时重启并更新证书"
                     sleep 2s
                     echo '###Ocserv' >> /var/spool/cron/crontabs/root
-                    echo '0 3 * * * systemctl restart ocserv.service >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '0 3 * * * service ocserv restart >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '45 2 * * * bash /etc/ocserv/updatessl.sh >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
@@ -1242,7 +1244,7 @@ install_ocserv(){
 	            chkconfig --add /etc/rc.d/init.d/ocserv
 	            chkconfig /etc/rc.d/init.d/ocserv on
 	            #systemctl enable ocserv.service
-	            #systemctl restart ocserv.service
+	            #service ocserv restart
 	            #systemctl status ocserv.service
                 rm -rf /etc/ocserv.zip
                 rm -rf /etc/radiusclient-ng.zip
