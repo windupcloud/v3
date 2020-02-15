@@ -211,6 +211,7 @@ install_pm2(){
     	    ln -sf /root/node-v9.11.2-linux-x64/bin/pm2 /usr/bin/pm2
         fi
             rm -rf /root/*.tar.xz
+            pm2 set pm2:autodump true
 	else
 		echo "已经安装pm2，请配置pm2"
 	fi
@@ -328,11 +329,13 @@ use_centos_pm2(){
         ssr_names+=($(basename "$ssr_dir"))
     done
 
-        max_memory_limit=700
+        max_memory_limit=800
     if [ $all -le 256 ] ; then
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
         max_memory_limit=512
+    elif [ $all -le 1000 ] ; then
+        max_memory_limit=700
     fi
 
     for ssr_name in "${ssr_names[@]}"
