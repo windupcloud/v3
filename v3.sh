@@ -334,7 +334,7 @@ use_centos_pm2(){
         max_memory_limit=192
     elif [ $all -le 512 ] ; then
         max_memory_limit=512
-    elif [ $all -le 1000 ] ; then
+    elif [ $all -le 1024 ] ; then
         max_memory_limit=700
     fi
 
