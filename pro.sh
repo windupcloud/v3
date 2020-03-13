@@ -4,7 +4,7 @@
 [ $(id -u) != "0" ] && { echo "请切换至root账户执行此脚本."; exit 1; }
 
 #全局变量
-server_ip=`curl -s https://app.52ll.win/ip/api.php`
+server_ip=`curl -s http://ip.sb`
 separate_lines="####################################################################"
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
@@ -14,11 +14,6 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 start_install(){
 clear
-    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/key.sh -O /root/key.sh; then
-       echo -e "${Error} key.sh 文件下载失败 !" && exit
-	fi
-bash /root/key.sh Super-box
-rm -rf /root/key.sh
 
 ###必备脚本
     if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/Optimize.sh -O /root/Optimize.sh; then
@@ -27,6 +22,12 @@ rm -rf /root/key.sh
 chmod +x /root/Optimize.sh
 bash /root/Optimize.sh
 rm -rf /root/Optimize.sh
+
+    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/key.sh -O /root/key.sh; then
+       echo -e "${Error} key.sh 文件下载失败 !" && exit
+	fi
+bash /root/key.sh Super-box
+rm -rf /root/key.sh
 
 ###去除付费订阅
 #mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
