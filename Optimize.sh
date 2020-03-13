@@ -1,6 +1,6 @@
 #!/bin/bash
 RemoveLoginBrand() {
-    cp /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js.bak
+    cp -r /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js.bak
     sed -i "s#data.status !== 'Active'#false#g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
 }
     
@@ -14,10 +14,12 @@ ReplaceEnterpriseSource() {
     cat > /etc/apt/sources.list.d/pve-community.list <<EOF
 # PVE pve-no-subscription repository provided by proxmox.com,
 # NOT recommended for production use
-deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+#deb http://download.proxmox.com/debian/pve buster pve-no-subscription
+deb https://mirrors.ustc.edu.cn/proxmox/debian/pve buster pve-no-subscription
+#deb http://download.proxmox.wiki/debian/pve buster pve-no-subscription
 
 # security updates
-deb http://security.debian.org buster/updates main contrib
+#deb http://security.debian.org buster/updates main contrib
 EOF
     fi
     echo "Source replacement already complete"
@@ -39,11 +41,12 @@ EOF
 
 AddReserveProxy() {
 # Add For Proxmox Update
-if [ `grep -c "89.31.125.19 download.proxmox.com" /etc/hosts` != '0' ]; then
-	echo 'Done'
-else
-    echo "89.31.125.19 download.proxmox.com" >> /etc/hosts
-fi
+# if [ `grep -c "89.31.125.19 download.proxmox.com" /etc/hosts` != '0' ]; then
+# 	echo 'Done'
+# else
+#     echo "89.31.125.19 download.proxmox.com" >> /etc/hosts
+# fi
+# 
 }
 
 AddConfirmForDangerCommand() {
