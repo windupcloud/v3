@@ -1247,7 +1247,7 @@ install_ocserv(){
 	            chkconfig --add /etc/rc.d/init.d/ocserv
 	            chkconfig /etc/rc.d/init.d/ocserv on
 	            #systemctl enable ocserv.service
-	            #/usr/sbin/service ocserv restart
+	            /usr/sbin/service ocserv restart
 	            #systemctl status ocserv.service
                 rm -rf /etc/ocserv.zip
                 rm -rf /etc/radiusclient-ng.zip
