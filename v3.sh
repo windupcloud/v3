@@ -1745,10 +1745,32 @@ install_shell(){
 
 get_server_ip_info(){
 	if [ ! -f /root/.server_ip_info.txt ]; then
-		curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
+		ip=$(wget -qO- -t1 -T2 ipinfo.io/ip)
+        if [[ -z "${ip}" ]]; then
+            ip=$(wget -qO- -t1 -T2 api.ip.sb/ip)
+            if [[ -z "${ip}" ]]; then
+                ip=$(wget -qO- -t1 -T2 members.3322.org/dyndns/getip)
+                if [[ -z "${ip}" ]]; then
+                    ip="VPS_IP(外网IP检测失败)"
+                fi
+            fi
+        fi
+        echo "${ip}" > /root/.server_ip_info.txt
+		#curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
 	else
 		rm -rf /root/.server_ip_info.txt
-		curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
+		ip=$(wget -qO- -t1 -T2 ipinfo.io/ip)
+        if [[ -z "${ip}" ]]; then
+            ip=$(wget -qO- -t1 -T2 api.ip.sb/ip)
+            if [[ -z "${ip}" ]]; then
+                ip=$(wget -qO- -t1 -T2 members.3322.org/dyndns/getip)
+                if [[ -z "${ip}" ]]; then
+                    ip="VPS_IP(外网IP检测失败)"
+                fi
+            fi
+        fi
+        echo "${ip}" > /root/.server_ip_info.txt
+		#curl -s https://ipv4.vircloud.net > /root/.server_ip_info.txt
 	fi
 	read server_ip_info < /root/.server_ip_info.txt
 }
