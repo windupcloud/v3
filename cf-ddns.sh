@@ -17,7 +17,17 @@ record_type="A"
 # IPv6 检测服务
 #ip=$(curl -s http://ipv6.ip.sb)
 # IPv4 检测服务
-ip="$(curl -s http://ipv4.ip.sb)"
+# 
+ip=$(wget -qO- -t1 -T2 ipinfo.io/ip)
+if [[ -z "${ip}" ]]; then
+    ip=$(wget -qO- -t1 -T2 api.ip.sb/ip)
+    if [[ -z "${ip}" ]]; then
+        ip=$(wget -qO- -t1 -T2 members.3322.org/dyndns/getip)
+        if [[ -z "${ip}" ]]; then
+            ip="VPS_IP(外网IP检测失败)"
+        fi
+    fi
+fi
 
 # 变动前的公网 IP 保存位置
 ip_file="/root/ddns/ip.txt"
