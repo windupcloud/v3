@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ddns.newfuture.cc/schema/v2.8.json", 
+  "debug": false, 
+  "dns": "cloudflare", 
+  "id": "472245834@qq.com", 
+  "index4": "public", 
+  "index6": "0", 
+  "ipv4": [
+    "aaa.yahaha.pro"
+  ], 
+  "ipv6": [
+
+  ], 
+  "proxy": null, 
+  "token": "8bf8eaff1c8d04b1a8b412f4b52e0b6726c40", 
+  "ttl": null
+}
