@@ -226,13 +226,13 @@ update_cron(){
                 rm -rf "/var/spool/cron/root"
             fi
             
-            if [ ! -f /usr/local/bin/ddns ] ; then
+            if [ ! -f /usr/bin/ddns ] ; then
                 echo "未检测到DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -367,13 +367,13 @@ use_centos_pm2(){
                 rm -rf "/var/spool/cron/root"
             fi
             
-            if [ ! -f /usr/local/bin/ddns ] ; then
+            if [ ! -f /usr/bin/ddns ] ; then
                 echo "未检测到DDNS"
             else
 	            echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
-                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
+                    echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -512,13 +512,13 @@ use_debian_pm2(){
                 rm -rf "/var/spool/cron/crontabs/root"
             fi
             
-            if [ ! -f /usr/local/bin/ddns ] ; then
+            if [ ! -f /usr/bin/ddns ] ; then
                 echo "未检测到DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/crontabs/root
-                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
@@ -1456,13 +1456,13 @@ ddns(){
     echo "选项：[1]安装 [2]配置 [3]运行"
 	read ddns
 	if [ ${ddns} = '1' ]; then
-	    if [ ! -f /usr/local/bin/ddns ]; then
+	    if [ ! -f /usr/bin/ddns ]; then
 	    	echo "DDNS未配置，开始下载";
 	    	#wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
 	    	sudo yum -y install epel-release
             sudo yum -y install python-pip
             pip install ddns
-            #chmod +x /usr/local/bin/ddns
+            #chmod +x /usr/bin/ddns
 	    fi
 	    #清屏
 		clear
@@ -1472,13 +1472,13 @@ ddns(){
 		CFRECORD_NAME=${CFRECORD_NAME}
 		sed -i "s#aaa.yahaha.pro#${<C></C>FRECORD_NAME}#" /root/config.json
 		#运行
-		/usr/local/bin/ddns
+		/usr/bin/ddns
 	     
         elif [ ${ddns} = '2' ]; then
 		#清屏
 		clear
         #判断DDNS文件是否存在
-        if [ ! -f /usr/local/bin/ddns ]; then
+        if [ ! -f /usr/bin/ddns ]; then
             echo "检查到您未安装ddns"
             sudo yum -y install epel-release
             sudo yum -y install python-pip
@@ -1491,7 +1491,7 @@ ddns(){
                 echo "当前DDNS配置如下:"
                 echo "------------------------------------"
                 sed -n '9p' /root/config.json
-                #sed -n '11p' /usr/local/bin/ddns
+                #sed -n '11p' /usr/bin/ddns
                 echo "------------------------------------"
             fi
         fi
@@ -1499,13 +1499,13 @@ ddns(){
 		read -p "新的DDNS地址是:" CFRECORD_NAME
 
 		#检查
-		#if [ ! -f /usr/local/bin/ddns.bak ]; then
+		#if [ ! -f /usr/bin/ddns.bak ]; then
 		#	rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
 		#	wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
 		#else
 		#还原
-		#	rm -rf /usr/local/bin/ddns && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-		#	cp /usr/local/bin/ddns.bak /usr/local/bin/ddns
+		#	rm -rf /usr/bin/ddns && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
+		#	cp /usr/bin/ddns.bak /usr/bin/ddns
 		#fi
 
 		#修改
@@ -1514,20 +1514,20 @@ ddns(){
 		sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/config.json
         #运行
         #rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-        /usr/local/bin/ddns
+        /usr/bin/ddns
         elif [ ${ddns} = '3' ]; then
 		#判断DDNS文件是否存在
-		if [ ! -f /usr/local/bin/ddns ]; then
+		if [ ! -f /usr/bin/ddns ]; then
  		    echo "检查到您未安装ddns"
 		else
 	        echo "当前DDNS配置如下:"
 		    echo "------------------------------------"
             sed -n '9p' /root/config.json
-            #sed -n '11p' /usr/local/bin/ddns
+            #sed -n '11p' /usr/bin/ddns
 		    echo "------------------------------------"
 		fi
 		    #运行
-		    /usr/local/bin/ddns
+		    /usr/bin/ddns
 	else
 		echo "选项不在范围.";exit 0
 	fi
