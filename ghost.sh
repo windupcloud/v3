@@ -106,7 +106,8 @@ function InstallGost() {
     cp gost /usr/bin/gost && chmod +x /usr/bin/gost
     echo -e "${SERVICE_FILE}" > /lib/systemd/system/gost.service
     which gost > /dev/null 2>&1 || (echo -e "安装失败，请重试" && return 0)
-    systemctl daemon-reload && systemctl enable gost.service
+    systemctl daemon-reload 
+    #&& systemctl enable gost.service
     echo -e "安装成功"
 }
 
