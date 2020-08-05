@@ -282,7 +282,7 @@ update_cron(){
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
-            if [ ! -f /root/trojan ] ; then
+            if [ ! -f /usr/bin/trojan ] ; then
                 echo "未检测到trojan"
             else
                 echo "添加trojan定时更新SSL"
@@ -432,7 +432,7 @@ use_centos_pm2(){
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
-            if [ ! -f /root/trojan ] ; then
+            if [ ! -f /usr/bin/trojan ] ; then
                 echo "未检测到trojan"
             else
                 echo "添加trojan定时更新SSL"
@@ -585,7 +585,7 @@ use_debian_pm2(){
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
-            if [ ! -f /root/trojan ] ; then
+            if [ ! -f /usr/bin/trojan ] ; then
                 echo "未检测到trojan"
             else
                 echo "添加trojan定时更新SSL"
