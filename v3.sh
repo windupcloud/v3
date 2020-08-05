@@ -282,6 +282,15 @@ update_cron(){
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
+            if [ ! -f /root/trojan ] ; then
+                echo "未检测到trojan"
+            else
+                echo "添加trojan定时更新SSL"
+                    sleep 2s
+                    echo '###Trojan' >> /var/spool/cron/root
+                    echo '45 2 * * * /usr/bin/bash /root/trojan/trojanssl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/root
                     echo '* */6 * * * /usr/bin/ssrr >> /dev/null 2>&1' >> /var/spool/cron/root
@@ -421,6 +430,15 @@ use_centos_pm2(){
                     sleep 2s
                     echo '###Docker' >> /var/spool/cron/root
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            if [ ! -f /root/trojan ] ; then
+                echo "未检测到trojan"
+            else
+                echo "添加trojan定时更新SSL"
+                    sleep 2s
+                    echo '###Trojan' >> /var/spool/cron/root
+                    echo '45 2 * * * /usr/bin/bash /root/trojan/trojanssl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
 
                 #PM2定时重启
@@ -566,7 +584,16 @@ use_debian_pm2(){
                     echo '###Docker' >> /var/spool/cron/crontabs/root
                     echo '0 3 * * * /usr/bin/systemctl restart docker >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
-            
+
+            if [ ! -f /root/trojan ] ; then
+                echo "未检测到trojan"
+            else
+                echo "添加trojan定时更新SSL"
+                    sleep 2s
+                    echo '###Trojan' >> /var/spool/cron/root
+                    echo '45 2 * * * /usr/bin/bash /root/trojan/trojanssl.sh >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
                 #PM2定时重启
                     echo '#DaliyJob' >> /var/spool/cron/crontabs/root
                     echo '* */6 * * * /usr/bin/ssrr >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
