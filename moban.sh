@@ -110,21 +110,21 @@ start_install(){
         elif [[ ${release} = "debian" ]]; then
             #安装 wget 和 ca-certificates 并换源
             apt-get install -y wget && apt-get install -y ca-certificates
-            wget -qO- git.io/superupdate.sh | bash
+            #wget -qO- git.io/superupdate.sh | bash
 
             #安装必备软件
             apt-get install build-essential -y
             apt -y install sudo git screen net-tools nload vim gcc make htop curl gcc+ unzip
 
-            #安装一下Docker-ce
-            sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
-            curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-            sudo add-apt-repository \
-            "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
-            $(lsb_release -cs) \
-            stable"
-            sudo apt-get update -y
-            sudo apt-get install docker-ce -y
+            ##安装一下Docker-ce
+            #sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
+            #curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+            #sudo add-apt-repository \
+            #"deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
+            #$(lsb_release -cs) \
+            #stable"
+            #sudo apt-get update -y
+            #sudo apt-get install docker-ce -y
 
             #更改时区为上海
             apt install -y ntpdate ntp
@@ -141,26 +141,26 @@ start_install(){
 
             #修改cloud-init导致的开机检测问题
             #sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
-            vim /etc/systemd/system/network-online.target.wants/networking.service
+            #vim /etc/systemd/system/network-online.target.wants/networking.service
 
-            #加测试源
-            echo '###163测试源' >> /etc/apt/sources.list
-            echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb-src http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb-src http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
-            echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
-            apt-get update -y
+            ##加测试源
+            #echo '###163测试源' >> /etc/apt/sources.list
+            #echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb-src http://mirrors.163.com/debian/ testing main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb-src http://mirrors.163.com/debian/ testing-updates main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
+            #echo 'deb-src http://mirrors.163.com/debian-security/ testing/updates main non-free contrib' >> /etc/apt/sources.list
+            #apt-get update -y
 
             #安装 cloud=init 及其套件
             apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
-            wget -N https://github.com/Super-box/v3/raw/master/D9-cloud.cfg -O /etc/cloud/cloud.cfg
+            #wget -N https://github.com/Super-box/v3/raw/master/D9-cloud.cfg -O /etc/cloud/cloud.cfg
             cloud-init clean
 
             #再换源
-            wget -qO- git.io/superupdate.sh | bash
+            #wget -qO- git.io/superupdate.sh | bash
 
             #清空历史记录
             apt clean all
@@ -185,28 +185,28 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
-            echo "Finish (先history -cw) 请运行 poweroff 关机"
+            echo "Finish 先 history -cw 请运行 poweroff 关机"
             #关机
             #poweroff
 
         elif [[ ${release} = "ubuntu" ]]; then
             #安装 wget 和 ca-certificates 并换源
             apt-get install -y wget && apt-get install -y ca-certificates
-            wget -qO- git.io/superupdate.sh | bash
+            #wget -qO- git.io/superupdate.sh | bash
 
             #安装必备软件
             apt-get install build-essential -y
             apt -y install sudo git screen net-tools nload vim gcc make htop curl gcc+ unzip
 
             #安装一下Docker-ce
-            sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
-            curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-            sudo add-apt-repository \
-            "deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
-            $(lsb_release -cs) \
-            stable"
-            sudo apt-get update -y
-            sudo apt-get install docker-ce -y
+            #sudo apt-get -y install apt-transport-https ca-certificates curl gnupg2 lsb-release software-properties-common
+            #curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+            #sudo add-apt-repository \
+            #"deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/debian \
+            #$(lsb_release -cs) \
+            #stable"
+            #sudo apt-get update -y
+            #sudo apt-get install docker-ce -y
 
             #更改时区为上海
             apt install -y ntpdate ntp
@@ -221,16 +221,19 @@ start_install(){
             useradd -G sudo -s /bin/bash afo
             echo afo:113389.com | chpasswd
 
+            #先强制卸载原来的cloud-init
+            apt-get -y --purge remove cloud-init cloud-utils cloud-initramfs-growroot parted
+            apt autoremove -y
             #安装 cloud=init 及其套件
             apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
-            wget -N https://github.com/Super-box/v3/raw/master/Ub-cloud.cfg -O /etc/cloud/cloud.cfg
+            #wget -N https://github.com/Super-box/v3/raw/master/Ub-cloud.cfg -O /etc/cloud/cloud.cfg
             cloud-init clean
             #再换源
-            wget -qO- git.io/superupdate.sh | bash
+            #wget -qO- git.io/superupdate.sh | bash
 
             #修改cloud-init导致的开机检测问题
             #sed -i "s#TimeoutStartSec=5min#TimeoutStartSec=15sec#" /etc/systemd/system/network-online.target.wants/networking.service
-            vim /etc/systemd/system/network-online.target.wants/networking.service
+            #vim /etc/systemd/system/network-online.target.wants/networking.service
 
             #清空历史记录
             apt clean all
@@ -255,7 +258,7 @@ start_install(){
             rm -f /var/lib/dhcp/dh*.leases*
             #删除自己
             rm -rf /root/moban.sh
-            echo "Finish (先history -cw) 请运行 poweroff 关机"
+            echo "Finish 先 [history -cw] 再运行 poweroff 关机"
             #关机
             #poweroff
         else
