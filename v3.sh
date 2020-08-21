@@ -1472,7 +1472,7 @@ swap(){
 install_ssh_port(){
     #检查文件sshport.sh是否存在,若不存在,则下载该文件
     if [ ! -f /root/sshport.sh ]; then
-        wget -N —no-check-certificate https://www.moerats.com/usr/down/sshport.sh
+        wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/sshport.sh
         chmod +x sshport.sh
     fi
         ./sshport.sh
