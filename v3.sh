@@ -353,6 +353,12 @@ Function_MediaUnlockTest_BBC() {
     fi
 }
 
+# 新版JSON解析
+PharseJSON() {
+    # 使用方法: PharseJSON "要解析的原JSON文本" "要解析的键值"
+    # Example: PharseJSON ""Value":"123456"" "Value" [返回结果: 123456]
+    echo -n $1 | jq -r .$2
+}
 #
 #PM2-[1]
 pm2_list(){
