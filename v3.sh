@@ -128,6 +128,7 @@ check_sys(){
 
 # 流媒体解锁测试
 Function_MediaUnlockTest() {
+    yum -y install jq
     echo -e " "
     echo -e "${Font_Yellow} -> Media Unlock Test ${Font_Suffix}"
     echo -e " "
