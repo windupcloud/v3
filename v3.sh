@@ -1179,7 +1179,7 @@ install_centos_ssr(){
     
     yum -y update --exclude=kernel* 
     yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables iptables-services
-    yum -y groupinstall "Development Tools" 
+    yum -y groupinstall "Development Tools"
     #第一次yum安装 supervisor pip
     yum -y install supervisor python-pip
     supervisord
@@ -1206,14 +1206,14 @@ install_centos_ssr(){
     supervisord
     fi
     python -m pip install --upgrade pip
-
-
-    #不再编译，直接yum
-        #yum install libsodium -y
     
     #用脚本安装
-        wget -N --no-check-certificate https://raw.githubusercontent.com/whunt1/onekeymakelibsodium/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
-        rm -rf libsodium.sh
+        #wget -N --no-check-certificate https://raw.githubusercontent.com/whunt1/onekeymakelibsodium/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
+        #rm -rf libsodium.sh
+
+    #Yum安装
+        yum -y install epel-release
+        yum -y install libsodium-devel
 
     #旧编译
     #   yum update
