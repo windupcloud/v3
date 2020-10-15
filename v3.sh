@@ -485,6 +485,9 @@ install_pm2(){
             ln -sf /usr/local/node-v14.8.0-linux-x64/bin/node /usr/bin/node
             ln -sf /usr/local/node-v14.8.0-linux-x64/bin/npm /usr/bin/npm
             #升级Node
+            if [[ ${country} = "CN" ]]; then
+                npm config set registry https://registry.npm.taobao.org
+            fi
             npm i -g npm
             npm install -g npm
             #安装PM2
@@ -915,6 +918,9 @@ use_debian_pm2(){
 
 update_pm2(){
     #更新node.js
+        if [[ ${country} = "CN" ]]; then
+            npm config set registry https://registry.npm.taobao.org
+        fi
         npm i -g npm
         npm install -g npm
     #更新PM2
