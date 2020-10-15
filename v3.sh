@@ -449,7 +449,10 @@ install_pm2(){
             timedatectl set-timezone Asia/Shanghai
             if [[ ${country} = "CN" ]]; then
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+                mv /etc/resolv.conf /etc/resolv.conf.bak
+                echo "#DNS目录" >> /etc/resolv.conf
+                echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+                /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
                 wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
@@ -467,7 +470,10 @@ install_pm2(){
             timedatectl set-timezone Asia/Shanghai
             if [[ ${country} = "CN" ]]; then
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+                mv /etc/resolv.conf /etc/resolv.conf.bak
+                echo "#DNS目录" >> /etc/resolv.conf
+                echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+                /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
                 wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
@@ -1231,7 +1237,10 @@ install_centos_ssr(){
     #更换DNS至8888/1001
     if [[ ${country} = "CN" ]]; then
         /usr/bin/chattr -i /etc/resolv.conf
-        wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+        mv /etc/resolv.conf /etc/resolv.conf.bak
+        echo "#DNS目录" >> /etc/resolv.conf
+        echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+        /usr/bin/chattr +i /etc/resolv.conf
     else
         /usr/bin/chattr -i /etc/resolv.conf
         wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
