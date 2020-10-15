@@ -30,7 +30,7 @@ echo && echo -e "###############################################################
 # [e]配置防火墙 [f]列出开放端口 [g]更换默认源                      #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
-# 此服务器IP信息：${server_ip_info}
+# 此服务器IP信息：${server_ip_info} 国家:${country}
 ####################################################################"
 
 stty erase '^H' && read -p "请选择安装项[1-8]/[a-g]:" num
@@ -121,7 +121,16 @@ check_sys(){
             release="ubuntu"
         elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
             release="centos"
-            fi
+        fi
+}
+
+check_country(){
+    resultverify="$(echo $(curl https://api.myip.com) | grep CN)"
+    if [ "$?" = "0" ]; then
+        country="CN"
+    else
+        country="Else"            
+    fi
 }
 #
 #  =============== 流媒体解锁测试 部分 ===============
@@ -393,10 +402,38 @@ pm2_list(){
     fi
 }
 
+pm2_test(){
+    #测速决定使用哪个源
+    nodejs='nodejs.org'
+    taobao='npm.taobao.org'
+    #doubanio='pypi.doubanio.com'
+    #pubyun='pypi.pubyun.com'    
+    nodejs_PING=`ping -c 1 -w 1 $nodejs|grep time=|awk '{print $8}'|sed "s/time=//"`
+    taobao_PING=`ping -c 1 -w 1 $taobao|grep time=|awk '{print $8}'|sed "s/time=//"`
+    #doubanio_PING=`ping -c 1 -w 1 $doubanio|grep time=|awk '{print $8}'|sed "s/time=//"`
+    #pubyun_PING=`ping -c 1 -w 1 $pubyun|grep time=|awk '{print $8}'|sed "s/time=//"`
+    echo "$nodejs_PING $nodejs" >> pingjs.pl
+    echo "$taobao_PING $taobao" >> pingjs.pl
+    #echo "$doubanio_PING $doubanio" >> ping.pl
+    #echo "$pubyun_PING $pubyun" >> ping.pl
+    jsAddr=`sort -V pingjs.pl|sed -n '1p'|awk '{print $2}'`
+    if [ "$jsAddr" == "$nodejs" ]; then
+        jsAddr='https://nodejs.org/dist/v14.8.0/node-v14.8.0-linux-x64.tar.gz'
+    elif [ "$jsAddr" == "$taobao" ]; then
+        jsAddr='https://npm.taobao.org/mirrors/node/v14.8.0/node-v14.8.0-linux-x64.tar.gz'
+    #elif [ "$pyAddr" == "$doubanio" ]; then
+    #    pyAddr='http://pypi.doubanio.com/simple --trusted-host pypi.doubanio.com'
+    #elif [ "$pyAddr" == "$pubyun_PING" ]; then
+    #    pyAddr='http://pypi.pubyun.com/simple --trusted-host pypi.pubyun.com'
+    fi
+    rm -f pingjs.pl
+}
+
 install_pm2(){
-        #检查系统版本
-        check_sys
-    
+    #检查系统版本
+    check_sys
+    #判断地址
+    pm2_test
     #判断/usr/bin/pm2文件是否存在
     if [ ! -f /usr/bin/pm2 ]; then
         echo "检查到您未安装pm2,脚本将先进行安装"
@@ -410,7 +447,14 @@ install_pm2(){
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
             timedatectl set-timezone Asia/Shanghai
-            wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            if [[ ${country} = "CN" ]]; then
+                /usr/bin/chattr -i /etc/resolv.conf
+                wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+            else
+                /usr/bin/chattr -i /etc/resolv.conf
+                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            fi
+            
         else
             apt -y install xz
             apt -y install wget
@@ -421,10 +465,16 @@ install_pm2(){
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
             /usr/sbin/ntpdate pool.ntp.org
             timedatectl set-timezone Asia/Shanghai
-            wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            if [[ ${country} = "CN" ]]; then
+                /usr/bin/chattr -i /etc/resolv.conf
+                wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+            else
+                /usr/bin/chattr -i /etc/resolv.conf
+                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            fi
     fi
         #编译Node.js
-            wget -N https://nodejs.org/dist/v14.8.0/node-v14.8.0-linux-x64.tar.gz
+            wget -N $jsAddr
             tar -xvf node-v14.8.0-linux-x64.tar.gz -C /usr/local
             #设置权限
             chmod +x /usr/local/node-v14.8.0-linux-x64/bin/node
@@ -1163,7 +1213,13 @@ install_centos_ssr(){
     fi
 
     #更换DNS至8888/1001
-    /usr/bin/chattr -i /etc/resolv.conf && wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+    if [[ ${country} = "CN" ]]; then
+        /usr/bin/chattr -i /etc/resolv.conf
+        wget -N https://github.com/Super-box/v3/raw/master/resolvCN.conf -O /etc/resolv.conf && /usr/bin/chattr +i /etc/resolv.conf
+    else
+        /usr/bin/chattr -i /etc/resolv.conf
+        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+    fi
     cd /root
     Get_Dist_Version
 
@@ -2055,6 +2111,7 @@ get_server_ip_info(){
 #安装本脚本,获取服务器IP信息
 install_shell
 get_server_ip_info
+check_country
 
 action=$1
 if [[ "${action}" == "pm2-update" ]]; then
