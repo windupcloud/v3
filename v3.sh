@@ -655,6 +655,11 @@ use_centos_pm2(){
             do
                 echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null -e /dev/null" >> /usr/bin/ssrr
             done
+            if [[ ! -f /usr/bin/gost ]]; then
+                echo "未安装Gost"
+            else
+                echo "pm2 start /usr/bin/gost --name=gost --max-memory-restart 1G -o /dev/null -e /dev/null -- -C /etc/gost/gost.json"  >> /usr/bin/ssrr
+            fi
             chmod +x /usr/bin/ssrr
         
         #创建pm2日志清理
@@ -809,6 +814,11 @@ use_debian_pm2(){
             do
                 echo "pm2 start /root/${ssr_name}/server.py --name $(echo ${ssr_name} | sed 's/shadowsocks-//') --max-memory-restart ${max_memory_limit}M  -o /dev/null -e /dev/null" >> /usr/bin/ssrr
             done
+            if [[ ! -f /usr/bin/gost ]]; then
+                echo "未安装Gost"
+            else
+                echo "pm2 start /usr/bin/gost --name=gost --max-memory-restart 1G -o /dev/null -e /dev/null -- -C /etc/gost/gost.json"  >> /usr/bin/ssrr
+            fi
             chmod +x /usr/bin/ssrr
         
         #创建pm2日志清理
