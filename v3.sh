@@ -754,6 +754,8 @@ use_centos_pm2(){
                     echo '5 3 * * * /usr/bin/cat /dev/null > /var/spool/mail/root >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '10 3 * * * /usr/bin/cat /dev/null > /var/log/cron >> /dev/null 2>&1' >> /var/spool/cron/root
                     echo '15 3 * * * /usr/bin/cat /dev/null > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/root
+                #定时重启
+                    echo '21 3 * * * reboot > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/root
                 #重启cron并备份
                     /sbin/service crond restart
                     cp /var/spool/cron/root /var/spool/cron/v3root.bak
@@ -913,6 +915,8 @@ use_debian_pm2(){
                     echo '6 3 * * * /usr/bin/cat /dev/null > /var/log/spooler >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '7 3 * * * /usr/bin/cat /dev/null > /var/log/messages >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
                     echo '8 3 * * * /usr/bin/cat /dev/null > /var/mail/root >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                #定时重启
+                    echo '21 3 * * * reboot > /var/log/syslog >> /dev/null 2>&1' >> /var/spool/cron/root
                 #重启cron并备份
                     service cron restart
                     service cron reload
