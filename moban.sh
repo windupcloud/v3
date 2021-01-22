@@ -224,6 +224,8 @@ start_install(){
             #先强制卸载原来的cloud-init
             apt-get -y --purge remove cloud-init cloud-utils cloud-initramfs-growroot parted
             apt autoremove -y
+            rm -rf /var/lib/cloud/
+            rm -rf /etc/cloud/
             #安装 cloud=init 及其套件
             apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
             #wget -N https://github.com/Super-box/v3/raw/master/Ub-cloud.cfg -O /etc/cloud/cloud.cfg
