@@ -125,7 +125,7 @@ check_sys(){
 }
 
 check_country(){
-    resultverify="$(echo $(curl https://api.myip.com) | grep CN)"
+    resultverify="$(echo $(curl myip.ipip.net) | grep -nP "中国")"
     if [ "$?" = "0" ]; then
         country="CN"
     else
