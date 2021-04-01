@@ -457,6 +457,9 @@ install_pm2(){
                 /usr/bin/chattr -i /etc/resolv.conf
                 wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
             fi
+            #安装nodejs
+            curl --silent --location https://rpm.nodesource.com/setup_10.x | sudo bash
+            sudo yum -y install nodejs
             
         else
             apt -y install xz
@@ -479,34 +482,9 @@ install_pm2(){
                 wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
             fi
     fi
-        #编译Node.js
-            wget -N $jsAddr
-            tar -xvf node-v14.8.0-linux-x64.tar.gz -C /usr/local
-            #设置权限
-            chmod +x /usr/local/node-v14.8.0-linux-x64/bin/node
-            chmod +x /usr/local/node-v14.8.0-linux-x64/bin/npm
-            #创建软连接
-            rm -rf "/usr/bin/node"
-            rm -rf "/usr/bin/npm"
-            ln -sf /usr/local/node-v14.8.0-linux-x64/bin/node /usr/bin/node
-            ln -sf /usr/local/node-v14.8.0-linux-x64/bin/npm /usr/bin/npm
-            #升级Node
-            if [[ ${country} = "CN" ]]; then
-                npm config set registry https://registry.npm.taobao.org
-            fi
-            npm i -g npm
-            npm install -g npm
-            #安装PM2
-            npm install -g pm2 --unsafe-perm
-            #创建软连接x2
-        if [ ! -f /usr/bin/pm2 ]; then
-            ln -sf /usr/local/node-v14.8.0-linux-x64/bin/pm2 /usr/bin/pm2
-        else
-            rm -rf "/usr/bin/pm2"
-            ln -sf /usr/local/node-v14.8.0-linux-x64/bin/pm2 /usr/bin/pm2
-        fi
-            rm -rf /root/*.tar.xz
-            pm2 set pm2:autodump true
+        #
+        npm install pm2 --unsafe-perm=true --allow-root
+        pm2 set pm2:autodump true
     else
         echo "已经安装pm2，请配置pm2"
     fi
