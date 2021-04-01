@@ -483,7 +483,7 @@ install_pm2(){
             fi
     fi
         #
-        npm install pm2 --unsafe-perm=true --allow-root
+        npm install pm2 -g
         pm2 set pm2:autodump true
     else
         echo "已经安装pm2，请配置pm2"
