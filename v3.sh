@@ -1045,6 +1045,8 @@ install_centos_ssr(){
     fi
     #2021.01.24 pip暂停支持python2 所以不更新
     #python -m pip install --upgrade pip
+    #更新到pip 20.3.4 最后支持的版本
+    python -m pip install pip==20.3.4
     
     #用脚本安装
         #wget -N --no-check-certificate https://raw.githubusercontent.com/whunt1/onekeymakelibsodium/master/libsodium.sh && chmod +x libsodium.sh && bash libsodium.sh
