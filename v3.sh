@@ -137,7 +137,7 @@ check_country(){
 
 # 流媒体解锁测试
 Function_MediaUnlockTest() {
-    yum install jq -y && bash <(curl -sSL "https://github.com/CoiaPrant/MediaUnlock_Test/raw/main/check.sh")
+    bash <(curl -sSL "https://github.com/CoiaPrant/MediaUnlock_Test/raw/main/check.sh")
 }
 
 
