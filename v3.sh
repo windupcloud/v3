@@ -276,6 +276,7 @@ update_cron(){
                 rm -rf "/var/spool/cron/root"
             fi
             
+            #C7
             if [ ! -f /usr/bin/ddns ] ; then
                 echo "未检测到DDNS"
             else
@@ -283,6 +284,16 @@ update_cron(){
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/root
                     echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
+            fi
+
+            #D11
+            if [ ! -f /usr/local/bin/ddns ] ; then
+                echo "未检测到DDNS"
+            else
+                echo "添加DDNS定时启动"
+                    sleep 2s
+                    echo '###DDNS' >> /var/spool/cron/crontabs/root
+                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
