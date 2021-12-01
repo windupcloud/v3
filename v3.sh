@@ -275,7 +275,7 @@ update_cron(){
                 cp "/var/spool/cron/root" "/var/spool/cron/root.bak"
                 rm -rf "/var/spool/cron/root"
             fi
-            
+
             #C7
             if [ ! -f /usr/bin/ddns ] ; then
                 echo "未检测到DDNS"
@@ -285,7 +285,14 @@ update_cron(){
                     echo '###DDNS' >> /var/spool/cron/root
                     echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
-
+            
+            if [ ! -f /var/spool/cron/crontabs/root ] ; then
+                echo "未设置定时任务"
+            else
+                cp "/var/spool/cron/crontabs/root" "/var/spool/cron/crontabs/root.bak"
+                rm -rf "/var/spool/cron/crontabs/root"
+            fi
+            
             #D11
             if [ ! -f /usr/local/bin/ddns ] ; then
                 echo "未检测到DDNS"
