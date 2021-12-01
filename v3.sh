@@ -285,23 +285,6 @@ update_cron(){
                     echo '###DDNS' >> /var/spool/cron/root
                     echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/root
             fi
-            
-            if [ ! -f /var/spool/cron/crontabs/root ] ; then
-                echo "未设置定时任务"
-            else
-                cp "/var/spool/cron/crontabs/root" "/var/spool/cron/crontabs/root.bak"
-                rm -rf "/var/spool/cron/crontabs/root"
-            fi
-            
-            #D11
-            if [ ! -f /usr/local/bin/ddns ] ; then
-                echo "未检测到DDNS"
-            else
-                echo "添加DDNS定时启动"
-                    sleep 2s
-                    echo '###DDNS' >> /var/spool/cron/crontabs/root
-                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
-            fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
                     echo "未检测到合租DDNS"
@@ -612,13 +595,14 @@ use_debian_pm2(){
                 rm -rf "/var/spool/cron/crontabs/root"
             fi
             
-            if [ ! -f /usr/bin/ddns ] ; then
+            #D11
+            if [ ! -f /usr/local/bin/ddns ] ; then
                 echo "未检测到DDNS"
             else
                 echo "添加DDNS定时启动"
                     sleep 2s
                     echo '###DDNS' >> /var/spool/cron/crontabs/root
-                    echo '* * * * * /usr/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
+                    echo '* * * * * /usr/local/bin/ddns >> /dev/null 2>&1' >> /var/spool/cron/crontabs/root
             fi
 
             if [ ! -f /root/ddns-hz/cf-ddns.sh ] ; then
