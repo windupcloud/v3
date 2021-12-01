@@ -236,6 +236,7 @@ install_pm2(){
             sudo yum -y install nodejs
             
         else
+            apt -y install sudo
             apt -y install xz
             apt -y install wget
             apt -y install git
@@ -255,6 +256,8 @@ install_pm2(){
                 /usr/bin/chattr -i /etc/resolv.conf
                 wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
             fi
+            curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+            apt-get install -y nodejs
     fi
         #
         npm install pm2 -g
