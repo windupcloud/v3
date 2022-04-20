@@ -13,7 +13,7 @@ cd ~
 mkdir .ssh
 cd .ssh
 #curl https://github.com/$1.keys > authorized_keys
-    if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/authorized_keys -O /root/.ssh/authorized_keys; then
+    if ! wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/Super-box/v3@master/authorized_keys -O /root/.ssh/authorized_keys; then
        echo -e "${Error} key.sh 文件下载失败 !" && exit
 	fi
 chmod 700 authorized_keys
