@@ -134,7 +134,7 @@ ddns_install(){
         echo "DDNS已经安装"
         if [ ! -f /root/config.json ]; then
             echo "下载配置文件"
-            wget -N —no-check-certificate "https://cdn.jsdelivr.net/gh/Super-box/v3@master/config.json" -P /root
+            wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/Super-box/v3@master/config.json" -P /root
         else
             echo "当前DDNS配置如下:"
             echo "------------------------------------"
@@ -393,7 +393,8 @@ ssr_linux_install(){
     if [[ ${release} = "centos" ]]; then
         yum -y install epel-release
         yum -y install unzip
-        wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/the0demiurge/CharlesScripts@master//charles/bin/ssr"
+        yum -y install git
+        wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/the0demiurge/CharlesScripts@master/charles/bin/ssr"
         chmod +x ssr
         cp -r ssr /usr/local/bin/ssr
         rm -rf ssr
