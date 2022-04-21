@@ -394,6 +394,7 @@ ssr_linux_install(){
         yum -y install epel-release
         yum -y install unzip
         yum -y install git
+        yum -y install libsodium
         wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/the0demiurge/CharlesScripts@master/charles/bin/ssr"
         chmod +x ssr
         cp -r ssr /usr/local/bin/ssr
