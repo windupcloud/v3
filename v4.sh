@@ -265,6 +265,7 @@ pm2_install(){
         npm install pm2 -g
         pm2 startup
         pm2 set pm2:autodump true
+        systemctl enable pm2-root
     else
         echo "已经安装pm2"
     fi
@@ -406,9 +407,9 @@ ssr_linux_install(){
         # ssr uninstall
         yum -y install privoxy
         echo 'forward-socks5 / 127.0.0.1:1080 .' >> /etc/privoxy/config
-        export http_proxy=http://127.0.0.1:8118
-        export https_proxy=http://127.0.0.1:8118
-        export no_proxy=localhost
+        #export http_proxy=http://127.0.0.1:8118
+        #export https_proxy=http://127.0.0.1:8118
+        #export no_proxy=localhost
         systemctl start privoxy.service
     else
         echo "暂时只完美支持Centos";exit 0
