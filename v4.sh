@@ -109,7 +109,7 @@ check_sys(){
 }
 
 change_linux_source(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/SuperManito/LinuxMirrors@main/ChangeMirrors.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/SuperManito/LinuxMirrors/main/ChangeMirrors.sh);exit 0
 }
 
 dd_reinstall(){
@@ -134,7 +134,7 @@ ddns_install(){
         echo "DDNS已经安装"
         if [ ! -f /root/config.json ]; then
             echo "下载配置文件"
-            wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/Super-box/v3@master/config.json" -P /root
+            wget -N --no-check-certificate "https://raw.githubusercontents.com/Super-box/v3/master/config.json" -P /root
         else
             echo "当前DDNS配置如下:"
             echo "------------------------------------"
@@ -143,7 +143,7 @@ ddns_install(){
         fi
         stty erase '^H' && read -p "新的DDNS地址是:" CFRECORD_NAME
         CFRECORD_NAME=${CFRECORD_NAME}
-        wget -N —no-check-certificate "https://cdn.jsdelivr.net/gh/Super-box/v3@master/config.json" -P /root
+        wget -N —no-check-certificate "https://raw.githubusercontents.com/Super-box/v3/master/config.json" -P /root
         sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/config.json
         ddns_local=$(echo $(find /usr/ -name ddns))
         ${ddns_local}
@@ -156,7 +156,7 @@ get_server_ip_info(){
 }
 
 gost_install(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/Super-box/v3@master/ghost.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/Super-box/v3/master/ghost.sh);exit 0
 }
 
 install_shell(){
@@ -167,7 +167,7 @@ install_shell(){
         rm -rf /usr/bin/v4
         cp -r /root/v4.sh /usr/bin/v4
         chmod +x /usr/bin/v4
-        clear;echo "Tips:您可通过命令[v3]快速启动本脚本!"
+        clear;echo "Tips:您可通过命令[v4]快速启动本脚本!"
     fi
 }
 
@@ -385,7 +385,7 @@ pm2_remove(){
 }
 
 ssh_key(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/Super-box/v3@master/key.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/Super-box/v3/master/key.sh);exit 0
 }
 
 ssr_linux_install(){
