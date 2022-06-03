@@ -78,7 +78,7 @@ base(){
 }
 
 bbr_install(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/ylx2016/Linux-NetSpeed@master/tcp.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
 }
 
 check_country(){
