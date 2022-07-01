@@ -394,40 +394,41 @@ ssr_node_install(){
     check_sys
     echo "$release" 
     if [[ ${release} = "centos" ]]; then
-    if [[ ${country} = "CN" ]]; then
-        /usr/bin/chattr -i /etc/resolv.conf
-        mv /etc/resolv.conf /etc/resolv.conf.bak
-        echo "#DNS目录" >> /etc/resolv.conf
-        echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
-        /usr/bin/chattr +i /etc/resolv.conf
-    else
-        /usr/bin/chattr -i /etc/resolv.conf
-        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+        if [[ ${country} = "CN" ]]; then
+            /usr/bin/chattr -i /etc/resolv.conf
+            mv /etc/resolv.conf /etc/resolv.conf.bak
+            echo "#DNS目录" >> /etc/resolv.conf
+            echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+            /usr/bin/chattr +i /etc/resolv.conf
+        else
+            /usr/bin/chattr -i /etc/resolv.conf
+            wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+        fi
+        yum -y install python-pip
+        #更新到pip 20.3.4 最后支持的版本
+        python -m pip install pip==20.3.4
+        #Yum安装
+        yum -y install epel-release
+        yum -y install libsodium-devel
+        #写入requirements.txt
+        rm -rf /root/requirements.txt
+        echo "asn1crypto==0.24.0" >> /root/requirements.txt
+        echo "certifi==2018.11.29" >> /root/requirements.txt
+        echo "cffi==1.11.5" >> /root/requirements.txt
+        echo "chardet==3.0.4" >> /root/requirements.txt
+        echo "cryptography==2.3" >> /root/requirements.txt
+        echo "cymysql==0.9.13" >> /root/requirements.txt
+        echo "idna==2.7" >> /root/requirements.txt
+        echo "ndg-httpsclient==0.5.1" >> /root/requirements.txt
+        echo "pyasn1==0.4.5" >> /root/requirements.txt
+        echo "pycparser==2.18" >> /root/requirements.txt
+        echo "pycryptodome==3.7.3" >> /root/requirements.txt
+        echo "pyOpenSSL==19.0.0" >> /root/requirements.txt
+        echo "requests==2.21.0" >> /root/requirements.txt
+        echo "six==1.11.0" >> /root/requirements.txt
+        echo "urllib3==1.24.1" >> /root/requirements.txt
+        pip install -r requirements.txt
     fi
-    yum -y install python-pip
-    #更新到pip 20.3.4 最后支持的版本
-    python -m pip install pip==20.3.4
-    #Yum安装
-    yum -y install epel-release
-    yum -y install libsodium-devel
-    #写入requirements.txt
-    rm -rf /root/requirements.txt
-    echo "asn1crypto==0.24.0" >> /root/requirements.txt
-    echo "certifi==2018.11.29" >> /root/requirements.txt
-    echo "cffi==1.11.5" >> /root/requirements.txt
-    echo "chardet==3.0.4" >> /root/requirements.txt
-    echo "cryptography==2.3" >> /root/requirements.txt
-    echo "cymysql==0.9.13" >> /root/requirements.txt
-    echo "idna==2.7" >> /root/requirements.txt
-    echo "ndg-httpsclient==0.5.1" >> /root/requirements.txt
-    echo "pyasn1==0.4.5" >> /root/requirements.txt
-    echo "pycparser==2.18" >> /root/requirements.txt
-    echo "pycryptodome==3.7.3" >> /root/requirements.txt
-    echo "pyOpenSSL==19.0.0" >> /root/requirements.txt
-    echo "requests==2.21.0" >> /root/requirements.txt
-    echo "six==1.11.0" >> /root/requirements.txt
-    echo "urllib3==1.24.1" >> /root/requirements.txt
-    pip install -r requirements.txt
 }
 
 ssr_linux_install(){
