@@ -404,11 +404,11 @@ ssr_node_install(){
             /usr/bin/chattr -i /etc/resolv.conf
             wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
+        yum -y install epel-release
         yum -y install python-pip
         #更新到pip 20.3.4 最后支持的版本
         python -m pip install pip==20.3.4
         #Yum安装
-        yum -y install epel-release
         yum -y install libsodium-devel
         #写入requirements.txt
         rm -rf /root/requirements.txt
