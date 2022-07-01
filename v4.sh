@@ -412,21 +412,21 @@ ssr_node_install(){
     yum -y install libsodium-devel
     #写入requirements.txt
     rm -rf /root/requirements.txt
-    echo "asn1crypto==0.24.0
-    certifi==2018.11.29
-    cffi==1.11.5
-    chardet==3.0.4
-    cryptography==2.3
-    cymysql==0.9.13
-    idna==2.7
-    ndg-httpsclient==0.5.1
-    pyasn1==0.4.5
-    pycparser==2.18
-    pycryptodome==3.7.3
-    pyOpenSSL==19.0.0
-    requests==2.21.0
-    six==1.11.0
-    urllib3==1.24.1" >> /root/requirements.txt
+    echo "asn1crypto==0.24.0" >> /root/requirements.txt
+    echo "certifi==2018.11.29" >> /root/requirements.txt
+    echo "cffi==1.11.5" >> /root/requirements.txt
+    echo "chardet==3.0.4" >> /root/requirements.txt
+    echo "cryptography==2.3" >> /root/requirements.txt
+    echo "cymysql==0.9.13" >> /root/requirements.txt
+    echo "idna==2.7" >> /root/requirements.txt
+    echo "ndg-httpsclient==0.5.1" >> /root/requirements.txt
+    echo "pyasn1==0.4.5" >> /root/requirements.txt
+    echo "pycparser==2.18" >> /root/requirements.txt
+    echo "pycryptodome==3.7.3" >> /root/requirements.txt
+    echo "pyOpenSSL==19.0.0" >> /root/requirements.txt
+    echo "requests==2.21.0" >> /root/requirements.txt
+    echo "six==1.11.0" >> /root/requirements.txt
+    echo "urllib3==1.24.1" >> /root/requirements.txt
     pip install -r requirements.txt
 }
 
