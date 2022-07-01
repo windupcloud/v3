@@ -14,7 +14,7 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 start_menu(){
 clear
 echo && echo -e "####################################################################
-# 版本：V.0.0.2 2022-04-20                                         #
+# 版本：V.0.0.3 2022-07-01                                         #
 ####################################################################
 # [1] 网络重装系统                                                 #
 # [2] 更改Linux源                                                  #
@@ -22,11 +22,11 @@ echo && echo -e "###############################################################
 # [4] BBR脚本                                                      #
 # [5] 安装Gost                                                     #
 # [6] PM2相关                                                      #
-# [7] Linux安装SSR客户端                                            #
+# [7] 安装SS_NODE依赖                                            #
 # [8] 回程路由查询                                                  #
 # [9] 流媒体检测                                                    #
 ####################################################################
-# [a]DDNS安装 [b] [c] [d]   #
+# [a]DDNS安装 [b] [c] [d]Linux安装SSR客户端   #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
 # 此服务器IP信息：${server_ip_info} 国家:${country}
@@ -48,13 +48,15 @@ case "$num" in
     6)
     pm2_list;;
     7)
-    ssr_linux_install;;
+    ssr_node_install;;
     8)
     mtr_trace;;
     9)
     MediaUnlockTest;;
     a)
     ddns_install;;
+    d)
+    ssr_linux_install;;
     x)
     rm -rf /usr/bin/v4
     cp -r /root/v4.sh /usr/bin/v4
@@ -388,6 +390,46 @@ ssh_key(){
     bash <(curl -sSL https://raw.githubusercontents.com/Super-box/v3/master/key.sh);exit 0
 }
 
+ssr_node_install(){
+    check_sys
+    echo "$release" 
+    if [[ ${release} = "centos" ]]; then
+    if [[ ${country} = "CN" ]]; then
+        /usr/bin/chattr -i /etc/resolv.conf
+        mv /etc/resolv.conf /etc/resolv.conf.bak
+        echo "#DNS目录" >> /etc/resolv.conf
+        echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+        /usr/bin/chattr +i /etc/resolv.conf
+    else
+        /usr/bin/chattr -i /etc/resolv.conf
+        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+    fi
+    yum -y install python-pip
+    #更新到pip 20.3.4 最后支持的版本
+    python -m pip install pip==20.3.4
+    #Yum安装
+    yum -y install epel-release
+    yum -y install libsodium-devel
+    #写入requirements.txt
+    rm -rf /root/requirements.txt
+    echo "asn1crypto==0.24.0
+    certifi==2018.11.29
+    cffi==1.11.5
+    chardet==3.0.4
+    cryptography==2.3
+    cymysql==0.9.13
+    idna==2.7
+    ndg-httpsclient==0.5.1
+    pyasn1==0.4.5
+    pycparser==2.18
+    pycryptodome==3.7.3
+    pyOpenSSL==19.0.0
+    requests==2.21.0
+    six==1.11.0
+    urllib3==1.24.1" >> /root/requirements.txt
+    pip install -r requirements.txt
+}
+
 ssr_linux_install(){
     check_sys
     echo "$release" 
@@ -395,8 +437,8 @@ ssr_linux_install(){
         yum -y install epel-release
         yum -y install unzip
         yum -y install git
-        yum -y install libsodium
-        wget -N --no-check-certificate "https://cdn.jsdelivr.net/gh/the0demiurge/CharlesScripts@master/charles/bin/ssr"
+        yum -y install libsodium 
+        wget -N --no-check-certificate "https://raw.githubusercontents.com/the0demiurge/CharlesScripts/master/charles/bin/ssr"
         chmod +x ssr
         cp -r ssr /usr/local/bin/ssr
         rm -rf ssr
@@ -438,4 +480,4 @@ do
 keep_loop
 done
 
-#END 2022年04月20日
+#END 2022年07月01日
