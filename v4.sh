@@ -136,7 +136,7 @@ ddns_install(){
         echo "DDNS已经安装"
         if [ ! -f /root/config.json ]; then
             echo "下载配置文件"
-            wget -N --no-check-certificate "https://raw.githubusercontents.com/Super-box/v3/master/config.json" -P /root
+            wget -N --no-check-certificate "https://raw.githubusercontents.com/windupcloud/v3/master/config.json" -P /root
         else
             echo "当前DDNS配置如下:"
             echo "------------------------------------"
@@ -145,7 +145,7 @@ ddns_install(){
         fi
         stty erase '^H' && read -p "新的DDNS地址是:" CFRECORD_NAME
         CFRECORD_NAME=${CFRECORD_NAME}
-        wget -N —no-check-certificate "https://raw.githubusercontents.com/Super-box/v3/master/config.json" -P /root
+        wget -N —no-check-certificate "https://raw.githubusercontents.com/windupcloud/v3/master/config.json" -P /root
         sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/config.json
         ddns_local=$(echo $(find /usr/ -name ddns))
         ${ddns_local}
@@ -158,7 +158,7 @@ get_server_ip_info(){
 }
 
 gost_install(){
-    bash <(curl -sSL https://raw.githubusercontents.com/Super-box/v3/master/ghost.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/ghost.sh);exit 0
 }
 
 install_shell(){
@@ -233,7 +233,7 @@ pm2_install(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc
+                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
             #安装nodejs
@@ -258,7 +258,7 @@ pm2_install(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc
+                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
             curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
@@ -387,7 +387,7 @@ pm2_remove(){
 }
 
 ssh_key(){
-    bash <(curl -sSL https://raw.githubusercontents.com/Super-box/v3/master/key.sh);exit 0
+    bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/key.sh);exit 0
 }
 
 ssr_node_install(){
@@ -402,7 +402,7 @@ ssr_node_install(){
             /usr/bin/chattr +i /etc/resolv.conf
         else
             /usr/bin/chattr -i /etc/resolv.conf
-            wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         yum -y install epel-release
         yum -y install python-pip
@@ -462,7 +462,7 @@ ssr_linux_install(){
 
 update_the_shell(){
     rm -rf /root/v4.sh v4.sh.*
-    wget -N "https://github.com/Super-box/v3/raw/master/v4.sh" /root/v4.sh
+    wget -N "https://github.com/windupcloud/v3/raw/master/v4.sh" /root/v4.sh
     #将脚本作为命令放置在/usr/bin目录内,最后执行
     rm -rf /usr/bin/v4;cp -r /root/v4.sh /usr/bin/v4;chmod +x /usr/bin/v4
     v4
