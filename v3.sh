@@ -229,7 +229,7 @@ install_pm2(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
             fi
             #安装nodejs
             curl --silent --location https://rpm.nodesource.com/setup_10.x | sudo bash
@@ -254,7 +254,7 @@ install_pm2(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
-                wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
             fi
             curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
             apt-get install -y nodejs
@@ -913,7 +913,7 @@ modify_node_info(){
     
             #检查
             if [ ! -f /root/shadowsocks/userapiconfig.py.bak ]; then
-                wget https://github.com/Super-box/v3/raw/master/userapiconfig.py
+                wget https://github.com/windupcloud/v3/raw/master/userapiconfig.py
             else
             #还原
                 rm -rf /root/shadowsocks/userapiconfig.py
@@ -942,7 +942,7 @@ Libtest(){
     echo "$LIB_PING $LIB" >> ping.pl
     libAddr=`sort -V ping.pl|sed -n '1p'|awk '{print $2}'`
     if [ "$libAddr" == "$GIT" ]; then
-        libAddr='https://github.com/Super-box/v3/raw/master/libsodium-1.0.16.tar.gz'
+        libAddr='https://github.com/windupcloud/v3/raw/master/libsodium-1.0.16.tar.gz'
     else
         libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz'
     fi
@@ -1006,7 +1006,7 @@ install_centos_ssr(){
         /usr/bin/chattr +i /etc/resolv.conf
     else
         /usr/bin/chattr -i /etc/resolv.conf
-        wget -N https://github.com/Super-box/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+        wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
     fi
     cd /root
     Get_Dist_Version
@@ -1311,7 +1311,7 @@ git_update(){
                 if [ ! -f /root/shadowsocks/userapiconfig.py ]; then
                 echo "Tan90°"
                 else
-                git clone -b manyuser https://github.com/Super-box/p3.git          
+                git clone -b manyuser https://github.com/windupcloud/p3.git          
                 \cp -r -f /root/p3/* /root/shadowsocks
                 rm -rf /root/p3
                 fi
@@ -1325,17 +1325,17 @@ install_ocserv(){
             yum install ocserv radiusclient-ng unzip -y
             yum -y install dos2unix
 
-                if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
+                if ! wget -N --no-check-certificate https://github.com/windupcloud/a5/raw/master/ocserv.zip -O /etc/ocserv.zip; then
             echo -e "${Error} ocserv 服务 配置文件下载失败 !" && exit
             fi
                 unzip -o /etc/ocserv.zip -d /etc
 
-                if ! wget -N --no-check-certificate https://github.com/Super-box/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
+                if ! wget -N --no-check-certificate https://github.com/windupcloud/a5/raw/master/radiusclient-ng.zip -O /etc/radiusclient-ng.zip; then
             echo -e "${Error} radius 服务 配置文件下载失败 !" && exiy
             fi
                 unzip -o /etc/radiusclient-ng.zip -d /etc
             
-                if ! wget -N --no-check-certificate https://github.com/Super-box/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
+                if ! wget -N --no-check-certificate https://github.com/windupcloud/v3/raw/master/setiptables.sh -O /root/setiptables.sh; then
                 echo -e "${Error} iptables文件下载失败 !" && exit
             fi
                 dos2unix /root/setiptables.sh
@@ -1347,7 +1347,7 @@ install_ocserv(){
                 echo -e "${Error} ocserv 服务 管理脚本下载失败 !" && exit
             fi
 
-            if ! wget --no-check-certificate https://github.com/Super-box/a5/raw/master/updatessl.sh -O /etc/ocserv/updatessl.sh; then
+            if ! wget --no-check-certificate https://github.com/windupcloud/a5/raw/master/updatessl.sh -O /etc/ocserv/updatessl.sh; then
                 echo -e "${Error} ocserv 服务 SSL更新脚本下载失败 !" && exit
             fi
                 dos2unix /etc/ocserv/updatessl.sh
@@ -1556,7 +1556,7 @@ swap(){
 install_ssh_port(){
     #检查文件sshport.sh是否存在,若不存在,则下载该文件
     if [ ! -f /root/sshport.sh ]; then
-        wget -N —no-check-certificate https://github.com/Super-box/v3/raw/master/sshport.sh
+        wget -N —no-check-certificate https://github.com/windupcloud/v3/raw/master/sshport.sh
         chmod +x sshport.sh
     fi
         ./sshport.sh
@@ -1569,7 +1569,7 @@ ddns(){
     if [ ${ddns} = '1' ]; then
         if [ ! -f /usr/bin/ddns ]; then
             echo "DDNS未配置，开始下载";
-            #wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
+            #wget -N —no-check-certificate "https://github.com/windupcloud/v3/raw/master/cf-ddns.sh" -P /root/ddns
             sudo yum -y install epel-release
             sudo yum -y install python-pip
             pip install ddns
@@ -1597,7 +1597,7 @@ ddns(){
         else
             if [ ! -f /root/config.json ]; then
                 echo "下载配置文件"
-                wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/config.json" -P /root
+                wget -N —no-check-certificate "https://github.com/windupcloud/v3/raw/master/config.json" -P /root
             else
                 echo "当前DDNS配置如下:"
                 echo "------------------------------------"
@@ -1612,7 +1612,7 @@ ddns(){
         #检查
         #if [ ! -f /usr/bin/ddns.bak ]; then
         #   rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
-        #   wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/cf-ddns.sh" -P /root/ddns
+        #   wget -N —no-check-certificate "https://github.com/windupcloud/v3/raw/master/cf-ddns.sh" -P /root/ddns
         #else
         #还原
         #   rm -rf /usr/bin/ddns && rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
@@ -1621,7 +1621,7 @@ ddns(){
 
         #修改
         CFRECORD_NAME=${CFRECORD_NAME}
-        wget -N —no-check-certificate "https://github.com/Super-box/v3/raw/master/config.json" -P /root
+        wget -N —no-check-certificate "https://github.com/windupcloud/v3/raw/master/config.json" -P /root
         sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/config.json
         #运行
         #rm -rf /root/ddns/cloud* && rm -rf /root/ddns/ip*
@@ -1734,7 +1734,7 @@ detect_backhaul_routing(){
 superspeed(){
     #检查文件superspeed.sh是否存在,若不存在,则下载该文件
     if [ ! -f /root/superspeed.sh ]; then
-        wget -N --no-check-certificate "https://github.com/Super-box/v3/raw/master/superspeed.sh" /root/superspeed.sh
+        wget -N --no-check-certificate "https://github.com/windupcloud/v3/raw/master/superspeed.sh" /root/superspeed.sh
         chmod +x /root/superspeed.sh
     fi
     #执行测试
@@ -1813,7 +1813,7 @@ configure_firewall(){
 
 update_the_shell(){
         rm -rf /root/v3.sh v3.sh.*
-        wget -N "https://github.com/Super-box/v3/raw/master/v3.sh" /root/v3.sh
+        wget -N "https://github.com/windupcloud/v3/raw/master/v3.sh" /root/v3.sh
             #将脚本作为命令放置在/usr/bin目录内,最后执行
             rm -rf /usr/bin/v3;cp /root/v3.sh /usr/bin/v3;chmod +x /usr/bin/v3
             v3
