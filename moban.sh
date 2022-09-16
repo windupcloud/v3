@@ -57,8 +57,8 @@ start_install(){
 
             #安装 cloud=init 及其套件
             yum -y install cloud-init cloud-utils cloud-initramfs-growroot
-            wget -N https://github.com/Super-box/v3/raw/master/C7-cloud.cfg -O /etc/cloud/cloud.cfg
-            wget -N https://github.com/Super-box/v3/raw/master/ifcfg-eth0 -P /etc/sysconfig/network-scripts
+            wget -N https://github.com/windupcloud/v3/raw/master/C7-cloud.cfg -O /etc/cloud/cloud.cfg
+            wget -N https://github.com/windupcloud/v3/raw/master/ifcfg-eth0 -P /etc/sysconfig/network-scripts
             cloud-init clean
             
             #创建用户
@@ -156,7 +156,7 @@ start_install(){
 
             #安装 cloud=init 及其套件
             apt-get -y install cloud-init cloud-utils cloud-initramfs-growroot parted
-            #wget -N https://github.com/Super-box/v3/raw/master/D9-cloud.cfg -O /etc/cloud/cloud.cfg
+            #wget -N https://github.com/windupcloud/v3/raw/master/D9-cloud.cfg -O /etc/cloud/cloud.cfg
             cloud-init clean
 
             #再换源
