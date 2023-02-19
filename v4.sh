@@ -26,7 +26,7 @@ echo && echo -e "###############################################################
 # [8] 回程路由查询                                                  #
 # [9] 流媒体检测                                                    #
 ####################################################################
-# [a]DDNS安装 [b] [c] [d]Linux安装SSR客户端   #
+# [a]DDNS安装 [b]Chat测试 [c] [d]Linux安装SSR客户端   #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
 # 此服务器IP信息：${server_ip_info} 国家:${country}
@@ -55,6 +55,8 @@ case "$num" in
     MediaUnlockTest;;
     a)
     ddns_install;;
+    b)
+    check_chatgpt;;
     d)
     ssr_linux_install;;
     x)
@@ -80,7 +82,11 @@ base(){
 }
 
 bbr_install(){
-    bash <(curl -sSL https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+    bash <(curl -Ls https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+}
+
+check_chatgpt(){
+    bash <(curl -Ls https://cdn.jsdelivr.net/gh/missuo/OpenAI-Checker/openai.sh);exit 0
 }
 
 check_country(){
@@ -188,7 +194,8 @@ echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
 }
 
 mtr_trace(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/zhucaidan/mtr_trace@main/mtr_trace.sh);exit 0
+    #bash <(curl -sSL https://cdn.jsdelivr.net/gh/zhucaidan/mtr_trace@main/mtr_trace.sh);exit 0
+    bash <(curl -sSL https://cdn.jsdelivr.net/gh/vpsxb/testrace@main/testrace.sh);exit 0
 }
 
 MediaUnlockTest(){
