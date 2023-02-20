@@ -446,9 +446,9 @@ set_crontab_start(){
     rm -r "/root/crontab.bak"
     cron_config=$(crontab -l | grep "cleanLog")
     if [[ -z ${cron_config} ]]; then
-        echo -e "${Error} Brook 服务端运行状态监控功能 启动失败 !" && exit 1
+        echo -e "${Error} cleanlog 已关闭 !" && exit 1
     else
-        echo -e "${Info} Brook 服务端运行状态监控功能 启动成功 !"
+        echo -e "${Info} cleanlog 已开启 !"
     fi
 }
 
@@ -459,9 +459,9 @@ set_crontab_stop(){
     rm -r "/root/crontab.bak"
     cron_config=$(crontab -l | grep "cleanLog")
     if [[ -z ${cron_config} ]]; then
-        echo -e "${Error} Brook 服务端运行状态监控功能 启动失败 !" && exit 1
+        echo -e "${Error} cleanlog 已关闭 !" && exit 1
     else
-        echo -e "${Info} Brook 服务端运行状态监控功能 启动成功 !"
+        echo -e "${Info} cleanlog 已开启 !"
     fi
 }
 
