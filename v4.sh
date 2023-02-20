@@ -26,7 +26,9 @@ echo && echo -e "###############################################################
 # [8] 回程路由查询                                                  #
 # [9] 流媒体检测                                                    #
 ####################################################################
-# [a]DDNS安装 [b]Chat测试 [c] [d]Linux安装SSR客户端   #
+# [a]DDNS安装 [b]Chat测试 [c]路由检测 [d]Linux安装SSR客户端   #
+# [e]null [f]null [g]null [h]null   #
+# [w]crontab修改                                #
 ####################################################################
 # [x]刷新脚本 [y]更新脚本 [z]退出脚本                              #
 # 此服务器IP信息：${server_ip_info} 国家:${country}
@@ -50,15 +52,19 @@ case "$num" in
     7)
     ssr_node_install;;
     8)
-    mtr_trace;;
+    mtr_trace_back;;
     9)
     MediaUnlockTest;;
     a)
     ddns_install;;
     b)
     check_chatgpt;;
+    c)
+    mtr_trace;;    
     d)
     ssr_linux_install;;
+    w)
+    set_crontab;;
     x)
     rm -rf /usr/bin/v4
     cp -r /root/v4.sh /usr/bin/v4
@@ -83,6 +89,16 @@ base(){
 
 bbr_install(){
     bash <(curl -Ls https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+}
+
+check_crontab_installed_status(){
+    if [[ ! -e /bin/cleanLog ]]; then
+        echo -e "${Error} cleanLog 没有安装，开始安装..."
+            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /bin/cleanLog
+            sudo chmod +x /bin/cleanLog
+    else
+        echo "已经安装"
+    fi
 }
 
 check_chatgpt(){
@@ -194,8 +210,11 @@ echo ${separate_lines};echo -n "继续(y)还是中止(n)? [y/n]:"
 }
 
 mtr_trace(){
-    #bash <(curl -sSL https://cdn.jsdelivr.net/gh/zhucaidan/mtr_trace@main/mtr_trace.sh);exit 0
     bash <(curl -sSL https://cdn.jsdelivr.net/gh/vpsxb/testrace@main/testrace.sh);exit 0
+}
+
+mtr_trace_back(){
+    bash <(curl -sSL https://cdn.jsdelivr.net/gh/zhucaidan/mtr_trace@main/mtr_trace.sh);exit 0 
 }
 
 MediaUnlockTest(){
@@ -393,6 +412,59 @@ pm2_remove(){
     exit 0
 }
 
+set_crontab(){
+    check_crontab_installed_status
+    crontab_monitor=$(crontab -l|grep "cleanLog")
+    if [[ -z "${crontab_monitor}" ]]; then
+        echo && echo -e "当前Cron: ${Green_font_prefix}未开启${Font_color_suffix}" && echo
+        echo -e "确定要开启 ${Green_font_prefix}Cron${Font_color_suffix} 功能吗?[Y/n]"
+        read -e -p "(默认: y):" crontab_monitor_ny
+        [[ -z "${crontab_monitor_ny}" ]] && crontab_monitor_ny="y"
+        if [[ ${crontab_monitor_ny} == [Yy] ]]; then
+            set_crontab_start
+        else
+            echo && echo "  已取消..." && echo
+        fi
+    else
+        echo && echo -e "当前监控模式: ${Green_font_prefix}已开启${Font_color_suffix}" && echo
+        echo -e "确定要关闭 ${Green_font_prefix}Cron${Font_color_suffix} 功能吗？[y/N]"
+        read -e -p "(默认: n):" crontab_monitor_ny
+        [[ -z "${crontab_monitor_ny}" ]] && crontab_monitor_ny="n"
+        if [[ ${crontab_monitor_ny} == [Yy] ]]; then
+            set_crontab_stop
+        else
+            echo && echo "  已取消..." && echo
+        fi
+    fi    
+}
+
+set_crontab_start(){
+    crontab -l > "/root/crontab.bak"
+    sed -i "/cleanLog/d" "/root/crontab.bak"
+    echo -e "\n*/1 * * * *  /bin/cleanLog >> /dev/null 2>&1" >> "/root/crontab.bak"
+    crontab "/root/crontab.bak"
+    rm -r "/root/crontab.bak"
+    cron_config=$(crontab -l | grep "cleanLog")
+    if [[ -z ${cron_config} ]]; then
+        echo -e "${Error} Brook 服务端运行状态监控功能 启动失败 !" && exit 1
+    else
+        echo -e "${Info} Brook 服务端运行状态监控功能 启动成功 !"
+    fi
+}
+
+set_crontab_stop(){
+    crontab -l > "/root/crontab.bak"
+    sed -i "/cleanLog/d" "/root/crontab.bak"
+    crontab "/root/crontab.bak"
+    rm -r "/root/crontab.bak"
+    cron_config=$(crontab -l | grep "cleanLog")
+    if [[ -z ${cron_config} ]]; then
+        echo -e "${Error} Brook 服务端运行状态监控功能 启动失败 !" && exit 1
+    else
+        echo -e "${Info} Brook 服务端运行状态监控功能 启动成功 !"
+    fi
+}
+
 ssh_key(){
     bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/key.sh);exit 0
 }
@@ -469,7 +541,7 @@ ssr_linux_install(){
 
 update_the_shell(){
     rm -rf /root/v4.sh v4.sh.*
-    wget -N "https://github.com/windupcloud/v3/raw/master/v4.sh" /root/v4.sh
+    wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/v4.sh" /root/v4.sh
     #将脚本作为命令放置在/usr/bin目录内,最后执行
     rm -rf /usr/bin/v4;cp -r /root/v4.sh /usr/bin/v4;chmod +x /usr/bin/v4
     v4
