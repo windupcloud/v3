@@ -92,10 +92,10 @@ bbr_install(){
 }
 
 check_crontab_installed_status(){
-    if [[ ! -e /bin/cleanLog ]]; then
+    if [[ ! -e /usr/bin/cleanLog ]]; then
         echo -e "${Error} cleanLog 没有安装，开始安装..."
-            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /bin/cleanLog
-            sudo chmod +x /bin/cleanLog
+            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /usr/bin/cleanLog
+            sudo chmod +x /usr/bin/cleanLog
     else
         echo "已经安装"
     fi
@@ -441,7 +441,7 @@ set_crontab(){
 set_crontab_start(){
     crontab -l > "/root/crontab.bak"
     sed -i "/cleanLog/d" "/root/crontab.bak"
-    echo -e "\n*/1 * * * *  /bin/cleanLog >> /dev/null 2>&1" >> "/root/crontab.bak"
+    echo -e "\n*/1 * * * *  /usr/bin/cleanLog >> /dev/null 2>&1" >> "/root/crontab.bak"
     crontab "/root/crontab.bak"
     rm -r "/root/crontab.bak"
     cron_config=$(crontab -l | grep "cleanLog")
