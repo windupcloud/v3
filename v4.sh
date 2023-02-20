@@ -94,7 +94,9 @@ bbr_install(){
 check_crontab_installed_status(){
     if [[ ! -e /usr/bin/cleanLog ]]; then
         echo -e "${Error} cleanLog 没有安装，开始安装..."
-            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /usr/bin/cleanLog
+            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /root/cleanLog
+            cp -r /root/cleanLog /usr/bin/cleanLog
+            rm -rf /root/cleanLog
             sudo chmod +x /usr/bin/cleanLog
     else
         echo "已经安装"
