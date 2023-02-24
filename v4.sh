@@ -139,9 +139,13 @@ change_linux_source(){
 }
 
 dd_reinstall(){
-    wget -N --no-check-certificate https://down.vpsaff.net/linux/dd/network-reinstall-os.sh
-    chmod +x network-reinstall-os.sh
-    ./network-reinstall-os.sh
+    #curl -sSL -k -o dd.sh https://raw.githubusercontent.com/haoduck/dd/master/dd.sh && chmod +x dd.sh && bash dd.sh
+
+    curl -sSL -k -o dd.sh https://fastly.jsdelivr.net/gh/haoduck/dd@latest/dd.sh && chmod +x dd.sh && bash dd.sh
+
+    #wget -N --no-check-certificate https://down.vpsaff.net/linux/dd/network-reinstall-os.sh
+    #chmod +x network-reinstall-os.sh
+    #./network-reinstall-os.sh
 }
 
 ddns_install(){
