@@ -513,6 +513,42 @@ ssr_node_install(){
         echo "six==1.11.0" >> /root/requirements.txt
         echo "urllib3==1.24.1" >> /root/requirements.txt
         pip install -r requirements.txt
+    else
+        if [[ ${country} = "CN" ]]; then
+            /usr/bin/chattr -i /etc/resolv.conf
+            mv /etc/resolv.conf /etc/resolv.conf.bak
+            echo "#DNS目录" >> /etc/resolv.conf
+            echo "nameserver 223.6.6.6 #Aliyun" >> /etc/resolv.conf
+            /usr/bin/chattr +i /etc/resolv.conf
+        else
+            /usr/bin/chattr -i /etc/resolv.conf
+            wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+        fi
+        apt -y update
+        apt -y install wget git
+        apt -y install python-pip python-dev libffi-dev libssl-dev  
+        python -m pip install pip==20.3.4
+        apt -y install libsodium-devel
+        pip install --upgrade setuptools
+        
+        rm -rf /root/requirements.txt
+        echo "asn1crypto==0.24.0" >> /root/requirements.txt
+        echo "certifi==2018.11.29" >> /root/requirements.txt
+        echo "cffi==1.11.5" >> /root/requirements.txt
+        echo "chardet==3.0.4" >> /root/requirements.txt
+        echo "cryptography==2.3" >> /root/requirements.txt
+        echo "cymysql==0.9.13" >> /root/requirements.txt
+        echo "idna==2.7" >> /root/requirements.txt
+        echo "ndg-httpsclient==0.5.1" >> /root/requirements.txt
+        echo "pyasn1==0.4.5" >> /root/requirements.txt
+        echo "pycparser==2.18" >> /root/requirements.txt
+        echo "pycryptodome==3.7.3" >> /root/requirements.txt
+        echo "pyOpenSSL==19.0.0" >> /root/requirements.txt
+        echo "requests==2.21.0" >> /root/requirements.txt
+        echo "six==1.11.0" >> /root/requirements.txt
+        echo "urllib3==1.24.1" >> /root/requirements.txt
+        pip install -r requirements.txt
+
     fi
 }
 
