@@ -526,11 +526,16 @@ ssr_node_install(){
         fi
         apt -y update
         apt -y install wget git
-        apt -y install python-pip python-dev libffi-dev libssl-dev  
-        python -m pip install pip==20.3.4
-        apt -y install libsodium-devel
-        pip install --upgrade setuptools
+        apt -y install python2 curl
+        apt -y install python-dev libffi-dev libssl-dev
+        curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+        sudo python2 get-pip.py
+        pip2 --version
         
+        python -m pip install pip==20.3.4
+        sudo apt-get install -y libsodium-dev
+        pip install --upgrade setuptools
+
         rm -rf /root/requirements.txt
         echo "asn1crypto==0.24.0" >> /root/requirements.txt
         echo "certifi==2018.11.29" >> /root/requirements.txt
