@@ -269,7 +269,7 @@ pm2_install(){
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
             #安装nodejs
-            curl --silent --location https://rpm.nodesource.com/setup_10.x | sudo bash
+            curl --silent --location https://rpm.nodesource.com/setup_14.x | sudo bash
             sudo yum -y install nodejs
         else
             apt -y install sudo
@@ -527,7 +527,7 @@ ssr_node_install(){
         apt -y update
         apt -y install wget git
         apt -y install python2 curl
-        apt -y install python-dev libffi-dev libssl-dev
+        apt -y install python-dev libffi-dev libssl-dev gcc
         curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
         sudo python2 get-pip.py
         pip2 --version
