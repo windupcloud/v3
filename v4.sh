@@ -525,6 +525,7 @@ ssr_node_install(){
             wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         apt -y update
+        apt -y install sudo
         apt -y install wget git
         apt -y install python2 curl
         apt -y install python-dev libffi-dev libssl-dev gcc
