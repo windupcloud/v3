@@ -293,8 +293,7 @@ pm2_install(){
                 wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
-            curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-            apt-get install -y nodejs
+            apt-get install -y npm
     fi
         npm install pm2 -g
         pm2 startup
