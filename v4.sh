@@ -88,7 +88,11 @@ base(){
 }
 
 bbr_install(){
-    bash <(curl -Ls https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+    if [[ ${country} = "CN" ]]; then
+        bash <(curl -Ls https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+    else 
+        bash <(curl -Ls https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
+    fi
 }
 
 check_crontab_installed_status(){
@@ -471,7 +475,11 @@ set_crontab_stop(){
 }
 
 ssh_key(){
-    bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/key.sh);exit 0
+    if [[ ${country} = "CN" ]]; then
+        bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/key.sh);exit 0
+    else
+        bash <(curl -sSL https://raw.githubusercontent.com/windupcloud/v3/master/key.sh);exit 0
+    fi
 }
 
 ssr_node_install(){
