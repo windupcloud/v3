@@ -297,6 +297,7 @@ pm2_install(){
                 wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
+            apt -y install libssl1.1=1.1.1n-0+deb11u3 --allow-downgrades
             apt-get install -y npm
     fi
         npm install pm2 -g
