@@ -112,7 +112,7 @@ check_chatgpt(){
 }
 
 check_country(){
-    resultverify="$(echo $(curl 3.0.3.0) | grep -nP "省")"
+    resultverify="$(echo $(curl 3.0.3.0/ips) | grep -nP "China")"
     if [ "$?" = "0" ]; then
         country="CN"
     else
