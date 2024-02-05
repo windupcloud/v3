@@ -228,7 +228,8 @@ mtr_trace_back(){
 }
 
 MediaUnlockTest(){
-    bash <(curl -sSL https://cdn.jsdelivr.net/gh/lmc999/RegionRestrictionCheck@main/check.sh);exit 0
+    #bash <(curl -sSL https://cdn.jsdelivr.net/gh/lmc999/RegionRestrictionCheck@main/check.sh);exit 0
+    bash <(curl -L -s media.ispvps.com)
 }
 
 pm2_list(){
