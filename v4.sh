@@ -270,6 +270,7 @@ pm2_install(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
+                cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
                 wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
@@ -295,6 +296,7 @@ pm2_install(){
                 /usr/bin/chattr +i /etc/resolv.conf
             else
                 /usr/bin/chattr -i /etc/resolv.conf
+                cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
                 wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
@@ -496,6 +498,7 @@ ssr_node_install(){
             /usr/bin/chattr +i /etc/resolv.conf
         else
             /usr/bin/chattr -i /etc/resolv.conf
+            cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
             wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         yum -y install epel-release
@@ -531,6 +534,7 @@ ssr_node_install(){
             /usr/bin/chattr +i /etc/resolv.conf
         else
             /usr/bin/chattr -i /etc/resolv.conf
+            cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
             wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         apt -y update
