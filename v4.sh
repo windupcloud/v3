@@ -88,17 +88,13 @@ base(){
 }
 
 bbr_install(){
-    if [[ ${country} = "CN" ]]; then
-        bash <(curl -Ls https://raw.githubusercontents.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
-    else 
-        bash <(curl -Ls https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh);exit 0
-    fi
+    bash <(curl -Ls "$(github_url 'https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh')");exit 0
 }
 
 check_crontab_installed_status(){
     if [[ ! -e /usr/bin/cleanLog ]]; then
         echo -e "${Error} cleanLog 没有安装，开始安装..."
-            wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog" /root/cleanLog
+            wget -N "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/cleanLog')" /root/cleanLog
             cp -r /root/cleanLog /usr/bin/cleanLog
             rm -rf /root/cleanLog
             sudo chmod +x /usr/bin/cleanLog
@@ -111,13 +107,66 @@ check_chatgpt(){
     bash <(curl -Ls https://cdn.jsdelivr.net/gh/missuo/OpenAI-Checker/openai.sh);exit 0
 }
 
+is_cn(){
+    if curl -s --max-time 3 3.0.3.0/ips | grep -q "China"; then
+        return 0
+    fi
+    return 1
+}
+
 check_country(){
-    resultverify="$(echo $(curl 3.0.3.0/ips) | grep -nP "China")"
-    if [ "$?" = "0" ]; then
+    if is_cn; then
         country="CN"
     else
         country="Else"            
     fi
+}
+
+check_cn() {
+    if is_cn; then
+        local suffixes=(
+            "https://gh.con.sh/"
+            "https://gh-proxy.com/"
+            "https://ghp.ci/"
+            "https://gh.m-l.cc/"
+            "https://down.npee.cn/?"
+            "https://mirror.ghproxy.com/"
+            "https://ghps.cc/"
+            "https://gh.api.99988866.xyz/"
+            "https://git.886.be/"
+            "https://hub.gitmirror.com/"
+            "https://pd.zwc365.com/"
+            "https://gh.ddlc.top/"
+            "https://slink.ltd/"
+            "https://github.moeyy.xyz/"
+            "https://ghproxy.crazypeace.workers.dev/"
+            "https://gh.h233.eu.org/"
+        )
+
+        local suffix
+        for suffix in "${suffixes[@]}"; do
+            local combined_url="${suffix}$1"
+            local response_code
+            response_code=$(curl --max-time 2 -sL -w "%{http_code}" -I "$combined_url" | head -n 1 | awk '{print $2}')
+            if [[ $response_code -ge 200 && $response_code -lt 300 ]]; then
+                echo "$combined_url"
+                return 0
+            fi
+        done
+    fi
+
+    echo "$1"
+    return 1
+}
+
+github_url() {
+    local url="$1"
+    if [[ -z "$url" ]]; then
+        echo ""
+        return 1
+    fi
+
+    check_cn "$url"
 }
 
 check_sys(){
@@ -139,7 +188,7 @@ check_sys(){
 }
 
 change_linux_source(){
-    bash <(curl -sSL https://raw.githubusercontents.com/SuperManito/LinuxMirrors/main/ChangeMirrors.sh);exit 0
+    bash <(curl -sSL "$(github_url 'https://raw.githubusercontent.com/SuperManito/LinuxMirrors/main/ChangeMirrors.sh')");exit 0
 }
 
 dd_reinstall(){
@@ -168,7 +217,7 @@ ddns_install(){
         echo "DDNS已经安装"
         if [ ! -f /root/config.json ]; then
             echo "下载配置文件"
-            wget -N --no-check-certificate "https://raw.githubusercontents.com/windupcloud/v3/master/config.json" -P /root
+            wget -N --no-check-certificate "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/config.json')" -P /root
         else
             echo "当前DDNS配置如下:"
             echo "------------------------------------"
@@ -177,7 +226,7 @@ ddns_install(){
         fi
         stty erase '^H' && read -p "新的DDNS地址是:" CFRECORD_NAME
         CFRECORD_NAME=${CFRECORD_NAME}
-        wget -N —no-check-certificate "https://raw.githubusercontents.com/windupcloud/v3/master/config.json" -P /root
+        wget -N --no-check-certificate "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/config.json')" -P /root
         sed -i "s#aaa.yahaha.pro#${CFRECORD_NAME}#" /root/config.json
         ddns_local=$(echo $(find /usr/ -name ddns))
         ${ddns_local}
@@ -190,7 +239,7 @@ get_server_ip_info(){
 }
 
 gost_install(){
-    bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/ghost.sh);exit 0
+    bash <(curl -sSL "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/ghost.sh')");exit 0
 }
 
 install_shell(){
@@ -271,7 +320,7 @@ pm2_install(){
             else
                 /usr/bin/chattr -i /etc/resolv.conf
                 cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
-                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
+                wget -N "$(github_url 'https://github.com/windupcloud/v3/raw/master/resolv.conf')" -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
             #安装nodejs
@@ -297,7 +346,7 @@ pm2_install(){
             else
                 /usr/bin/chattr -i /etc/resolv.conf
                 cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
-                wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc
+                wget -N "$(github_url 'https://github.com/windupcloud/v3/raw/master/resolv.conf')" -P /etc
                 /usr/bin/chattr +i /etc/resolv.conf
             fi
             apt -y install libssl1.1=1.1.1n-0+deb11u3 --allow-downgrades
@@ -479,11 +528,7 @@ set_crontab_stop(){
 }
 
 ssh_key(){
-    if [[ ${country} = "CN" ]]; then
-        bash <(curl -sSL https://raw.githubusercontents.com/windupcloud/v3/master/key.sh);exit 0
-    else
-        bash <(curl -sSL https://raw.githubusercontent.com/windupcloud/v3/master/key.sh);exit 0
-    fi
+    bash <(curl -sSL "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/key.sh')");exit 0
 }
 
 ssr_node_install(){
@@ -499,7 +544,7 @@ ssr_node_install(){
         else
             /usr/bin/chattr -i /etc/resolv.conf
             cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
-            wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            wget -N "$(github_url 'https://github.com/windupcloud/v3/raw/master/resolv.conf')" -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         yum -y install epel-release
         yum -y install python-pip
@@ -535,7 +580,7 @@ ssr_node_install(){
         else
             /usr/bin/chattr -i /etc/resolv.conf
             cp -r -n /etc/resolv.conf /etc/resolv.conf.bak
-            wget -N https://github.com/windupcloud/v3/raw/master/resolv.conf -P /etc && /usr/bin/chattr +i /etc/resolv.conf
+            wget -N "$(github_url 'https://github.com/windupcloud/v3/raw/master/resolv.conf')" -P /etc && /usr/bin/chattr +i /etc/resolv.conf
         fi
         apt -y update
         apt -y install sudo
@@ -579,7 +624,7 @@ ssr_linux_install(){
         yum -y install unzip
         yum -y install git
         yum -y install libsodium 
-        wget -N --no-check-certificate "https://raw.githubusercontents.com/the0demiurge/CharlesScripts/master/charles/bin/ssr"
+        wget -N --no-check-certificate "$(github_url 'https://raw.githubusercontent.com/the0demiurge/CharlesScripts/master/charles/bin/ssr')"
         chmod +x ssr
         cp -r ssr /usr/local/bin/ssr
         rm -rf ssr
@@ -602,7 +647,7 @@ ssr_linux_install(){
 
 update_the_shell(){
     rm -rf /root/v4.sh v4.sh.*
-    wget -N "https://raw.githubusercontent.com/windupcloud/v3/master/v4.sh" /root/v4.sh
+    wget -N "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/v4.sh')" /root/v4.sh
     #将脚本作为命令放置在/usr/bin目录内,最后执行
     rm -rf /usr/bin/v4;cp -r /root/v4.sh /usr/bin/v4;chmod +x /usr/bin/v4
     v4
