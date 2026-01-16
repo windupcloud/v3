@@ -579,12 +579,9 @@ ssh_key(){
 
     mkdir -p "${ssh_dir}"
     chmod 700 "${ssh_dir}"
-    touch "${auth_file}"
+    printf '%s\n' "${key}" > "${auth_file}"
     chmod 600 "${auth_file}"
-
-    if ! grep -qxF "${key}" "${auth_file}"; then
-        echo "${key}" >> "${auth_file}"
-    fi
+    echo -e "${Info} SSH key 已替换: ${auth_file}"
 
     if [ -f /etc/ssh/sshd_config ]; then
         sed -i "/PasswordAuthentication no/c PasswordAuthentication no" /etc/ssh/sshd_config
@@ -601,6 +598,7 @@ ssh_key(){
     service ssh restart 2>/dev/null
     systemctl restart sshd 2>/dev/null
     systemctl restart ssh 2>/dev/null
+    echo -e "${Info} SSH 服务重启完成"
     exit 0
 }
 
