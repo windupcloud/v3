@@ -351,10 +351,12 @@ pm2_install(){
             yum -y install wget
             yum -y install git
             #切换时钟
-            yum install -y ntpdate ntp
+            yum install -y chrony
+            systemctl start chronyd
+            systemctl enable chronyd
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
-            /usr/sbin/ntpdate pool.ntp.org
+            chronyc makestep
             timedatectl set-timezone Asia/Shanghai
             if [[ ${country} = "CN" ]]; then
                 /usr/bin/chattr -i /etc/resolv.conf
@@ -376,11 +378,12 @@ pm2_install(){
             apt -y install xz
             apt -y install wget
             apt -y install git
-            apt install -y ntpdate ntp
-            ps aux |grep ntpd |grep -v grep |awk -F ' ' '{print $2}' | xargs kill -9 2>/dev/null
+            apt install -y chrony
+            systemctl start chronyd
+            systemctl enable chronyd
             ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
             ln -sf /usr/share/zoneinfo/CST /etc/localtime
-            /usr/sbin/ntpdate pool.ntp.org
+            chronyc makestep
             timedatectl set-timezone Asia/Shanghai
             if [[ ${country} = "CN" ]]; then
                 /usr/bin/chattr -i /etc/resolv.conf
